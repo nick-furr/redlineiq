@@ -1,0 +1,322 @@
+/**
+ * API Routes
+ * 
+ * POST /api/projects              — Create project + upload PDF
+ * GET  /api/projects               — List all projects
+ * GET  /api/projects/:id           — Get project with checklist
+ * POST /api/projects/:id/extract   — Kick off async extraction job
+ * GET  /api/jobs/:jobId/status     — SSE stream for job progress
+ * GET  /api/jobs/:jobId            — Poll job status (non-SSE fallback)
+ * PATCH /api/projects/:id/items/:itemId — Update checklist item status
+ * POST /api/projects/:id/items/:itemId/flag — Flag item for clarification
+ * GET  /api/projects/:id/summary   — Get progress summary
+ * DELETE /api/projects/:id         — Delete project
+ */
+
+import { Router } from 'express';
+import multer from 'multer';
+import path from 'path';
+import { createReadStream } from 'fs';
+import { stat } from 'fs/promises';
+import { config } from '../config/index.js';
+import { getPdfPageCount } from '../utils/pdf-converter.js';
+import {
+  createProject,
+  updateItemStatus,
+  flagForClarification,
+  getProject,
+  listProjects,
+  deleteProject,
+} from '../services/project-service.js';
+import { createJob, getJob } from '../services/job-service.js';
+
+const router = Router();
+
+// ─── File Upload Config ────────────────────────────────────────
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, config.upload.uploadDir),
+  filename: (req, file, cb) => {
+    const uniqueName = `${Date.now()}-${file.originalname}`;
+    cb(null, uniqueName);
+  },
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: config.upload.maxFileSizeMB * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype !== 'application/pdf') {
+      return cb(new Error('Only PDF files are accepted'));
+    }
+    cb(null, true);
+  },
+});
+
+// ─── Routes ────────────────────────────────────────────────────
+
+/**
+ * POST /api/projects
+ * Upload a PDF and create a new project
+ */
+router.post('/projects', upload.single('pdf'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No PDF file uploaded' });
+    }
+
+    const projectName = req.body.name || req.file.originalname.replace('.pdf', '');
+    const pdfPath = path.resolve(req.file.path);
+
+    // Get page count
+    const totalPages = await getPdfPageCount(pdfPath);
+
+    if (totalPages > config.upload.maxPages) {
+      return res.status(400).json({
+        error: `PDF has ${totalPages} pages. Maximum is ${config.upload.maxPages}.`,
+      });
+    }
+
+    const project = await createProject(projectName, req.file.originalname, pdfPath, totalPages);
+
+    res.status(201).json({
+      project,
+      message: `Project created with ${totalPages} pages. POST to /api/projects/${project.id}/extract to run extraction.`,
+    });
+  } catch (err) {
+    console.error('Project creation error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/projects
+ * List all projects
+ */
+router.get('/projects', (req, res) => {
+  const projects = listProjects();
+  res.json({ projects });
+});
+
+/**
+ * GET /api/projects/:id
+ * Get a single project with full checklist
+ */
+router.get('/projects/:id', (req, res) => {
+  const project = getProject(req.params.id);
+  if (!project) return res.status(404).json({ error: 'Project not found' });
+  res.json({ project });
+});
+
+/**
+ * POST /api/projects/:id/extract
+ * Kick off an async extraction job. Returns a jobId immediately.
+ * Client should connect to GET /api/jobs/:jobId/status for SSE updates.
+ */
+router.post('/projects/:id/extract', async (req, res) => {
+  const project = getProject(req.params.id);
+  if (!project) return res.status(404).json({ error: 'Project not found' });
+
+  try {
+    const { jobId } = createJob(project.id);
+
+    console.log(`Extraction job ${jobId} created for "${project.name}"`);
+
+    res.status(202).json({
+      jobId,
+      message: `Extraction started. Stream progress at GET /api/jobs/${jobId}/status`,
+      project: {
+        id: project.id,
+        name: project.name,
+        total_pages: project.total_pages,
+      },
+    });
+  } catch (err) {
+    console.error('Job creation error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/jobs/:jobId/status
+ * SSE endpoint — streams extraction progress events to the client.
+ * 
+ * Events:
+ *   job_started        — extraction has begun
+ *   conversion_complete — PDF pages converted to images
+ *   page_complete      — one page extracted (includes markup count)
+ *   job_complete       — all pages done, results saved
+ *   job_failed         — something went wrong
+ */
+router.get('/jobs/:jobId/status', (req, res) => {
+  const job = getJob(req.params.jobId);
+  if (!job) return res.status(404).json({ error: 'Job not found' });
+
+  // If job already finished, return final status as regular JSON
+  if (job.status === 'complete') {
+    return res.json({
+      jobId: job.id,
+      status: job.status,
+      result: job.result,
+    });
+  }
+  if (job.status === 'failed') {
+    return res.json({
+      jobId: job.id,
+      status: job.status,
+      error: job.error,
+    });
+  }
+
+  // Set up SSE headers
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive',
+    'X-Accel-Buffering': 'no', // Disable nginx buffering if behind a proxy
+  });
+
+  // Send initial connection event
+  sendSSE(res, 'connected', {
+    jobId: job.id,
+    status: job.status,
+    progress: job.progress,
+  });
+
+  // Listen to job events and forward them to the client
+  const { emitter } = job;
+
+  const events = ['job_started', 'conversion_complete', 'page_complete', 'job_complete', 'job_failed'];
+  const listeners = {};
+
+  for (const eventName of events) {
+    const listener = (data) => {
+      sendSSE(res, eventName, data);
+
+      // Close connection on terminal events
+      if (eventName === 'job_complete' || eventName === 'job_failed') {
+        cleanup();
+        res.end();
+      }
+    };
+    listeners[eventName] = listener;
+    emitter.on(eventName, listener);
+  }
+
+  // Clean up listeners when client disconnects
+  const cleanup = () => {
+    for (const [eventName, listener] of Object.entries(listeners)) {
+      emitter.removeListener(eventName, listener);
+    }
+  };
+
+  req.on('close', cleanup);
+});
+
+/**
+ * GET /api/jobs/:jobId
+ * Non-SSE fallback — poll for job status
+ */
+router.get('/jobs/:jobId', (req, res) => {
+  const job = getJob(req.params.jobId);
+  if (!job) return res.status(404).json({ error: 'Job not found' });
+
+  res.json({
+    jobId: job.id,
+    status: job.status,
+    progress: job.progress,
+    result: job.result,
+    error: job.error,
+  });
+});
+
+/**
+ * PATCH /api/projects/:id/items/:itemId
+ * Update a checklist item's status
+ * 
+ * Body: { status: "done"|"pending"|"in_progress"|"skipped", notes: "optional" }
+ */
+router.patch('/projects/:id/items/:itemId', async (req, res) => {
+  try {
+    const { status, notes } = req.body;
+    if (!status) return res.status(400).json({ error: 'Status is required' });
+
+    const item = await updateItemStatus(req.params.id, req.params.itemId, status, notes);
+    const project = getProject(req.params.id);
+
+    res.json({ item, summary: project.summary });
+  } catch (err) {
+    res.status(err.message.includes('not found') ? 404 : 500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/projects/:id/items/:itemId/flag
+ * Flag an item for clarification
+ * 
+ * Body: { message: "Question for the engineer" }
+ */
+router.post('/projects/:id/items/:itemId/flag', async (req, res) => {
+  try {
+    const { message } = req.body;
+    if (!message) return res.status(400).json({ error: 'Clarification message is required' });
+
+    const item = await flagForClarification(req.params.id, req.params.itemId, message);
+    res.json({ item });
+  } catch (err) {
+    res.status(err.message.includes('not found') ? 404 : 500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/projects/:id/summary
+ * Get progress summary for a project
+ */
+router.get('/projects/:id/summary', (req, res) => {
+  const project = getProject(req.params.id);
+  if (!project) return res.status(404).json({ error: 'Project not found' });
+
+  res.json({
+    project_name: project.name,
+    summary: project.summary,
+    total_pages: project.total_pages,
+    pages_processed: project.pages_processed,
+  });
+});
+
+/**
+ * GET /api/projects/:id/pdf
+ * Stream the original uploaded PDF back to the client
+ */
+router.get('/projects/:id/pdf', async (req, res) => {
+  const project = getProject(req.params.id);
+  if (!project) return res.status(404).json({ error: 'Project not found' });
+
+  try {
+    await stat(project.pdf_path);
+  } catch {
+    return res.status(404).json({ error: 'PDF file not found on disk' });
+  }
+
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `inline; filename="${project.pdf_filename}"`);
+  res.setHeader('Cache-Control', 'private, max-age=3600');
+  createReadStream(project.pdf_path).pipe(res);
+});
+
+/**
+ * DELETE /api/projects/:id
+ */
+router.delete('/projects/:id', async (req, res) => {
+  const deleted = await deleteProject(req.params.id);
+  if (!deleted) return res.status(404).json({ error: 'Project not found' });
+  res.json({ message: 'Project deleted' });
+});
+
+// ─── SSE Helper ────────────────────────────────────────────────
+
+function sendSSE(res, event, data) {
+  res.write(`event: ${event}\n`);
+  res.write(`data: ${JSON.stringify(data)}\n\n`);
+}
+
+export default router;

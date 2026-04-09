@@ -1,0 +1,2 @@
+node_modules/\n.env\n.env.*\n*.log\ndist/\n.DS_Store
+.env
