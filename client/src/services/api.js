@@ -51,6 +51,10 @@ export async function getProjectSummary(projectId) {
   return request(`/projects/${projectId}/summary`)
 }
 
+export async function deleteProject(projectId) {
+  return request(`/projects/${projectId}`, { method: 'DELETE' })
+}
+
 // Returns an EventSource connected to the job status SSE stream
 export function createJobStream(jobId) {
   return new EventSource(`${BASE}/jobs/${jobId}/status`)

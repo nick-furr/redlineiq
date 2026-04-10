@@ -45,7 +45,7 @@ Your task is to extract EVERY redline markup annotation from the provided drawin
 
 5. **Location descriptions:** Be specific about where on the drawing each markup appears. Reference grid lines, room names, elevation markers, or relative position (e.g., "upper-left quadrant, near the kitchen island").
 
-6. **Drawing reference:** Identify the sheet number/name from title blocks or headers (e.g., "A-201", "C-3.1"). If not visible, use "Unknown".
+6. **Drawing reference:** Identify the sheet number/name from title blocks, headers, or detail references on the drawing (e.g., "A-201", "C-3.1", "BATH 01 - E"). Look for circled numbers with titles, title block text at the bottom or right edge, or any sheet identification visible on the page. If multiple detail references exist (e.g., detail 3: "BATH 01 - E"), use the primary one. Only use "Unknown" if absolutely no identifying text exists anywhere on the drawing.
 
 7. **Be exhaustive.** Do not skip small annotations, dimension corrections, check marks, question marks, or arrows. Each one matters to the drafter.
 

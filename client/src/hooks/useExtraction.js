@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react'
-import { uploadProject, startExtraction, createJobStream, getProject } from '../services/api.js'
+import { createJobStream, getProject } from '../services/api.js'
 
 // Checklist items from the API have markup fields nested under item.markup.
 // Flatten them so downstream components can use item.markup_type, item.markup_text, etc.
@@ -8,7 +8,7 @@ function flattenItem(item) {
     ...item.markup,
     id: item.id,
     status: item.status,
-    flagged: item.flagged ?? false,
+    flagged: item.status === 'flagged',
     drafter_notes: item.drafter_notes,
     clarification_request: item.clarification_request,
     clarification_response: item.clarification_response,
@@ -114,18 +114,26 @@ export function useExtraction() {
     }
   }, [closeStream, patchState])
 
-  const upload = useCallback(async (file) => {
-    patchState({ phase: 'uploading', error: null })
-
+  // Load an existing project and optionally reconnect to a running extraction job.
+  // Called by ProjectPage on mount — jobId comes from navigation state if we just
+  // kicked off extraction in HomePage.
+  const initialize = useCallback(async (projectId, jobId = null) => {
     try {
-      const { project } = await uploadProject(file)
+      const { project } = await getProject(projectId)
+      const existingMarkups = (project.checklist ?? []).map(flattenItem)
 
-      patchState({ phase: 'extracting', project, markups: [], pagesComplete: 0 })
-
-      const { jobId } = await startExtraction(project.id)
-      patchState({ jobId })
-
-      subscribeToJob(project.id, jobId)
+      if (jobId && existingMarkups.length === 0) {
+        // Job is still running — subscribe to SSE stream
+        patchState({ phase: 'extracting', project, jobId, markups: [], pagesComplete: 0 })
+        subscribeToJob(projectId, jobId)
+      } else {
+        // Job finished (or never started) — render what we have
+        patchState({
+          phase: existingMarkups.length > 0 ? 'done' : 'idle',
+          project,
+          markups: existingMarkups,
+        })
+      }
     } catch (err) {
       patchState({ phase: 'error', error: err.message })
     }
@@ -136,5 +144,5 @@ export function useExtraction() {
     setState(INITIAL_STATE)
   }, [closeStream])
 
-  return { ...state, upload, reset }
+  return { ...state, initialize, reset }
 }

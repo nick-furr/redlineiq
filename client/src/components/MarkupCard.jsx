@@ -26,12 +26,18 @@ export default function MarkupCard({ item, selected, onSelect, onStatusChange, o
 
   function handleFlag(e) {
     e.stopPropagation()
-    setFlagMode(true)
+    if (isFlagged) {
+      // Unflag: reset status to pending via the existing status-update path
+      onStatusChange(item.id, 'pending')
+    } else {
+      setFlagMode(true)
+    }
   }
 
   function submitFlag(e) {
     e.stopPropagation()
-    onFlag(item.id, flagMessage)
+    if (!flagMessage.trim()) return
+    onFlag(item.id, flagMessage.trim())
     setFlagMode(false)
     setFlagMessage('')
   }
@@ -133,12 +139,13 @@ export default function MarkupCard({ item, selected, onSelect, onStatusChange, o
             value={flagMessage}
             onChange={e => setFlagMessage(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && submitFlag(e)}
-            placeholder="Flag note (optional)…"
+            placeholder="What needs clarification?…"
             className="flex-1 bg-[#0f1014] border border-[#2e3340] rounded px-2 py-1 text-xs text-[#d1d5db] outline-none focus:border-[#1D9E75]"
           />
           <button
             onClick={submitFlag}
-            className="px-2 py-1 rounded text-xs bg-orange-600 text-white hover:bg-orange-500"
+            disabled={!flagMessage.trim()}
+            className="px-2 py-1 rounded text-xs bg-orange-600 text-white hover:bg-orange-500 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Flag
           </button>
