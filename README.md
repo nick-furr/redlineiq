@@ -1,12 +1,22 @@
 # RedlineIQ
 
-Redlined plan sets are how engineers mark up drawings for drafters to revise — handwritten annotations scattered across pages, no standard format, no built-in organization. I've worked in civil engineering and construction long enough to know how much time gets lost just interpreting and organizing that markup before any actual drafting happens. RedlineIQ automates that translation step.
+**[Live demo →](https://redlineiq-ukx6.onrender.com)**
+Free-tier deploy — first request may take 30–60s to wake up.
 
-AI-powered extraction of redline markup annotations from architectural and engineering drawings.
+![RedlineIQ screenshot](docs/screenshot.png)
 
 ## What it does
 
-Upload a redlined PDF → RedlineIQ uses Claude Vision to extract every markup annotation → Returns a structured checklist the drafter can work through systematically.
+Redlined plan sets are how engineers mark up drawings for drafters to revise — handwritten annotations scattered across pages, no standard format, no built-in organization. Before any actual drafting can begin, a drafter has to manually read, interpret, and organize every annotation. RedlineIQ eliminates that step. Upload a marked-up PDF and the app uses Claude Vision to extract every annotation into a structured, actionable checklist — categorized by type, location, and confidence, with ambiguous items auto-flagged for clarification.
+
+## Tech stack
+
+- **Frontend:** React + Vite, Tailwind CSS
+- **Backend:** Node.js + Express
+- **AI:** Claude Sonnet 4 (Vision API)
+- **Persistence:** SQLite via better-sqlite3
+- **PDF processing:** pdf2pic + GraphicsMagick + Ghostscript
+- **Deployment:** Docker on Render
 
 ## Architecture
 
@@ -125,15 +135,22 @@ curl http://localhost:3001/api/projects/{id}/summary
 | `MAX_PAGES` | No | `10` | Max pages per PDF. Checked at upload and again before extraction. |
 | `PORT` | No | `3001` | HTTP port. |
 
-### Render / Railway notes
+### Render notes
 
-- Add a **persistent disk** mounted at `/var/data` and set `DATABASE_PATH=/var/data/redlineiq.db`. Without a persistent disk the SQLite file lives in the ephemeral container filesystem and is wiped on every redeploy.
-- The `uploads/` directory is also ephemeral — uploaded PDFs won't survive a redeploy. This is fine for a demo; for production you'd move uploads to object storage (S3/R2).
-- Set `DEMO_MODE=true` and a strong `DEMO_KEY` before making the deployment public.
+- The app is deployed as a Docker service so GraphicsMagick and Ghostscript are available as system binaries.
+- Add a **persistent disk** mounted at `/var/data` and set `DATABASE_PATH=/var/data/redlineiq.db` when upgrading from free tier. Without it, the SQLite file is wiped on every redeploy.
+- The `uploads/` directory is ephemeral — uploaded PDFs won't survive a redeploy. For production, move uploads to object storage (S3/R2).
+
+## Engineering decisions
+
+- **Async job pattern with SSE** rather than a synchronous POST response — extraction on a multi-page PDF takes tens of seconds per page. A synchronous approach would time out at the load balancer. The job service runs extraction in the background and streams per-page progress events to the client over SSE.
+- **SQLite over JSON file persistence** — the JSON approach required reading and rewriting the entire dataset on every checklist update. SQLite gives row-level writes, survives concurrent requests cleanly, and needs no separate database service to operate.
+- **Docker deploy to install system deps** — pdf2pic delegates PDF rendering to GraphicsMagick and Ghostscript, which are OS-level binaries. The default Render Node runtime doesn't include them. A Dockerfile makes the dependency explicit and reproducible.
+- **Per-IP rate limiting with a 10-page cap** — each extraction page hits the Claude Vision API. Without limits, a single user could run up significant API costs on a public demo. The extraction endpoint is capped at 3 jobs/hour per IP; uploads are rejected above 10 pages.
 
 ## Next steps
 
-- [ ] Real-time extraction progress via WebSocket/SSE ✓ (done — uses SSE via job-service)
-- [ ] React frontend with split-panel layout (PDF viewer + checklist) ✓ (done — see /client)
-- [ ] Clarification workflow (engineer response loop)
-- [ ] Export progress report as PDF/CSV
+- [ ] Clarification workflow — engineer response loop for ambiguous markups (currently auto-flagged but no reply path)
+- [ ] Export — download progress report as PDF or CSV for handoff
+- [ ] Multi-sheet plan sets — improve handling of large plan sets with cross-sheet references and consistent sheet numbering
+- [ ] Sample library — pre-extracted example projects so visitors can explore the checklist UI without uploading their own drawings
