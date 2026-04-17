@@ -1,6 +1,6 @@
 # RedlineIQ
 
-**[Live demo →](https://redlineiq-ukx6.onrender.com)**
+**[Live demo →](https://redlineiq-new.onrender.com)**
 Free-tier deploy — first request may take 30–60s to wake up.
 
 ![RedlineIQ screenshot](docs/screenshot.png)
