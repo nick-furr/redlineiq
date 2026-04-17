@@ -1,6 +1,6 @@
 /**
  * API Routes
- * 
+ *
  * POST /api/projects              — Create project + upload PDF
  * GET  /api/projects               — List all projects
  * GET  /api/projects/:id           — Get project with checklist
@@ -18,6 +18,7 @@ import multer from 'multer';
 import path from 'path';
 import { createReadStream } from 'fs';
 import { stat } from 'fs/promises';
+import rateLimit from 'express-rate-limit';
 import { config } from '../config/index.js';
 import { getPdfPageCount } from '../utils/pdf-converter.js';
 import {
@@ -31,6 +32,36 @@ import {
 import { createJob, getJob } from '../services/job-service.js';
 
 const router = Router();
+
+// ─── Extraction Rate Limiter ───────────────────────────────────
+// Extraction is the expensive operation — each page calls the Claude API.
+// 3 per hour per IP keeps accidental or malicious usage from running up the bill.
+const extractionLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) => {
+    res.status(429).json({
+      error: 'Extraction limit reached (3 per hour). Please try again later.',
+    });
+  },
+});
+
+// ─── Demo Key Gate ─────────────────────────────────────────────
+// Controlled by DEMO_MODE env var. When enabled, POST /extract requires
+// the X-Demo-Key header to match DEMO_KEY. GET routes stay public.
+function requireDemoKey(req, res, next) {
+  if (!config.demo.enabled) return next();
+
+  const key = req.headers['x-demo-key'];
+  if (!key || key !== config.demo.key) {
+    return res.status(401).json({
+      error: 'Live extraction requires a demo key. Contact the maintainer or view the pre-extracted sample projects.',
+    });
+  }
+  next();
+}
 
 // ─── File Upload Config ────────────────────────────────────────
 const storage = multer.diskStorage({
@@ -67,12 +98,11 @@ router.post('/projects', upload.single('pdf'), async (req, res) => {
     const projectName = req.body.name || req.file.originalname.replace('.pdf', '');
     const pdfPath = path.resolve(req.file.path);
 
-    // Get page count
     const totalPages = await getPdfPageCount(pdfPath);
 
     if (totalPages > config.upload.maxPages) {
       return res.status(400).json({
-        error: `PDF has ${totalPages} pages. Maximum is ${config.upload.maxPages}.`,
+        error: `PDF has ${totalPages} pages. Maximum allowed is ${config.upload.maxPages}.`,
       });
     }
 
@@ -111,10 +141,22 @@ router.get('/projects/:id', (req, res) => {
  * POST /api/projects/:id/extract
  * Kick off an async extraction job. Returns a jobId immediately.
  * Client should connect to GET /api/jobs/:jobId/status for SSE updates.
+ *
+ * Protected by:
+ *   - requireDemoKey  (when DEMO_MODE=true)
+ *   - extractionLimiter  (3 per hour per IP)
+ *   - page count guard  (blocks before any Claude API calls)
  */
-router.post('/projects/:id/extract', async (req, res) => {
+router.post('/projects/:id/extract', requireDemoKey, extractionLimiter, async (req, res) => {
   const project = getProject(req.params.id);
   if (!project) return res.status(404).json({ error: 'Project not found' });
+
+  // Belt-and-suspenders page check right before the expensive AI step
+  if (project.total_pages > config.upload.maxPages) {
+    return res.status(400).json({
+      error: `This PDF has ${project.total_pages} pages. Extraction is limited to ${config.upload.maxPages} pages to control API costs.`,
+    });
+  }
 
   try {
     const { jobId } = createJob(project.id);
@@ -139,7 +181,7 @@ router.post('/projects/:id/extract', async (req, res) => {
 /**
  * GET /api/jobs/:jobId/status
  * SSE endpoint — streams extraction progress events to the client.
- * 
+ *
  * Events:
  *   job_started        — extraction has begun
  *   conversion_complete — PDF pages converted to images
@@ -151,23 +193,13 @@ router.get('/jobs/:jobId/status', (req, res) => {
   const job = getJob(req.params.jobId);
   if (!job) return res.status(404).json({ error: 'Job not found' });
 
-  // If job already finished, return final status as regular JSON
   if (job.status === 'complete') {
-    return res.json({
-      jobId: job.id,
-      status: job.status,
-      result: job.result,
-    });
+    return res.json({ jobId: job.id, status: job.status, result: job.result });
   }
   if (job.status === 'failed') {
-    return res.json({
-      jobId: job.id,
-      status: job.status,
-      error: job.error,
-    });
+    return res.json({ jobId: job.id, status: job.status, error: job.error });
   }
 
-  // Set up SSE headers
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',
@@ -175,24 +207,15 @@ router.get('/jobs/:jobId/status', (req, res) => {
     'X-Accel-Buffering': 'no', // Disable nginx buffering if behind a proxy
   });
 
-  // Send initial connection event
-  sendSSE(res, 'connected', {
-    jobId: job.id,
-    status: job.status,
-    progress: job.progress,
-  });
+  sendSSE(res, 'connected', { jobId: job.id, status: job.status, progress: job.progress });
 
-  // Listen to job events and forward them to the client
   const { emitter } = job;
-
   const events = ['job_started', 'conversion_complete', 'page_complete', 'job_complete', 'job_failed'];
   const listeners = {};
 
   for (const eventName of events) {
     const listener = (data) => {
       sendSSE(res, eventName, data);
-
-      // Close connection on terminal events
       if (eventName === 'job_complete' || eventName === 'job_failed') {
         cleanup();
         res.end();
@@ -202,7 +225,6 @@ router.get('/jobs/:jobId/status', (req, res) => {
     emitter.on(eventName, listener);
   }
 
-  // Clean up listeners when client disconnects
   const cleanup = () => {
     for (const [eventName, listener] of Object.entries(listeners)) {
       emitter.removeListener(eventName, listener);
@@ -232,7 +254,7 @@ router.get('/jobs/:jobId', (req, res) => {
 /**
  * PATCH /api/projects/:id/items/:itemId
  * Update a checklist item's status
- * 
+ *
  * Body: { status: "done"|"pending"|"in_progress"|"skipped", notes: "optional" }
  */
 router.patch('/projects/:id/items/:itemId', async (req, res) => {
@@ -252,7 +274,7 @@ router.patch('/projects/:id/items/:itemId', async (req, res) => {
 /**
  * POST /api/projects/:id/items/:itemId/flag
  * Flag an item for clarification
- * 
+ *
  * Body: { message: "Question for the engineer" }
  */
 router.post('/projects/:id/items/:itemId/flag', async (req, res) => {

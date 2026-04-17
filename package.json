@@ -7,19 +7,22 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
+    "build": "cd client && npm install && npm run build",
     "extract": "node src/scripts/extract-cli.js",
     "test": "node test/test-extraction.js",
     "test:root": "node test-extraction.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
-    "express": "^4.21.0",
-    "multer": "^1.4.5-lts.1",
-    "pdf-lib": "^1.17.1",
-    "sharp": "^0.33.2",
-    "pdf2pic": "^3.1.1",
+    "better-sqlite3": "^12.9.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "express-rate-limit": "^8.3.2",
+    "multer": "^1.4.5-lts.1",
+    "pdf-lib": "^1.17.1",
+    "pdf2pic": "^3.1.1",
+    "sharp": "^0.33.2",
     "uuid": "^9.0.0"
   }
 }

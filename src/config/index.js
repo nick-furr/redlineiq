@@ -13,9 +13,19 @@ export const config = {
     port: parseInt(process.env.PORT) || 3001,
   },
   upload: {
-    maxFileSizeMB: parseInt(process.env.MAX_FILE_SIZE_MB) || 50,
-    maxPages: parseInt(process.env.MAX_PAGES) || 100,
+    // Defaults are conservative for public demo deployments
+    maxFileSizeMB: parseInt(process.env.MAX_FILE_SIZE_MB) || 20,
+    maxPages: parseInt(process.env.MAX_PAGES) || 10,
     uploadDir: './uploads',
     outputDir: process.env.OUTPUT_DIR || './output',
+  },
+  database: {
+    path: process.env.DATABASE_PATH || './data/redlineiq.db',
+  },
+  demo: {
+    // When true, POST /extract requires the X-Demo-Key header to match DEMO_KEY.
+    // GET routes (viewing existing projects) remain public.
+    enabled: process.env.DEMO_MODE === 'true',
+    key: process.env.DEMO_KEY || '',
   },
 };
