@@ -1,0 +1,36 @@
+# Dependencies — reinstalled inside the image
+node_modules
+client/node_modules
+
+# Client build output — rebuilt inside the image
+client/dist
+
+# Secrets and local config
+.env
+.env.*
+
+# Runtime-written directories (ephemeral on free tier anyway)
+data/
+uploads/
+output/
+
+# Git internals
+.git
+.gitignore
+.gitattributes
+
+# Claude Code local config
+.claude/
+
+# Docs (keep README in case anything reads it, skip the rest)
+*.md
+!README.md
+
+# Tests
+test/
+
+# Logs
+*.log
+
+# OS artifacts
+.DS_Store
