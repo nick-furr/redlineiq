@@ -31,11 +31,11 @@ import {
   deleteProject,
 } from '../services/project-service.js';
 import { createJob, getJob } from '../services/job-service.js';
+import { SAMPLE_ID, isSampleProject, rejectSampleWrite } from '../constants/sample.js';
 
 // ─── Sample Project ────────────────────────────────────────────
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const SAMPLE_ID = 'sample-demo-001';
 const SAMPLE_JSON_PATH = path.join(__dirname, '../../samples/demo-extraction.json');
 const SAMPLE_PDF_PATH = path.join(__dirname, '../../samples/demo-plan.pdf');
 
@@ -160,7 +160,7 @@ router.get('/projects', (req, res) => {
  * Get a single project with full checklist
  */
 router.get('/projects/:id', (req, res) => {
-  if (req.params.id === SAMPLE_ID) {
+  if (isSampleProject(req.params.id)) {
     if (!sampleProject) return res.status(404).json({ error: 'Sample not available' });
     return res.json({ project: sampleProject });
   }
@@ -179,7 +179,7 @@ router.get('/projects/:id', (req, res) => {
  *   - extractionLimiter  (3 per hour per IP)
  *   - page count guard  (blocks before any Claude API calls)
  */
-router.post('/projects/:id/extract', requireDemoKey, extractionLimiter, async (req, res) => {
+router.post('/projects/:id/extract', rejectSampleWrite, requireDemoKey, extractionLimiter, async (req, res) => {
   const project = getProject(req.params.id);
   if (!project) return res.status(404).json({ error: 'Project not found' });
 
@@ -289,13 +289,7 @@ router.get('/jobs/:jobId', (req, res) => {
  *
  * Body: { status: "done"|"pending"|"in_progress"|"skipped", notes: "optional" }
  */
-router.patch('/projects/:id/items/:itemId', async (req, res) => {
-  // Sample writes are handled client-side — no-op here to avoid disk mutation
-  if (req.params.id === SAMPLE_ID) {
-    const item = sampleProject?.checklist?.find(i => i.id === req.params.itemId) ?? null;
-    return res.json({ item, summary: sampleProject?.summary ?? {} });
-  }
-
+router.patch('/projects/:id/items/:itemId', rejectSampleWrite, async (req, res) => {
   try {
     const { status, notes } = req.body;
     if (!status) return res.status(400).json({ error: 'Status is required' });
@@ -315,13 +309,7 @@ router.patch('/projects/:id/items/:itemId', async (req, res) => {
  *
  * Body: { message: "Question for the engineer" }
  */
-router.post('/projects/:id/items/:itemId/flag', async (req, res) => {
-  // Sample writes are handled client-side — no-op here to avoid disk mutation
-  if (req.params.id === SAMPLE_ID) {
-    const item = sampleProject?.checklist?.find(i => i.id === req.params.itemId) ?? null;
-    return res.json({ item });
-  }
-
+router.post('/projects/:id/items/:itemId/flag', rejectSampleWrite, async (req, res) => {
   try {
     const { message } = req.body;
     if (!message) return res.status(400).json({ error: 'Clarification message is required' });
@@ -338,6 +326,16 @@ router.post('/projects/:id/items/:itemId/flag', async (req, res) => {
  * Get progress summary for a project
  */
 router.get('/projects/:id/summary', (req, res) => {
+  if (isSampleProject(req.params.id)) {
+    if (!sampleProject) return res.status(404).json({ error: 'Sample not available' });
+    return res.json({
+      project_name: sampleProject.name,
+      summary: sampleProject.summary,
+      total_pages: sampleProject.total_pages,
+      pages_processed: sampleProject.pages_processed,
+    });
+  }
+
   const project = getProject(req.params.id);
   if (!project) return res.status(404).json({ error: 'Project not found' });
 
@@ -354,7 +352,7 @@ router.get('/projects/:id/summary', (req, res) => {
  * Stream the original uploaded PDF back to the client
  */
 router.get('/projects/:id/pdf', async (req, res) => {
-  if (req.params.id === SAMPLE_ID) {
+  if (isSampleProject(req.params.id)) {
     try {
       await stat(SAMPLE_PDF_PATH);
     } catch {
@@ -384,10 +382,7 @@ router.get('/projects/:id/pdf', async (req, res) => {
 /**
  * DELETE /api/projects/:id
  */
-router.delete('/projects/:id', async (req, res) => {
-  if (req.params.id === SAMPLE_ID) {
-    return res.status(400).json({ error: 'The sample project cannot be deleted.' });
-  }
+router.delete('/projects/:id', rejectSampleWrite, async (req, res) => {
   const deleted = await deleteProject(req.params.id);
   if (!deleted) return res.status(404).json({ error: 'Project not found' });
   res.json({ message: 'Project deleted' });
