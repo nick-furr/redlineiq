@@ -10,15 +10,22 @@
 
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { config } from './config/index.js';
 import apiRoutes from './routes/api.js';
 import { initProjectStore } from './services/project-service.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
 // ─── Middleware ─────────────────────────────────────────────────
 app.use(cors());
 app.use(express.json());
+
+// ─── Static Assets ─────────────────────────────────────────────
+app.use('/samples', express.static(path.join(__dirname, 'samples')));
 
 // ─── Routes ────────────────────────────────────────────────────
 app.use('/api', apiRoutes);

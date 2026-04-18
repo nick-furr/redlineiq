@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom'
 import { uploadProject, startExtraction, listProjects, deleteProject } from '../services/api.js'
 import UploadZone from '../components/UploadZone.jsx'
 
+const SAMPLE_ID = 'sample-demo-001'
+
 function formatDate(iso) {
   const d = new Date(iso)
   const diffDays = Math.floor((Date.now() - d) / (1000 * 60 * 60 * 24))
@@ -72,6 +74,16 @@ export default function HomePage() {
           <p className="text-red-400 text-xs font-mono text-center">{uploadError}</p>
         )}
         <UploadZone onUpload={handleUpload} disabled={uploading} />
+
+        <div className="text-center">
+          <span className="text-xs text-[#374151]">or </span>
+          <Link
+            to={`/projects/${SAMPLE_ID}`}
+            className="text-xs text-[#1D9E75] hover:text-[#22c55e] transition-colors underline underline-offset-2"
+          >
+            try with a sample redlined drawing
+          </Link>
+        </div>
       </div>
 
       {/* Project list */}
@@ -92,6 +104,7 @@ export default function HomePage() {
               const pct = total > 0 ? Math.round((done / total) * 100) : 0
               const isConfirming = confirmingId === project.id
               const isDeleting = deletingId === project.id
+              const isSample = project.id === SAMPLE_ID
 
               return (
                 <li key={project.id}>
@@ -135,19 +148,21 @@ export default function HomePage() {
                         </div>
                       </Link>
 
-                      {/* Delete button */}
-                      <button
-                        onClick={() => setConfirmingId(isConfirming ? null : project.id)}
-                        title="Delete project"
-                        className="px-3 py-3 text-[#2e3340] hover:text-red-500 transition-colors shrink-0"
-                      >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="3,6 5,6 21,6"/>
-                          <path d="M19,6l-1,14a2,2,0,0,1-2,2H8a2,2,0,0,1-2-2L5,6"/>
-                          <path d="M10,11v6M14,11v6"/>
-                          <path d="M9,6V4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1V6"/>
-                        </svg>
-                      </button>
+                      {/* Delete button — hidden for the sample project */}
+                      {!isSample && (
+                        <button
+                          onClick={() => setConfirmingId(isConfirming ? null : project.id)}
+                          title="Delete project"
+                          className="px-3 py-3 text-[#2e3340] hover:text-red-500 transition-colors shrink-0"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="3,6 5,6 21,6"/>
+                            <path d="M19,6l-1,14a2,2,0,0,1-2,2H8a2,2,0,0,1-2-2L5,6"/>
+                            <path d="M10,11v6M14,11v6"/>
+                            <path d="M9,6V4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1V6"/>
+                          </svg>
+                        </button>
+                      )}
                     </div>
 
                     {/* Inline confirm bar */}

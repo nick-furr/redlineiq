@@ -7,6 +7,8 @@ import ChecklistPanel from '../components/ChecklistPanel.jsx'
 import PdfViewer from '../components/PdfViewer.jsx'
 import SummaryBar from '../components/SummaryBar.jsx'
 
+const SAMPLE_ID = 'sample-demo-001'
+
 export default function ProjectPage() {
   const { id } = useParams()
   const { state } = useLocation()
@@ -14,6 +16,7 @@ export default function ProjectPage() {
   const [loading, setLoading] = useState(true)
   const [selectedId, setSelectedId] = useState(null)
   const [localMarkups, setLocalMarkups] = useState([])
+  const isSample = id === SAMPLE_ID
 
   // Ref so action callbacks always have the current project ID without stale closure issues.
   // useCallback with [extraction.project?.id] as a dep can silently skip the API call if the
@@ -45,6 +48,7 @@ export default function ProjectPage() {
       if (exists) return prev.map(l => l.id === itemId ? { ...l, ...patch } : l)
       return [...prev, { id: itemId, ...patch }]
     })
+    if (isSample) return // sample state is local only — no persistence
     const projectId = projectIdRef.current
     if (projectId) {
       try {
@@ -53,7 +57,7 @@ export default function ProjectPage() {
         console.error('Failed to update status:', err)
       }
     }
-  }, []) // stable — reads projectId from ref, never stale
+  }, [isSample]) // stable — reads projectId from ref, never stale
 
   const handleFlag = useCallback(async (itemId, message) => {
     // Optimistically mark as flagged so filters and summary update before the API responds
@@ -62,6 +66,7 @@ export default function ProjectPage() {
       if (exists) return prev.map(l => l.id === itemId ? { ...l, flagged: true, status: 'flagged' } : l)
       return [...prev, { id: itemId, flagged: true, status: 'flagged' }]
     })
+    if (isSample) return // sample state is local only — no persistence
     const projectId = projectIdRef.current
     if (projectId) {
       try {
@@ -70,7 +75,7 @@ export default function ProjectPage() {
         console.error('Failed to flag item:', err)
       }
     }
-  }, []) // stable — reads projectId from ref, never stale
+  }, [isSample]) // stable — reads projectId from ref, never stale
 
   const isProcessing = extraction.phase === 'extracting'
 

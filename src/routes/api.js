@@ -16,8 +16,9 @@
 import { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
-import { createReadStream } from 'fs';
+import { createReadStream, readFileSync } from 'fs';
 import { stat } from 'fs/promises';
+import { fileURLToPath } from 'url';
 import rateLimit from 'express-rate-limit';
 import { config } from '../config/index.js';
 import { getPdfPageCount } from '../utils/pdf-converter.js';
@@ -30,6 +31,21 @@ import {
   deleteProject,
 } from '../services/project-service.js';
 import { createJob, getJob } from '../services/job-service.js';
+
+// ─── Sample Project ────────────────────────────────────────────
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const SAMPLE_ID = 'sample-demo-001';
+const SAMPLE_JSON_PATH = path.join(__dirname, '../../samples/demo-extraction.json');
+const SAMPLE_PDF_PATH = path.join(__dirname, '../../samples/demo-plan.pdf');
+
+let sampleProject = null;
+try {
+  sampleProject = JSON.parse(readFileSync(SAMPLE_JSON_PATH, 'utf-8'));
+  console.log('Sample project loaded from demo-extraction.json');
+} catch {
+  console.log('No sample project found (samples/demo-extraction.json missing — run scripts/generate-sample.js to create it)');
+}
 
 const router = Router();
 
@@ -86,6 +102,17 @@ const upload = multer({
 // ─── Routes ────────────────────────────────────────────────────
 
 /**
+ * GET /api/samples/demo
+ * Returns the pre-extracted sample project for demo/portfolio use.
+ */
+router.get('/samples/demo', (req, res) => {
+  if (!sampleProject) {
+    return res.status(404).json({ error: 'Sample not available. Run scripts/generate-sample.js first.' });
+  }
+  res.json({ project: sampleProject });
+});
+
+/**
  * POST /api/projects
  * Upload a PDF and create a new project
  */
@@ -120,11 +147,12 @@ router.post('/projects', upload.single('pdf'), async (req, res) => {
 
 /**
  * GET /api/projects
- * List all projects
+ * List all projects — sample project is always prepended if available
  */
 router.get('/projects', (req, res) => {
   const projects = listProjects();
-  res.json({ projects });
+  const all = sampleProject ? [sampleProject, ...projects] : projects;
+  res.json({ projects: all });
 });
 
 /**
@@ -132,6 +160,10 @@ router.get('/projects', (req, res) => {
  * Get a single project with full checklist
  */
 router.get('/projects/:id', (req, res) => {
+  if (req.params.id === SAMPLE_ID) {
+    if (!sampleProject) return res.status(404).json({ error: 'Sample not available' });
+    return res.json({ project: sampleProject });
+  }
   const project = getProject(req.params.id);
   if (!project) return res.status(404).json({ error: 'Project not found' });
   res.json({ project });
@@ -258,6 +290,12 @@ router.get('/jobs/:jobId', (req, res) => {
  * Body: { status: "done"|"pending"|"in_progress"|"skipped", notes: "optional" }
  */
 router.patch('/projects/:id/items/:itemId', async (req, res) => {
+  // Sample writes are handled client-side — no-op here to avoid disk mutation
+  if (req.params.id === SAMPLE_ID) {
+    const item = sampleProject?.checklist?.find(i => i.id === req.params.itemId) ?? null;
+    return res.json({ item, summary: sampleProject?.summary ?? {} });
+  }
+
   try {
     const { status, notes } = req.body;
     if (!status) return res.status(400).json({ error: 'Status is required' });
@@ -278,6 +316,12 @@ router.patch('/projects/:id/items/:itemId', async (req, res) => {
  * Body: { message: "Question for the engineer" }
  */
 router.post('/projects/:id/items/:itemId/flag', async (req, res) => {
+  // Sample writes are handled client-side — no-op here to avoid disk mutation
+  if (req.params.id === SAMPLE_ID) {
+    const item = sampleProject?.checklist?.find(i => i.id === req.params.itemId) ?? null;
+    return res.json({ item });
+  }
+
   try {
     const { message } = req.body;
     if (!message) return res.status(400).json({ error: 'Clarification message is required' });
@@ -310,6 +354,18 @@ router.get('/projects/:id/summary', (req, res) => {
  * Stream the original uploaded PDF back to the client
  */
 router.get('/projects/:id/pdf', async (req, res) => {
+  if (req.params.id === SAMPLE_ID) {
+    try {
+      await stat(SAMPLE_PDF_PATH);
+    } catch {
+      return res.status(404).json({ error: 'Sample PDF not found on disk' });
+    }
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'inline; filename="demo-plan.pdf"');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    return createReadStream(SAMPLE_PDF_PATH).pipe(res);
+  }
+
   const project = getProject(req.params.id);
   if (!project) return res.status(404).json({ error: 'Project not found' });
 
@@ -329,6 +385,9 @@ router.get('/projects/:id/pdf', async (req, res) => {
  * DELETE /api/projects/:id
  */
 router.delete('/projects/:id', async (req, res) => {
+  if (req.params.id === SAMPLE_ID) {
+    return res.status(400).json({ error: 'The sample project cannot be deleted.' });
+  }
   const deleted = await deleteProject(req.params.id);
   if (!deleted) return res.status(404).json({ error: 'Project not found' });
   res.json({ message: 'Project deleted' });
