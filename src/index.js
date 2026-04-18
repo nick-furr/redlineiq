@@ -40,6 +40,9 @@ const globalApiLimiter = rateLimit({
   },
 });
 
+// ─── Static Assets ─────────────────────────────────────────────
+app.use('/samples', express.static(path.resolve('./samples')));
+
 // ─── Routes ────────────────────────────────────────────────────
 app.use('/api', globalApiLimiter, apiRoutes);
 
