@@ -1,5 +1,16 @@
 import { useState, useRef } from 'react'
 
+const UPLOAD_PATH = 'M12 3v13 M6 9l6-6 6 6 M4 21h16'
+
+function Icon({ d, size = 16, stroke = 1.5 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round">
+      <path d={d}/>
+    </svg>
+  )
+}
+
 export default function UploadZone({ onUpload, disabled }) {
   const [dragging, setDragging] = useState(false)
   const inputRef = useRef(null)
@@ -9,9 +20,7 @@ export default function UploadZone({ onUpload, disabled }) {
     if (!disabled) setDragging(true)
   }
 
-  function handleDragLeave() {
-    setDragging(false)
-  }
+  function handleDragLeave() { setDragging(false) }
 
   function handleDrop(e) {
     e.preventDefault()
@@ -31,17 +40,26 @@ export default function UploadZone({ onUpload, disabled }) {
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      onClick={() => !disabled && inputRef.current?.click()}
       className={[
-        'flex flex-col items-center justify-center gap-4',
-        'border-2 border-dashed rounded-lg p-16 cursor-pointer',
-        'transition-colors duration-150 select-none',
-        dragging
-          ? 'border-teal bg-teal-light'
-          : 'border-[#2e3340] hover:border-[#1D9E75] hover:bg-teal-light',
-        disabled ? 'opacity-50 pointer-events-none' : '',
+        'relative border border-dashed rounded-[4px] transition-colors',
+        dragging || disabled
+          ? 'border-[var(--accent)] bg-[var(--accent-f)]'
+          : 'border-[var(--line-2)] hover:border-[var(--fg-3)]',
+        disabled ? 'pointer-events-none' : '',
       ].join(' ')}
     >
+      <button
+        onClick={() => !disabled && inputRef.current?.click()}
+        className="w-full py-10 px-6 flex flex-col items-center gap-3"
+      >
+        <div className="w-10 h-10 rounded-full border border-[var(--line-2)] flex items-center justify-center text-[var(--fg-2)]">
+          <Icon d={UPLOAD_PATH}/>
+        </div>
+        <div className="text-[13.5px] text-[var(--fg-1)]">
+          Drop a PDF here, or <span className="text-[var(--fg)] underline underline-offset-2 decoration-[var(--line-2)]">browse</span>
+        </div>
+        <div className="mono text-[10.5px] text-[var(--fg-3)]">PDF · up to 10 pages · max 20 MB</div>
+      </button>
       <input
         ref={inputRef}
         type="file"
@@ -49,16 +67,6 @@ export default function UploadZone({ onUpload, disabled }) {
         className="hidden"
         onChange={handleChange}
       />
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#1D9E75" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-        <polyline points="14,2 14,8 20,8"/>
-        <line x1="12" y1="18" x2="12" y2="12"/>
-        <polyline points="9,15 12,12 15,15"/>
-      </svg>
-      <div className="text-center">
-        <p className="text-[#e2e4e9] font-medium text-sm">Drop a PDF here or click to browse</p>
-        <p className="text-[#6b7280] text-xs mt-1">Construction drawings, redline sets, marked-up sheets</p>
-      </div>
     </div>
   )
 }

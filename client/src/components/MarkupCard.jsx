@@ -1,162 +1,88 @@
-import { useState } from 'react'
+import TypeBadge from './TypeBadge.jsx'
+import ConfDot from './ConfDot.jsx'
 
-const TYPE_COLORS = {
-  add: 'bg-emerald-900/50 text-emerald-400 border-emerald-800',
-  delete: 'bg-red-900/50 text-red-400 border-red-800',
-  move: 'bg-blue-900/50 text-blue-400 border-blue-800',
-  modify: 'bg-amber-900/50 text-amber-400 border-amber-800',
-  dimension: 'bg-purple-900/50 text-purple-400 border-purple-800',
-  note: 'bg-slate-700/50 text-slate-300 border-slate-600',
-  clarify: 'bg-orange-900/50 text-orange-400 border-orange-800',
-  detail: 'bg-cyan-900/50 text-cyan-400 border-cyan-800',
+const FLAG_PATH = 'M4 22V4 M4 4s2-1 5 0 5 2 8 0v10c-3 2-5 0-8 0s-5 1-5 1'
+const CHECK_PATH = 'M4 12l5 5 11-11'
+
+function Icon({ d, size = 14, stroke = 1.5 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round">
+      <path d={d}/>
+    </svg>
+  )
 }
 
-const CONFIDENCE_COLORS = {
-  high: 'text-emerald-400',
-  medium: 'text-amber-400',
-  low: 'text-red-400',
-}
-
-export default function MarkupCard({ item, selected, onSelect, onStatusChange, onFlag }) {
-  const [flagMode, setFlagMode] = useState(false)
-  const [flagMessage, setFlagMessage] = useState('')
-
+export default function MarkupCard({ item, selected, onSelect, onStatusChange, onFlag, density = 'comfortable', showColors = false }) {
   const isDone = item.status === 'done'
   const isFlagged = item.flagged
-
-  function handleFlag(e) {
-    e.stopPropagation()
-    if (isFlagged) {
-      // Unflag: reset status to pending via the existing status-update path
-      onStatusChange(item.id, 'pending')
-    } else {
-      setFlagMode(true)
-    }
-  }
-
-  function submitFlag(e) {
-    e.stopPropagation()
-    if (!flagMessage.trim()) return
-    onFlag(item.id, flagMessage.trim())
-    setFlagMode(false)
-    setFlagMessage('')
-  }
+  const padY = density === 'compact' ? 'py-[7px]' : density === 'spacious' ? 'py-[13px]' : 'py-[10px]'
 
   function toggleDone(e) {
     e.stopPropagation()
     onStatusChange(item.id, isDone ? 'pending' : 'done')
   }
 
+  function toggleFlag(e) {
+    e.stopPropagation()
+    if (isFlagged) {
+      onStatusChange(item.id, 'pending')
+    } else {
+      onFlag(item.id, '')
+    }
+  }
+
   return (
     <div
       onClick={() => onSelect(item.id)}
       className={[
-        'p-3 rounded-lg border cursor-pointer transition-colors',
-        selected
-          ? 'border-[#1D9E75] bg-teal-light'
-          : 'border-[#1e2128] bg-[#13151a] hover:border-[#2e3340]',
-        isDone ? 'opacity-50' : '',
+        'group flex items-center gap-3 px-4 cursor-pointer relative',
+        'transition-[background] duration-100',
+        padY,
+        selected ? 'bg-[var(--bg-2)]' : 'hover:bg-[var(--bg-1)]',
+        isDone ? 'opacity-45' : '',
       ].join(' ')}
     >
-      {/* Header row */}
-      <div className="flex items-start justify-between gap-2 mb-2">
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium border ${TYPE_COLORS[item.markup_type] ?? 'bg-slate-700 text-slate-300 border-slate-600'}`}>
-            {item.markup_type}
-          </span>
-          {item.ambiguous && (
-            <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-yellow-900/50 text-yellow-400 border border-yellow-800">
-              ambiguous
-            </span>
-          )}
-          <span className={`text-[10px] font-mono font-medium ${CONFIDENCE_COLORS[item.confidence] ?? 'text-slate-400'}`}>
-            {item.confidence}
-          </span>
-        </div>
-        <div className="flex items-center gap-1.5 shrink-0">
-          {/* Flag button */}
-          <button
-            onClick={handleFlag}
-            title="Flag this item"
-            className={[
-              'p-1 rounded transition-colors',
-              isFlagged
-                ? 'text-orange-400'
-                : 'text-[#4b5563] hover:text-orange-400',
-            ].join(' ')}
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill={isFlagged ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
-              <line x1="4" y1="22" x2="4" y2="15"/>
-            </svg>
-          </button>
-          {/* Done toggle */}
-          <button
-            onClick={toggleDone}
-            title={isDone ? 'Mark as pending' : 'Mark as done'}
-            className={[
-              'p-1 rounded transition-colors',
-              isDone
-                ? 'text-[#1D9E75]'
-                : 'text-[#4b5563] hover:text-[#1D9E75]',
-            ].join(' ')}
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="20,6 9,17 4,12"/>
-            </svg>
-          </button>
-        </div>
-      </div>
+      {selected && <span className="absolute left-0 top-0 bottom-0 w-[2px] bg-[var(--accent)]"/>}
 
-      {/* Markup text */}
-      <p className={`text-sm leading-snug mb-2 ${isDone ? 'line-through text-[#4b5563]' : 'text-[#d1d5db]'}`}>
+      <button
+        onClick={toggleDone}
+        className={[
+          'w-4 h-4 rounded-[3px] border shrink-0 inline-flex items-center justify-center transition',
+          isDone
+            ? 'bg-[var(--fg-1)] border-[var(--fg-1)] text-[var(--bg)]'
+            : 'border-[var(--line-2)] text-transparent hover:border-[var(--fg-3)] hover:text-[var(--fg-3)]',
+        ].join(' ')}
+        title={isDone ? 'Mark pending' : 'Mark done'}
+      >
+        <Icon d={CHECK_PATH} size={10} stroke={3.5}/>
+      </button>
+
+      <TypeBadge type={item.markup_type} showColors={showColors}/>
+
+      <div className={`flex-1 min-w-0 text-[13.5px] leading-tight truncate ${isDone ? 'line-through text-[var(--fg-3)]' : 'text-[var(--fg)]'}`}>
         {item.markup_text}
-      </p>
-
-      {/* Meta */}
-      <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-[#4b5563] font-mono">
-        {item.drawing_reference && (
-          <span title="Drawing reference">
-            <span className="text-[#374151]">ref </span>{item.drawing_reference}
-          </span>
-        )}
-        {item.location_on_drawing && (
-          <span title="Location">
-            <span className="text-[#374151]">loc </span>{item.location_on_drawing}
-          </span>
-        )}
       </div>
 
-      {/* Flag input */}
-      {flagMode && (
-        <div
-          className="mt-2 flex gap-1.5"
-          onClick={e => e.stopPropagation()}
+      <div className="flex items-center gap-2.5 shrink-0">
+        {item.ambiguous && (
+          <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" title="ambiguous"/>
+        )}
+        <ConfDot level={item.confidence}/>
+        <button
+          onClick={toggleFlag}
+          className={[
+            'w-5 h-5 inline-flex items-center justify-center rounded-[3px] transition',
+            isFlagged
+              ? 'text-[var(--accent)] opacity-100'
+              : 'text-[var(--fg-3)] opacity-0 group-hover:opacity-100 hover:text-[var(--fg-1)]',
+            selected ? 'opacity-100' : '',
+          ].join(' ')}
+          title={isFlagged ? 'Unflag' : 'Flag'}
         >
-          <input
-            autoFocus
-            type="text"
-            value={flagMessage}
-            onChange={e => setFlagMessage(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && submitFlag(e)}
-            placeholder="What needs clarification?…"
-            className="flex-1 bg-[#0f1014] border border-[#2e3340] rounded px-2 py-1 text-xs text-[#d1d5db] outline-none focus:border-[#1D9E75]"
-          />
-          <button
-            onClick={submitFlag}
-            disabled={!flagMessage.trim()}
-            className="px-2 py-1 rounded text-xs bg-orange-600 text-white hover:bg-orange-500 disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            Flag
-          </button>
-          <button
-            onClick={e => { e.stopPropagation(); setFlagMode(false) }}
-            className="px-2 py-1 rounded text-xs text-[#6b7280] hover:text-[#d1d5db]"
-          >
-            Cancel
-          </button>
-        </div>
-      )}
+          <Icon d={FLAG_PATH} size={11}/>
+        </button>
+      </div>
     </div>
   )
 }

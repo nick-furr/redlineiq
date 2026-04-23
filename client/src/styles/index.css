@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg:       oklch(0.17 0.008 60);
+  --bg-1:     oklch(0.20 0.009 60);
+  --bg-2:     oklch(0.23 0.010 60);
+  --bg-3:     oklch(0.27 0.012 60);
+  --line:     oklch(0.26 0.009 60);
+  --line-2:   oklch(0.32 0.011 60);
+  --fg:       oklch(0.96 0.008 80);
+  --fg-1:     oklch(0.82 0.008 80);
+  --fg-2:     oklch(0.62 0.010 65);
+  --fg-3:     oklch(0.46 0.010 60);
+  --fg-4:     oklch(0.34 0.010 60);
+  --accent:   oklch(0.70 0.18 30);
+  --accent-d: oklch(0.60 0.19 28);
+  --accent-f: oklch(0.70 0.18 30 / 0.10);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -10,10 +27,11 @@
 
 html, body, #root {
   height: 100%;
-  background-color: #0f1014;
-  color: #e2e4e9;
-  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01", "cv11";
 }
 
 #root {
@@ -22,17 +40,36 @@ html, body, #root {
   overflow: hidden;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
+.mono {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-feature-settings: "zero", "ss02";
 }
-::-webkit-scrollbar-track {
-  background: #1a1d23;
+
+::-webkit-scrollbar { width: 10px; height: 10px }
+::-webkit-scrollbar-track { background: transparent }
+::-webkit-scrollbar-thumb { background: var(--bg-2); border-radius: 10px; border: 3px solid var(--bg) }
+::-webkit-scrollbar-thumb:hover { background: var(--bg-3) }
+
+.focus-ring:focus-visible { outline: 1px solid var(--accent); outline-offset: 1px }
+
+@keyframes redpulse { 0%, 100% { opacity: .35 } 50% { opacity: .9 } }
+.redpulse { animation: redpulse 1.6s ease-in-out infinite }
+
+@keyframes shimmer {
+  0% { background-position: -200% 0 }
+  100% { background-position: 200% 0 }
 }
-::-webkit-scrollbar-thumb {
-  background: #2e3340;
-  border-radius: 3px;
+.shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.04) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2.2s linear infinite;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #3d4354;
+
+.redline path, .redline circle, .redline rect, .redline line, .redline polyline {
+  stroke: oklch(0.66 0.19 25);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 0 0.4px oklch(0.66 0.19 25));
 }

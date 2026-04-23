@@ -3,7 +3,6 @@ import { Document, Page, pdfjs } from 'react-pdf'
 import 'react-pdf/dist/Page/AnnotationLayer.css'
 import 'react-pdf/dist/Page/TextLayer.css'
 
-// Use the pdfjs worker bundled with react-pdf via Vite's URL import
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
   import.meta.url,
@@ -14,7 +13,19 @@ const MIN_ZOOM = 0.5
 const MAX_ZOOM = 3
 const BASE_PAGE_WIDTH = 800
 
-export default function PdfViewer({ project, selectedItem }) {
+const RESET_PATH = 'M3 12a9 9 0 1 0 3-6.7 M3 4v5h5'
+const EXPORT_PATH = 'M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2 M7 10l5 5 5-5 M12 15V3'
+
+function Icon({ d, size = 14, stroke = 1.5 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round">
+      <path d={d}/>
+    </svg>
+  )
+}
+
+export default function PdfViewer({ project, selectedItem, onExport }) {
   const [numPages, setNumPages] = useState(null)
   const [zoom, setZoom] = useState(1)
   const [loadError, setLoadError] = useState(null)
@@ -22,13 +33,10 @@ export default function PdfViewer({ project, selectedItem }) {
 
   const pdfUrl = project ? `/api/projects/${project.id}/pdf` : null
 
-  // Scroll to the selected item's page whenever selection changes
   useEffect(() => {
     if (!selectedItem?.page_number) return
     const el = pageRefs.current[selectedItem.page_number]
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }, [selectedItem?.id, selectedItem?.page_number])
 
   const handleLoadSuccess = useCallback(({ numPages }) => {
@@ -50,58 +58,42 @@ export default function PdfViewer({ project, selectedItem }) {
   const zoomOut = () => setZoom(z => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)))
   const resetZoom = () => setZoom(1)
 
+  const totalPages = numPages ?? project?.total_pages ?? null
+
   if (!pdfUrl) {
-    return <EmptyPlaceholder selectedItem={selectedItem} />
+    return (
+      <div className="flex flex-col h-full">
+        <ViewerToolbar
+          selectedItem={selectedItem}
+          totalPages={totalPages}
+          zoom={Math.round(zoom * 100)}
+          onZoomIn={zoomIn} onZoomOut={zoomOut} onReset={resetZoom}
+          onExport={onExport}
+          drawingRef={null}
+        />
+        <div className="flex-1 flex items-center justify-center">
+          <p className="mono text-[11px] text-[var(--fg-3)]">no pdf loaded</p>
+        </div>
+      </div>
+    )
   }
 
   const pageWidth = Math.round(BASE_PAGE_WIDTH * zoom)
 
   return (
     <div className="flex flex-col h-full">
-      {/* Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-[#1e2128] bg-[#0c0e12] shrink-0">
-        <span className="text-[11px] font-mono text-[#4b5563]">
-          {numPages != null ? `${numPages} page${numPages !== 1 ? 's' : ''}` : 'Loading…'}
-        </span>
-
-        {selectedItem?.page_number && (
-          <span className="text-[11px] font-mono text-[#1D9E75]">
-            p.{selectedItem.page_number} · {selectedItem.drawing_reference}
-          </span>
-        )}
-
-        <div className="flex items-center gap-0.5">
-          <button
-            onClick={zoomOut}
-            disabled={zoom <= MIN_ZOOM}
-            className="w-7 h-7 flex items-center justify-center rounded text-lg font-light text-[#6b7280] hover:text-[#e2e4e9] hover:bg-[#1e2128] transition-colors disabled:opacity-30 disabled:pointer-events-none"
-            title="Zoom out"
-          >
-            −
-          </button>
-          <button
-            onClick={resetZoom}
-            className="px-2 h-7 rounded text-[11px] font-mono text-[#4b5563] hover:text-[#9ca3af] hover:bg-[#1e2128] transition-colors"
-            title="Reset zoom"
-          >
-            {Math.round(zoom * 100)}%
-          </button>
-          <button
-            onClick={zoomIn}
-            disabled={zoom >= MAX_ZOOM}
-            className="w-7 h-7 flex items-center justify-center rounded text-lg font-light text-[#6b7280] hover:text-[#e2e4e9] hover:bg-[#1e2128] transition-colors disabled:opacity-30 disabled:pointer-events-none"
-            title="Zoom in"
-          >
-            +
-          </button>
-        </div>
-      </div>
-
-      {/* PDF scroll area */}
-      <div className="flex-1 overflow-auto bg-[#07080b]">
+      <ViewerToolbar
+        selectedItem={selectedItem}
+        totalPages={totalPages}
+        zoom={Math.round(zoom * 100)}
+        onZoomIn={zoomIn} onZoomOut={zoomOut} onReset={resetZoom}
+        onExport={onExport}
+        drawingRef={selectedItem?.drawing_reference}
+      />
+      <div className="flex-1 overflow-auto bg-[var(--bg-1)]">
         {loadError ? (
           <div className="flex items-center justify-center h-full">
-            <p className="text-red-400 text-sm font-mono">{loadError}</p>
+            <p className="text-red-400 text-sm mono">{loadError}</p>
           </div>
         ) : (
           <Document
@@ -110,8 +102,8 @@ export default function PdfViewer({ project, selectedItem }) {
             onLoadError={handleLoadError}
             loading={
               <div className="flex items-center justify-center h-full gap-3">
-                <div className="w-5 h-5 border-2 border-[#1D9E75] border-t-transparent rounded-full animate-spin" />
-                <span className="text-[#4b5563] text-sm font-mono">Loading PDF…</span>
+                <div className="w-5 h-5 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin"/>
+                <span className="mono text-[11px] text-[var(--fg-3)]">loading pdf…</span>
               </div>
             }
           >
@@ -119,21 +111,11 @@ export default function PdfViewer({ project, selectedItem }) {
               {Array.from({ length: numPages ?? 0 }, (_, i) => i + 1).map(pageNum => {
                 const isActive = selectedItem?.page_number === pageNum
                 return (
-                  <div
-                    key={pageNum}
-                    ref={el => setPageRef(pageNum, el)}
-                    className="relative"
-                  >
-                    {/* Active page highlight ring */}
-                    <div
-                      className={[
-                        'absolute inset-0 rounded pointer-events-none z-10 transition-all',
-                        isActive
-                          ? 'ring-2 ring-[#1D9E75] ring-offset-2 ring-offset-[#07080b]'
-                          : '',
-                      ].join(' ')}
-                    />
-
+                  <div key={pageNum} ref={el => setPageRef(pageNum, el)} className="relative">
+                    <div className={[
+                      'absolute inset-0 rounded pointer-events-none z-10 transition-all',
+                      isActive ? 'ring-1 ring-[var(--accent)] ring-offset-2 ring-offset-[var(--bg-1)]' : '',
+                    ].join(' ')}/>
                     <Page
                       pageNumber={pageNum}
                       width={pageWidth}
@@ -141,15 +123,11 @@ export default function PdfViewer({ project, selectedItem }) {
                       renderTextLayer={false}
                       className="shadow-xl"
                       loading={
-                        <div
-                          className="bg-[#13151a] animate-pulse"
-                          style={{ width: pageWidth, height: Math.round(pageWidth * 1.294) }}
-                        />
+                        <div className="bg-[var(--bg-2)] animate-pulse"
+                          style={{ width: pageWidth, height: Math.round(pageWidth * 1.294) }}/>
                       }
                     />
-
-                    {/* Page number badge */}
-                    <div className="absolute bottom-2 right-2 z-20 px-1.5 py-0.5 rounded bg-black/70 text-[10px] font-mono text-[#6b7280] select-none">
+                    <div className="absolute bottom-2 right-2 z-20 px-1.5 py-0.5 rounded bg-black/70 mono text-[10px] text-[var(--fg-3)] select-none">
                       {pageNum}
                     </div>
                   </div>
@@ -163,36 +141,43 @@ export default function PdfViewer({ project, selectedItem }) {
   )
 }
 
-function EmptyPlaceholder({ selectedItem }) {
+function ViewerToolbar({ selectedItem, totalPages, zoom, onZoomIn, onZoomOut, onReset, onExport, drawingRef }) {
+  const [page] = useState(1)
   return (
-    <div className="flex flex-col items-center justify-center h-full gap-4 text-center px-8">
-      <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#2e3340" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="2"/>
-        <line x1="3" y1="9" x2="21" y2="9"/>
-        <line x1="9" y1="21" x2="9" y2="9"/>
-      </svg>
-      <div>
-        <p className="text-[#374151] font-medium text-sm">PDF Viewer</p>
-        <p className="text-[#2e3340] text-xs mt-1">Upload a PDF to view it here</p>
+    <div className="h-10 shrink-0 border-b border-[var(--line)] bg-[var(--bg)] px-4 flex items-center justify-between">
+      <div className="flex items-center gap-3 mono text-[11px] text-[var(--fg-3)]">
+        <span className="tabular-nums">
+          p.{selectedItem?.page_number ?? page}
+          <span className="text-[var(--fg-4)]">/{totalPages ?? '—'}</span>
+        </span>
+        {drawingRef && (
+          <>
+            <span className="text-[var(--fg-4)]">·</span>
+            <span className="text-[var(--fg-2)]">{drawingRef}</span>
+          </>
+        )}
+        {selectedItem && (
+          <>
+            <span className="text-[var(--fg-4)]">·</span>
+            <span className="text-[var(--accent)] tabular-nums">{selectedItem.id}</span>
+          </>
+        )}
       </div>
-      {selectedItem && (
-        <div className="mt-2 p-3 rounded-lg border border-[#1e2128] bg-[#13151a] max-w-sm w-full text-left">
-          <p className="text-[10px] text-[#4b5563] font-mono uppercase tracking-wider mb-2">Selected Item</p>
-          {selectedItem.drawing_reference && (
-            <div className="mb-1.5">
-              <span className="text-[11px] text-[#4b5563] font-mono">Drawing: </span>
-              <span className="text-[11px] text-[#1D9E75] font-mono">{selectedItem.drawing_reference}</span>
-            </div>
-          )}
-          {selectedItem.location_on_drawing && (
-            <div className="mb-1.5">
-              <span className="text-[11px] text-[#4b5563] font-mono">Location: </span>
-              <span className="text-[11px] text-[#9ca3af] font-mono">{selectedItem.location_on_drawing}</span>
-            </div>
-          )}
-          <p className="text-xs text-[#6b7280] mt-2 leading-snug">{selectedItem.markup_text}</p>
+      <div className="flex items-center gap-1">
+        <button onClick={onReset} className="w-7 h-7 inline-flex items-center justify-center rounded-[3px] text-[var(--fg-3)] hover:text-[var(--fg-1)] hover:bg-[var(--bg-2)]">
+          <Icon d={RESET_PATH} size={12}/>
+        </button>
+        <div className="flex items-center border border-[var(--line)] rounded-[3px] overflow-hidden">
+          <button onClick={onZoomOut} disabled={zoom <= 50} className="w-7 h-6 text-[var(--fg-3)] hover:text-[var(--fg-1)] hover:bg-[var(--bg-2)] disabled:opacity-30">−</button>
+          <span className="mono text-[10.5px] text-[var(--fg-2)] px-2 tabular-nums w-[44px] text-center">{zoom}%</span>
+          <button onClick={onZoomIn} disabled={zoom >= 300} className="w-7 h-6 text-[var(--fg-3)] hover:text-[var(--fg-1)] hover:bg-[var(--bg-2)] disabled:opacity-30">+</button>
         </div>
-      )}
+        {onExport && (
+          <button onClick={onExport} className="h-7 px-2.5 inline-flex items-center gap-1.5 rounded-[3px] text-[var(--fg-3)] hover:text-[var(--fg-1)] hover:bg-[var(--bg-2)] mono text-[11px]">
+            <Icon d={EXPORT_PATH} size={12}/> export CSV
+          </button>
+        )}
+      </div>
     </div>
   )
 }
