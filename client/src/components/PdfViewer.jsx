@@ -13,8 +13,62 @@ const MIN_ZOOM = 0.5
 const MAX_ZOOM = 3
 const BASE_PAGE_WIDTH = 800
 
+// Coordinates in the 1200×820 SVG space used by DrawingPlate
+const MARKUP_LOCS = {
+  'MK-001': [380, 110, 520, 40],
+  'MK-002': [360, 90, 560, 80],
+  'MK-003': [95, 150, 20, 180],
+  'MK-004': [560, 145, 70, 26],
+  'MK-005': [[420, 225], [630, 225], [820, 225]],
+  'MK-006': [380, 240, 180, 150],
+  'MK-007': [270, 320, 120, 22],
+  'MK-008': [760, 240, 180, 150],
+  'MK-009': [200, 540, 90, 22],
+  'MK-010': [380, 450, 180, 150],
+  'MK-011': [760, 450, 180, 150],
+  'MK-012': [330, 640, 30, 30],
+  'MK-013': [410, 680, 30, 16],
+  'MK-014': [490, 680, 34, 16],
+  'MK-015': [610, 680, 30, 16],
+  'MK-016': [740, 680, 30, 16],
+  'MK-017': [830, 640, 30, 30],
+  'MK-018': [220, 720, 180, 22],
+  'MK-019': [220, 745, 180, 22],
+}
+
 const RESET_PATH = 'M3 12a9 9 0 1 0 3-6.7 M3 4v5h5'
 const EXPORT_PATH = 'M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2 M7 10l5 5 5-5 M12 15V3'
+
+function MarkupHighlight({ itemId }) {
+  const sel = MARKUP_LOCS[itemId]
+  if (!sel) return null
+  const ACCENT = 'oklch(0.66 0.19 25)'
+  const FILL = 'oklch(0.66 0.19 25 / 0.10)'
+  return (
+    <svg
+      className="absolute inset-0 w-full h-full pointer-events-none z-[15]"
+      viewBox="0 0 1200 820"
+      preserveAspectRatio="xMidYMid meet"
+    >
+      {!Array.isArray(sel[0]) ? (
+        <rect
+          x={sel[0] - 10} y={sel[1] - 10}
+          width={sel[2] + 20} height={sel[3] + 20}
+          stroke={ACCENT} strokeWidth="2" strokeDasharray="6 4"
+          fill={FILL} rx="4"
+        />
+      ) : (
+        sel.map(([x, y], i) => (
+          <rect key={i}
+            x={x - 14} y={y - 14} width="52" height="52"
+            stroke={ACCENT} strokeWidth="2" strokeDasharray="6 4"
+            fill={FILL} rx="4"
+          />
+        ))
+      )}
+    </svg>
+  )
+}
 
 function Icon({ d, size = 14, stroke = 1.5 }) {
   return (
@@ -116,6 +170,9 @@ export default function PdfViewer({ project, pdfUrl: pdfUrlProp, selectedItem, o
                       'absolute inset-0 rounded pointer-events-none z-10 transition-all',
                       isActive ? 'ring-1 ring-[var(--accent)] ring-offset-2 ring-offset-[var(--bg-1)]' : '',
                     ].join(' ')}/>
+                    {isActive && selectedItem && (
+                      <MarkupHighlight itemId={selectedItem.id} />
+                    )}
                     <Page
                       pageNumber={pageNum}
                       width={pageWidth}
