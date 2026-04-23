@@ -10,11 +10,12 @@ function Header() {
   return (
     <header className="flex items-center justify-between px-5 h-12 border-b border-[var(--line)] bg-[var(--bg)] shrink-0 z-20">
       <Link to="/" className="flex items-center gap-2.5">
-        {/* two-square logo */}
-        <div className="relative w-[22px] h-[22px]">
-          <div className="absolute inset-[2px] border border-[var(--fg-2)] rounded-[2px]"/>
-          <div className="absolute inset-[6px] top-[8px] border border-[var(--accent)] bg-[var(--accent-f)] rounded-[1px]"/>
-        </div>
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0 text-[var(--fg-2)]">
+          <rect x=".75" y=".75" width="16.5" height="16.5" rx="2.5" stroke="currentColor" strokeOpacity=".35" strokeWidth="1.5"/>
+          <line x1="4.5" y1="6.5" x2="13.5" y2="6.5" stroke="currentColor" strokeOpacity=".35" strokeWidth="1.3" strokeLinecap="round"/>
+          <line x1="4.5" y1="9.5" x2="13.5" y2="9.5" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round"/>
+          <line x1="4.5" y1="12.5" x2="10" y2="12.5" stroke="currentColor" strokeOpacity=".35" strokeWidth="1.3" strokeLinecap="round"/>
+        </svg>
         <span className="text-[13.5px] tracking-tight font-semibold">RedlineIQ</span>
       </Link>
 
