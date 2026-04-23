@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { uploadProject, startExtraction, listProjects, deleteProject } from '../services/api.js'
+import { SAMPLE_PROJECT } from '../sampleData.js'
 import UploadZone from '../components/UploadZone.jsx'
 import TypeBadge from '../components/TypeBadge.jsx'
 
@@ -80,8 +81,13 @@ export default function HomePage() {
 
   useEffect(() => {
     listProjects()
-      .then(({ projects }) => setProjects(projects))
-      .catch(() => {})
+      .then(({ projects }) => {
+        const real = projects.filter(p => p.id !== SAMPLE_ID)
+        setProjects([SAMPLE_PROJECT, ...real])
+      })
+      .catch(() => {
+        setProjects([SAMPLE_PROJECT])
+      })
       .finally(() => setProjectsLoading(false))
   }, [])
 

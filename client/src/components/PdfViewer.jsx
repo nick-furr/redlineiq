@@ -25,13 +25,13 @@ function Icon({ d, size = 14, stroke = 1.5 }) {
   )
 }
 
-export default function PdfViewer({ project, selectedItem, onExport }) {
+export default function PdfViewer({ project, pdfUrl: pdfUrlProp, selectedItem, onExport }) {
   const [numPages, setNumPages] = useState(null)
   const [zoom, setZoom] = useState(1)
   const [loadError, setLoadError] = useState(null)
   const pageRefs = useRef({})
 
-  const pdfUrl = project ? `/api/projects/${project.id}/pdf` : null
+  const pdfUrl = pdfUrlProp ?? (project ? `/api/projects/${project.id}/pdf` : null)
 
   useEffect(() => {
     if (!selectedItem?.page_number) return

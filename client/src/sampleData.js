@@ -3,6 +3,8 @@ export const SAMPLE_PROJECT = {
   name: 'Sample: Demo Plan',
   pdf_filename: 'demo-plan.pdf',
   total_pages: 1,
+  created_at: '2026-04-18T09:07:50.039Z',
+  summary: { total: 19, done: 0, flagged: 3, pending: 16, in_progress: 0 },
 }
 
 export const SAMPLE_ITEMS = [

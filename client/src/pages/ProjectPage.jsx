@@ -6,7 +6,6 @@ import { SAMPLE_PROJECT, SAMPLE_ITEMS } from '../sampleData.js'
 import ExtractionProgress from '../components/ExtractionProgress.jsx'
 import ChecklistPanel from '../components/ChecklistPanel.jsx'
 import PdfViewer from '../components/PdfViewer.jsx'
-import DrawingPlate from '../components/DrawingPlate.jsx'
 import DetailStrip from '../components/DetailStrip.jsx'
 
 const SAMPLE_ID = 'sample-demo-001'
@@ -94,28 +93,7 @@ function SampleProjectPage() {
         </div>
       </aside>
       <main className="flex-1 flex flex-col overflow-hidden bg-[var(--bg-1)]">
-        <div className="h-10 shrink-0 border-b border-[var(--line)] bg-[var(--bg)] px-4 flex items-center justify-between">
-          <div className="flex items-center gap-3 mono text-[11px] text-[var(--fg-3)]">
-            <span className="tabular-nums">p.1<span className="text-[var(--fg-4)]">/1</span></span>
-            <span className="text-[var(--fg-4)]">·</span>
-            <span className="text-[var(--fg-2)]">BATH 01 — E</span>
-            {selectedItem && (
-              <>
-                <span className="text-[var(--fg-4)]">·</span>
-                <span className="text-[var(--accent)] tabular-nums">{selectedItem.id}</span>
-              </>
-            )}
-          </div>
-          <button onClick={exportCSV} className="h-7 px-2.5 inline-flex items-center gap-1.5 rounded-[3px] text-[var(--fg-3)] hover:text-[var(--fg-1)] hover:bg-[var(--bg-2)] mono text-[11px]">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2 M7 10l5 5 5-5 M12 15V3"/>
-            </svg>
-            export CSV
-          </button>
-        </div>
-        <div className="flex-1 overflow-hidden">
-          <DrawingPlate selectedId={selectedId}/>
-        </div>
+        <PdfViewer pdfUrl="/samples/demo-plan.pdf" selectedItem={selectedItem} onExport={exportCSV}/>
         <DetailStrip item={selectedItem} onStatusChange={handleStatusChange} onFlag={handleFlag}/>
       </main>
     </div>
