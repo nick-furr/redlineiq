@@ -128,6 +128,7 @@ curl http://localhost:3001/api/projects/{id}/summary
 | Variable | Required | Default | Description |
 |---|---|---|---|
 | `ANTHROPIC_API_KEY` | Yes | — | Your Anthropic API key |
+| `CLAUDE_MODEL` | No | `claude-sonnet-4-20250514` | Claude model version to use for extraction. |
 | `DATABASE_PATH` | No | `./data/redlineiq.db` | Path to SQLite file. On Render/Railway, point this at a persistent volume (e.g. `/var/data/redlineiq.db`) so data survives redeploys. |
 | `DEMO_MODE` | No | `false` | Set to `true` to require `X-Demo-Key` header on POST /extract. GET routes stay public. |
 | `DEMO_KEY` | If DEMO_MODE=true | — | The key callers must supply in the `X-Demo-Key` request header to run extractions. |
@@ -151,6 +152,5 @@ curl http://localhost:3001/api/projects/{id}/summary
 ## Next steps
 
 - [ ] Clarification workflow — engineer response loop for ambiguous markups (currently auto-flagged but no reply path)
-- [ ] Export — download progress report as PDF or CSV for handoff
+- [ ] PDF export — checklist is exportable as CSV today; a formatted PDF report for handoff is not yet implemented
 - [ ] Multi-sheet plan sets — improve handling of large plan sets with cross-sheet references and consistent sheet numbering
-- [ ] Sample library — pre-extracted example projects so visitors can explore the checklist UI without uploading their own drawings
