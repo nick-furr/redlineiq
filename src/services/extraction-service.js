@@ -17,6 +17,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { config } from '../config/index.js';
 import { MARKUP_TYPES, CONFIDENCE } from '../models/markup.js';
+import langfuse from './langfuse.js';
 
 const client = new Anthropic({ apiKey: config.anthropic.apiKey });
 
@@ -94,6 +95,13 @@ export async function extractMarkupsFromPage(pageImage, context = {}) {
 
   const userMessage = buildUserMessage(pageNumber, context);
 
+  const generation = context.langfuseTrace?.generation({
+    name: `extract-page-${pageNumber}`,
+    model: config.anthropic.model,
+    modelParameters: { max_tokens: 8192 },
+    input: { system: SYSTEM_PROMPT, user: userMessage },
+  });
+
   try {
     const response = await client.messages.create({
       model: config.anthropic.model,
@@ -133,10 +141,24 @@ export async function extractMarkupsFromPage(pageImage, context = {}) {
       .trim();
 
     const result = JSON.parse(rawText);
+    const normalized = normalizeExtractionResult(result, pageNumber);
 
-    // Validate and normalize
-    return normalizeExtractionResult(result, pageNumber);
+    generation?.end({
+      output: rawText,
+      usage: {
+        input: response.usage.input_tokens,
+        output: response.usage.output_tokens,
+      },
+      metadata: {
+        markups_found: normalized.markups.length,
+        drawing_reference: normalized.drawing_reference,
+      },
+    });
+
+    return normalized;
   } catch (err) {
+    generation?.end({ level: 'ERROR', statusMessage: err.message });
+
     if (err instanceof SyntaxError) {
       console.error(`JSON parse error on page ${pageNumber}:`, err.message);
       throw new Error(`Failed to parse extraction result for page ${pageNumber}. The API response was not valid JSON.`);
@@ -171,6 +193,14 @@ export async function extractAllPages(pageImages, context = {}, onProgress = nul
   const allMarkups = [];
   let globalIdCounter = 1;
 
+  const trace = langfuse.trace({
+    name: 'pdf-extraction',
+    metadata: {
+      projectName: context.projectName,
+      totalPages: pageImages.length,
+    },
+  });
+
   for (const pageImage of pageImages) {
     if (!pageImage.base64) {
       console.warn(`Skipping page ${pageImage.pageNumber} — no image data`);
@@ -178,7 +208,7 @@ export async function extractAllPages(pageImages, context = {}, onProgress = nul
     }
 
     try {
-      const result = await extractMarkupsFromPage(pageImage, context);
+      const result = await extractMarkupsFromPage(pageImage, { ...context, langfuseTrace: trace });
 
       // Re-number IDs to be globally unique across all pages
       for (const markup of result.markups) {
@@ -238,6 +268,9 @@ export async function extractAllPages(pageImages, context = {}, onProgress = nul
     stats.byConfidence[markup.confidence]++;
     if (markup.ambiguous) stats.ambiguousCount++;
   }
+
+  trace.update({ output: { totalMarkups: allMarkups.length, stats } });
+  await langfuse.flushAsync();
 
   return { pages, allMarkups, totalMarkups: allMarkups.length, stats };
 }

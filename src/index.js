@@ -8,6 +8,8 @@
  * - Progress tracking and summaries
  */
 
+import './instrument.js';
+import * as Sentry from '@sentry/node';
 import express from 'express';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
@@ -64,6 +66,9 @@ if (existsSync(clientDist)) {
 }
 
 // ─── Error Handler ─────────────────────────────────────────────
+// Sentry must come before the custom handler to capture unhandled errors
+Sentry.setupExpressErrorHandler(app);
+
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
 
