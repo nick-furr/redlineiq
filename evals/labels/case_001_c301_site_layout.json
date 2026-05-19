@@ -1,0 +1,89 @@
+{
+  "case_id": "case_001_c301_site_layout",
+  "discipline": "civil",
+  "sheet": "C-301",
+  "source": "synthetic",
+  "page_count": 1,
+  "expected_markups": [
+    {
+      "id": "m1",
+      "concept": "FFE elevation corrected from 442.0 to 142.0 — reference sheet C-401",
+      "category": "modify",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m2",
+      "concept": "5'-0\" access aisle must be 8' wide for van-accessible stall per ADA",
+      "category": "modify",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m3",
+      "concept": "36.7' building clearance dimension — verify with fire apparatus turning template",
+      "category": "verify",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m4",
+      "concept": "8' compact parking stall — confirm town zoning allows and cite applicable section",
+      "category": "question",
+      "page": 1,
+      "specificity_target": 1,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m5",
+      "concept": "bare 'verify?' near side setback — no context, intent is unclear",
+      "category": "clarify",
+      "page": 1,
+      "specificity_target": 0,
+      "is_ambiguous": true
+    },
+    {
+      "id": "m6",
+      "concept": "duplicate PROP. MONOLITHIC CONC. WALK (TYP.) label near front entrance — remove one",
+      "category": "delete",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m7",
+      "concept": "add sight triangle dimensions per MA AOT standard at East Street driveway",
+      "category": "add",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m8",
+      "concept": "bare '??' near property corner dimension — no context, intent is unclear",
+      "category": "clarify",
+      "page": 1,
+      "specificity_target": 0,
+      "is_ambiguous": true
+    },
+    {
+      "id": "m9",
+      "concept": "24.0' two-way drive aisle crossed out and corrected to 26.0' minimum",
+      "category": "modify",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m10",
+      "concept": "69'-11\" building height exceeds 52' max — confirm ZBA waiver granted and attach the decision document",
+      "category": "verify",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    }
+  ]
+}

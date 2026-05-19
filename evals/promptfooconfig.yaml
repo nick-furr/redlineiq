@@ -1,0 +1,12 @@
+# Promptfoo config — wired up in Week 2 (CI/PR eval on prompt changes)
+# See: https://promptfoo.dev/docs/configuration/guide
+#
+# Until /prompts/ versioning is in place, use run-eval.js directly.
+
+# prompts:
+#   - file://../prompts/active.md
+
+# providers:
+#   - anthropic:messages:claude-sonnet-4-6
+
+# tests: []  # populated in Week 2
