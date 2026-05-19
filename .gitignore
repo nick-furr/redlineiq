@@ -10,3 +10,9 @@ data/
 *.db
 *.sqlite
 .claude/
+
+# Eval — source plan PDFs are large, not committed
+evals/synthetic/source/
+# Generated sheet outputs (regenerate with generate.py)
+evals/synthetic/*/output.pdf
+evals/synthetic/*/output.png
