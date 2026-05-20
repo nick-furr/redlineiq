@@ -149,8 +149,31 @@ curl http://localhost:3001/api/projects/{id}/summary
 - **Docker deploy to install system deps** — pdf2pic delegates PDF rendering to GraphicsMagick and Ghostscript, which are OS-level binaries. The default Render Node runtime doesn't include them. A Dockerfile makes the dependency explicit and reproducible.
 - **Per-IP rate limiting with a 10-page cap** — each extraction page hits the Claude Vision API. Without limits, a single user could run up significant API costs on a public demo. The extraction endpoint is capped at 3 jobs/hour per IP; uploads are rejected above 10 pages.
 
+## Eval harness
+
+RedlineIQ includes a structured eval harness for measuring extraction quality against synthetic redlined drawings.
+
+```bash
+# Run against all labeled PDFs
+node evals/run-eval.js --prompt v0.6 --working-set
+```
+
+Outputs a JSON run file and an HTML report to `evals/runs/`. Each run scores three metrics:
+
+| Metric | Description | Target |
+|---|---|---|
+| **Recall** | Fraction of expected markups captured | ≥ 0.80 |
+| **Precision** | Fraction of extracted markups that matched something expected | ≥ 0.70 |
+| **Specificity** | Avg specificity weight of matched items (rewards detail) | ≥ 1.50 |
+
+**Current scores (v0.6):** recall=0.72 · precision=0.55 · specificity=1.58
+
+Prompt versions are tracked in [`evals/PROMPT_CHANGELOG.md`](evals/PROMPT_CHANGELOG.md). Judgment uses Claude Haiku with a 3-vote majority to reduce variance, matching by conceptual equivalence rather than literal text.
+
 ## Next steps
 
+- [ ] Eval set expansion — synthesize 10 more sheets (MEP, structural, misc) to reach 15-case working set
+- [ ] Precision improvement — v0.6 at 0.55, target ≥ 0.70; C-401 mark-splitting is the main driver
 - [ ] Clarification workflow — engineer response loop for ambiguous markups (currently auto-flagged but no reply path)
 - [ ] PDF export — checklist is exportable as CSV today; a formatted PDF report for handoff is not yet implemented
-- [ ] Multi-sheet plan sets — improve handling of large plan sets with cross-sheet references and consistent sheet numbering
+- [ ] CI — `npm test` on every PR; manual-trigger eval run via `workflow_dispatch`
