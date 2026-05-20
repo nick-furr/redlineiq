@@ -1,0 +1,73 @@
+{
+  "case_id": "case_010",
+  "discipline": "structural",
+  "sheet": "S1",
+  "source": "synthetic",
+  "page_count": 1,
+  "expected_markups": [
+    {
+      "id": "m1",
+      "concept": "W12x26 beam undersized for 28-foot span — calculations require W16x31 minimum",
+      "category": "design_issue",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m2",
+      "concept": "Connection detail reference missing at ridge beam to column — add detail reference",
+      "category": "missing_information",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m3",
+      "concept": "Joist bearing condition at exterior wall not detailed — add detail",
+      "category": "missing_information",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m4",
+      "concept": "Midspan blocking missing — required for lateral stability of joists",
+      "category": "code_violation",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m5",
+      "concept": "Hip rafter size not called out on plan — add member size",
+      "category": "missing_information",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m6",
+      "concept": "Ledger-to-wall attachment detail missing — add detail with bolt pattern",
+      "category": "missing_information",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m7",
+      "concept": "Ambiguous mark near purlin connection — verify",
+      "category": "ambiguous",
+      "page": 1,
+      "specificity_target": 0,
+      "is_ambiguous": true
+    },
+    {
+      "id": "m8",
+      "concept": "Ambiguous mark near valley rafter — unclear intent",
+      "category": "ambiguous",
+      "page": 1,
+      "specificity_target": 0,
+      "is_ambiguous": true
+    }
+  ]
+}

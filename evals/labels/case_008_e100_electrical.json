@@ -1,0 +1,73 @@
+{
+  "case_id": "case_008",
+  "discipline": "electrical",
+  "sheet": "E100",
+  "source": "synthetic",
+  "page_count": 1,
+  "expected_markups": [
+    {
+      "id": "m1",
+      "concept": "GFCI protection missing at wet location — NEC 210.8(B) requires GFCI within 6 feet of sink",
+      "category": "code_violation",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m2",
+      "concept": "20-amp circuit required at break room countertop — update panel schedule",
+      "category": "design_issue",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m3",
+      "concept": "Exit sign missing at egress door — required per IBC 1013",
+      "category": "code_violation",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m4",
+      "concept": "Fixture type on plan conflicts with fixture schedule — coordinate",
+      "category": "coordination_issue",
+      "page": 1,
+      "specificity_target": 1,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m5",
+      "concept": "Conduit routing conflicts with plumbing — coordinate with plumbing plan",
+      "category": "coordination_issue",
+      "page": 1,
+      "specificity_target": 1,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m6",
+      "concept": "Panel schedule not updated to reflect new circuits — add new loads",
+      "category": "missing_information",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m7",
+      "concept": "Ambiguous mark near switch — verify",
+      "category": "ambiguous",
+      "page": 1,
+      "specificity_target": 0,
+      "is_ambiguous": true
+    },
+    {
+      "id": "m8",
+      "concept": "Ambiguous mark near junction box — unclear intent",
+      "category": "ambiguous",
+      "page": 1,
+      "specificity_target": 0,
+      "is_ambiguous": true
+    }
+  ]
+}

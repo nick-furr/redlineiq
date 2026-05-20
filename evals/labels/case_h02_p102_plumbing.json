@@ -1,0 +1,73 @@
+{
+  "case_id": "case_h02",
+  "discipline": "plumbing",
+  "sheet": "P102",
+  "source": "synthetic",
+  "page_count": 1,
+  "expected_markups": [
+    {
+      "id": "m1",
+      "concept": "3-inch sanitary pipe undersized — fixture unit count requires 4-inch minimum",
+      "category": "code_violation",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m2",
+      "concept": "Cleanout missing at horizontal run change of direction — add cleanout",
+      "category": "code_violation",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m3",
+      "concept": "Floor drain not shown on renovation plan — verify existing or add new",
+      "category": "missing_information",
+      "page": 1,
+      "specificity_target": 1,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m4",
+      "concept": "Vent stack location conflicts with structural framing — coordinate with engineer",
+      "category": "coordination_issue",
+      "page": 1,
+      "specificity_target": 1,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m5",
+      "concept": "Fixture unit count wrong — flush valve toilets are 6 FU each, not 4 FU (tank type)",
+      "category": "design_issue",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m6",
+      "concept": "Hot and cold supply labels appear swapped at lavatory — verify and correct",
+      "category": "design_issue",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m7",
+      "concept": "Ambiguous mark near stack connection — verify",
+      "category": "ambiguous",
+      "page": 1,
+      "specificity_target": 0,
+      "is_ambiguous": true
+    },
+    {
+      "id": "m8",
+      "concept": "Ambiguous mark near drain location — unclear intent",
+      "category": "ambiguous",
+      "page": 1,
+      "specificity_target": 0,
+      "is_ambiguous": true
+    }
+  ]
+}

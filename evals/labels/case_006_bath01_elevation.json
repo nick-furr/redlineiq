@@ -1,0 +1,114 @@
+{
+  "case_id": "case_006_bath01_elevation",
+  "discipline": "architectural",
+  "sheet": "BATH 01-E",
+  "source": "real",
+  "page_count": 1,
+  "notes": "Real marked-up interior elevation. Also used as live demo sheet. Markups are handwritten in red pen. PDF contains clean drawing (top) and redlined copy (bottom) on same page.",
+  "expected_markups": [
+    {
+      "id": "m1",
+      "concept": "arc drawn across top — spring points and high points on all arched elements must match each other",
+      "category": "modify",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m2",
+      "concept": "X marks on arched top sections — arched elements or spring point locations flagged for revision",
+      "category": "clarify",
+      "page": 1,
+      "specificity_target": 1,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m3",
+      "concept": "annotation written over center door — appears to read 'B2°U' or similar, possibly door swing or hardware spec",
+      "category": "clarify",
+      "page": 1,
+      "specificity_target": 1,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m4",
+      "concept": "keep splash level across — backsplash height to be consistent across full vanity elevation",
+      "category": "modify",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m5",
+      "concept": "change to counter — material or product change callout in left cabinet area, paired with splash note",
+      "category": "modify",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m6",
+      "concept": "hatched area on left mirror — mirror flagged for removal or revision",
+      "category": "modify",
+      "page": 1,
+      "specificity_target": 1,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m7",
+      "concept": "hatched area on right mirror — mirror flagged for removal or revision",
+      "category": "modify",
+      "page": 1,
+      "specificity_target": 1,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m8",
+      "concept": "hatched area on left vanity base cabinets — base flagged for removal or revision",
+      "category": "modify",
+      "page": 1,
+      "specificity_target": 1,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m9",
+      "concept": "hatched area on right vanity base cabinets — base flagged for removal or revision",
+      "category": "modify",
+      "page": 1,
+      "specificity_target": 1,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m10",
+      "concept": "countertop thickness is 1½\" — coordinate with finish schedule",
+      "category": "verify",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m11",
+      "concept": "multiple ½\" and 1½\" dimension callouts added along bottom edge of elevation",
+      "category": "add",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m12",
+      "concept": "bare notation near lower left vanity — reads approximately '9pm U' or '9mm U', intent unclear",
+      "category": "clarify",
+      "page": 1,
+      "specificity_target": 0,
+      "is_ambiguous": true
+    },
+    {
+      "id": "m13",
+      "concept": "circled dimension on left wall — value circled in red, correction or verification needed, no explicit replacement given",
+      "category": "verify",
+      "page": 1,
+      "specificity_target": 0,
+      "is_ambiguous": true
+    }
+  ]
+}

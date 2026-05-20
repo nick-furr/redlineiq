@@ -1,0 +1,73 @@
+{
+  "case_id": "case_009",
+  "discipline": "mechanical",
+  "sheet": "M101",
+  "source": "synthetic",
+  "page_count": 1,
+  "expected_markups": [
+    {
+      "id": "m1",
+      "concept": "EF-1 exhaust fan rated 75 CFM is undersized — restroom requires 150 CFM minimum per IMC",
+      "category": "code_violation",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m2",
+      "concept": "Supply diffuser conflicts with light fixture location — coordinate with electrical",
+      "category": "coordination_issue",
+      "page": 1,
+      "specificity_target": 1,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m3",
+      "concept": "Backdraft damper required at duct penetration through rated wall — add per IMC 607",
+      "category": "code_violation",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m4",
+      "concept": "Access panel not shown for exhaust fan — required for maintenance access",
+      "category": "missing_information",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m5",
+      "concept": "Horizontal duct pitched back toward unit — re-pitch to drain away",
+      "category": "design_issue",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m6",
+      "concept": "Return air path not shown — verify or add transfer grille",
+      "category": "missing_information",
+      "page": 1,
+      "specificity_target": 1,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m7",
+      "concept": "Ambiguous mark near diffuser — verify",
+      "category": "ambiguous",
+      "page": 1,
+      "specificity_target": 0,
+      "is_ambiguous": true
+    },
+    {
+      "id": "m8",
+      "concept": "Ambiguous mark near duct run — unclear intent",
+      "category": "ambiguous",
+      "page": 1,
+      "specificity_target": 0,
+      "is_ambiguous": true
+    }
+  ]
+}

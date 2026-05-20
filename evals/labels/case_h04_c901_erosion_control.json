@@ -1,0 +1,65 @@
+{
+  "case_id": "case_h04",
+  "discipline": "civil",
+  "sheet": "C-901",
+  "source": "synthetic",
+  "page_count": 1,
+  "expected_markups": [
+    {
+      "id": "m1",
+      "concept": "Silt fence missing at down-slope property line — add per NPDES requirements",
+      "category": "code_violation",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m2",
+      "concept": "Stabilized construction entrance not shown at site access — add SCE detail",
+      "category": "missing_information",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m3",
+      "concept": "SWPPP note missing from plan — required prior to earth disturbance permit",
+      "category": "code_violation",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m4",
+      "concept": "Sediment trap sizing not noted — verify capacity for drainage area",
+      "category": "missing_information",
+      "page": 1,
+      "specificity_target": 1,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m5",
+      "concept": "Inlet protection not shown at catch basin — add curb sock or block",
+      "category": "missing_information",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m6",
+      "concept": "Ambiguous mark near disturbed area boundary — verify",
+      "category": "ambiguous",
+      "page": 1,
+      "specificity_target": 0,
+      "is_ambiguous": true
+    },
+    {
+      "id": "m7",
+      "concept": "Ambiguous mark near outlet protection — unclear intent",
+      "category": "ambiguous",
+      "page": 1,
+      "specificity_target": 0,
+      "is_ambiguous": true
+    }
+  ]
+}

@@ -13,29 +13,35 @@ const JUDGE_MODEL = 'claude-haiku-4-5-20251001';
  * @returns {Promise<boolean>} true if concept is captured in the extraction
  */
 export async function judgeMarkup(expectedConcept, extractedMarkups) {
-  const votes = await Promise.all([
-    singleVote(expectedConcept, extractedMarkups),
-    singleVote(expectedConcept, extractedMarkups),
-    singleVote(expectedConcept, extractedMarkups),
-  ]);
+  // Sequential votes to stay within 50 req/min Haiku rate limit
+  const votes = [];
+  for (let i = 0; i < 3; i++) {
+    votes.push(await singleVote(expectedConcept, extractedMarkups));
+  }
   return votes.filter(Boolean).length >= 2;
 }
 
-async function singleVote(expectedConcept, extractedMarkups) {
+async function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function singleVote(expectedConcept, extractedMarkups, retries = 4) {
   const summary = extractedMarkups
     .map(m => `- [${m.markup_type}] "${m.markup_text}" at: ${m.location_on_drawing}`)
     .join('\n');
 
-  const response = await client.messages.create({
-    model: JUDGE_MODEL,
-    max_tokens: 5,
-    system: `You are evaluating whether a redline markup extraction captured a specific reviewer concept.
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+          const response = await client.messages.create({
+        model: JUDGE_MODEL,
+        max_tokens: 5,
+        system: `You are evaluating whether a redline markup extraction captured a specific reviewer concept.
 Reviewers use engineering shorthand, abbreviations, and OCR may mangle text. Judge by CONCEPTUAL equivalence, not literal text.
 Examples of matches: "DR/SWING BLOCKS EGRESS" = "door swing blocks egress width", "8\" SAN UNDERSIZED" = "8 inch sanitary sewer undersized", "ADD SIGHT TRIANGLE DIMS" = "add sight triangle dimensions".
 Answer "yes" if the concept is substantially present in any entry. Answer "no" only if genuinely absent.`,
-    messages: [{
-      role: 'user',
-      content: `Does the extraction capture the expected concept?
+        messages: [{
+          role: 'user',
+          content: `Does the extraction capture the expected concept?
 
 Expected: ${expectedConcept}
 
@@ -43,8 +49,17 @@ Extracted markups:
 ${summary || '(none)'}
 
 Answer only "yes" or "no".`,
-    }],
-  });
+        }],
+      });
 
-  return response.content[0].text.trim().toLowerCase().startsWith('yes');
+      return response.content[0].text.trim().toLowerCase().startsWith('yes');
+    } catch (err) {
+      if (err.status === 429 && attempt < retries) {
+        const wait = Math.pow(2, attempt + 1) * 1000;
+        await sleep(wait);
+        continue;
+      }
+      throw err;
+    }
+  }
 }

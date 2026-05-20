@@ -1,0 +1,65 @@
+{
+  "case_id": "case_h03",
+  "discipline": "structural",
+  "sheet": "S0",
+  "source": "synthetic",
+  "page_count": 1,
+  "expected_markups": [
+    {
+      "id": "m1",
+      "concept": "18x18 footing may be undersized — geotech report allows 2000 PSF bearing max",
+      "category": "design_issue",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m2",
+      "concept": "Anchor bolt spacing is 72 inches — exceeds 48-inch maximum per ASCE 7-22",
+      "category": "code_violation",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m3",
+      "concept": "Slab thickness not noted on plan — add 4-inch minimum callout",
+      "category": "missing_information",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m4",
+      "concept": "Reinforcing not specified at slab on grade — add #4 at 18 inches each way per geotech",
+      "category": "missing_information",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m5",
+      "concept": "Grade beam depth not shown — add elevation or depth note",
+      "category": "missing_information",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m6",
+      "concept": "Ambiguous mark near column footing — verify",
+      "category": "ambiguous",
+      "page": 1,
+      "specificity_target": 0,
+      "is_ambiguous": true
+    },
+    {
+      "id": "m7",
+      "concept": "Ambiguous mark near slab edge condition — unclear intent",
+      "category": "ambiguous",
+      "page": 1,
+      "specificity_target": 0,
+      "is_ambiguous": true
+    }
+  ]
+}
