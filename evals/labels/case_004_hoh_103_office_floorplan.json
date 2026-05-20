@@ -1,0 +1,19 @@
+{
+  "case_id": "case_004_hoh_103_office_floorplan",
+  "discipline": "architectural",
+  "sheet": "103",
+  "source": "synthetic",
+  "page_count": 1,
+  "expected_markups": [
+    {"id": "m1", "concept": "Restroom lavatory clear floor space 28\" — ADA minimum is 30\", fix layout", "category": "modify", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m2", "concept": "Conference room door swing blocks corridor egress width — flip door or recess", "category": "modify", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m3", "concept": "Reception counter length dimension missing from drawing", "category": "add", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m4", "concept": "Electrical panel clearance shown 3'-0\" — NEC 110.26 requires 3'-6\" minimum at 240V", "category": "modify", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m5", "concept": "Verify travel distance from Office 3 to exit is under 200' without sprinkler per IBC", "category": "verify", "page": 1, "specificity_target": 1, "is_ambiguous": false},
+    {"id": "m6", "concept": "Wall type between office and conference room not called out", "category": "add", "page": 1, "specificity_target": 1, "is_ambiguous": false},
+    {"id": "m7", "concept": "Two windows shown in office on this sheet but only one shown on Sheet 105 elevations — reconcile", "category": "modify", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m8", "concept": "Storage closet depth is 2'-0\" — not functional, coordinate minimum depth with owner", "category": "note", "page": 1, "specificity_target": 1, "is_ambiguous": false},
+    {"id": "m9", "concept": "bare 'verify?' near mechanical room — intent unclear", "category": "clarify", "page": 1, "specificity_target": 0, "is_ambiguous": true},
+    {"id": "m10", "concept": "bare '??' near kitchenette area — no context", "category": "clarify", "page": 1, "specificity_target": 0, "is_ambiguous": true}
+  ]
+}

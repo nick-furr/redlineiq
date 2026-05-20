@@ -1,0 +1,19 @@
+{
+  "case_id": "case_003_c501_utility",
+  "discipline": "civil",
+  "sheet": "C-501",
+  "source": "synthetic",
+  "page_count": 1,
+  "expected_markups": [
+    {"id": "m1", "concept": "8\" sanitary sewer undersized — flow calculations require 10\" pipe", "category": "modify", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m2", "concept": "Water main crosses storm drain with less than 18\" vertical separation — show separation or add sleeve", "category": "modify", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m3", "concept": "Manhole outgoing invert elevation is higher than incoming invert — reverse slope condition", "category": "modify", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m4", "concept": "Missing cleanout at building sanitary service connection bend per local code", "category": "add", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m5", "concept": "Fire hydrant 4' from curb — local standard requires 6' minimum, relocate", "category": "modify", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m6", "concept": "Verify 1\" domestic water service adequate for total unit count", "category": "verify", "page": 1, "specificity_target": 1, "is_ambiguous": false},
+    {"id": "m7", "concept": "Missing gate valve on water service line before building entry", "category": "add", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m8", "concept": "Storm drain outfall end treatment not specified — add riprap or flared end section callout", "category": "add", "page": 1, "specificity_target": 1, "is_ambiguous": false},
+    {"id": "m9", "concept": "bare 'verify?' near force main — intent unclear", "category": "clarify", "page": 1, "specificity_target": 0, "is_ambiguous": true},
+    {"id": "m10", "concept": "bare '??' near northeast utility cluster — no context", "category": "clarify", "page": 1, "specificity_target": 0, "is_ambiguous": true}
+  ]
+}

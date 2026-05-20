@@ -1,0 +1,19 @@
+{
+  "case_id": "case_002_c401_grading",
+  "discipline": "civil",
+  "sheet": "C-401",
+  "source": "synthetic",
+  "page_count": 1,
+  "expected_markups": [
+    {"id": "m1", "concept": "FFE vs finished grade conflict at building entrance — match correction from C-301", "category": "modify", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m2", "concept": "Swale slope 0.4% is below 0.5% minimum for grass-lined swale — fix grade", "category": "modify", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m3", "concept": "Add high point callout at drainage break in parking field", "category": "add", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m4", "concept": "Catch basin rim elevation — verify flush with finished pavement grade", "category": "verify", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m5", "concept": "Proposed grading extends into East Street ROW — add highway permit note", "category": "add", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m6", "concept": "Accessible route cross slope exceeds 2.0% ADA maximum — fix grading", "category": "modify", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m7", "concept": "Retaining wall shown without identifying wall designer per general note 7", "category": "add", "page": 1, "specificity_target": 1, "is_ambiguous": false},
+    {"id": "m8", "concept": "Add emergency overflow route for parking field drainage basin", "category": "add", "page": 1, "specificity_target": 1, "is_ambiguous": false},
+    {"id": "m9", "concept": "bare 'verify?' near west drainage swale — intent unclear", "category": "clarify", "page": 1, "specificity_target": 0, "is_ambiguous": true},
+    {"id": "m10", "concept": "bare '??' near east property corner — no context", "category": "clarify", "page": 1, "specificity_target": 0, "is_ambiguous": true}
+  ]
+}

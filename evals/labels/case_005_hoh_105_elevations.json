@@ -1,0 +1,19 @@
+{
+  "case_id": "case_005_hoh_105_elevations",
+  "discipline": "architectural",
+  "sheet": "105",
+  "source": "synthetic",
+  "page_count": 1,
+  "expected_markups": [
+    {"id": "m1", "concept": "Total building height dimension missing on all elevations — required for permit", "category": "add", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m2", "concept": "Man door header height appears 7'-0\" — IBC 1010.1.1 requires 7'-4\" minimum commercial", "category": "modify", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m3", "concept": "Roof pitch visible in profile but not labeled — add pitch callout", "category": "add", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m4", "concept": "Window sill height not dimensioned on west elevation — required for egress analysis", "category": "add", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m5", "concept": "Finish grade line on north elevation — verify matches C-401 grading plan", "category": "verify", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m6", "concept": "Metal wall panel type, color, and manufacturer not specified on elevations", "category": "add", "page": 1, "specificity_target": 1, "is_ambiguous": false},
+    {"id": "m7", "concept": "Wainscot labeled 4'-0\" but graphic shows approximately 3'-6\" — which is correct", "category": "modify", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m8", "concept": "Overhead door opening size not dimensioned — required for permit", "category": "add", "page": 1, "specificity_target": 2, "is_ambiguous": false},
+    {"id": "m9", "concept": "bare 'verify?' near parapet detail reference — intent unclear", "category": "clarify", "page": 1, "specificity_target": 0, "is_ambiguous": true},
+    {"id": "m10", "concept": "bare '??' near east corner of south elevation — no context", "category": "clarify", "page": 1, "specificity_target": 0, "is_ambiguous": true}
+  ]
+}
