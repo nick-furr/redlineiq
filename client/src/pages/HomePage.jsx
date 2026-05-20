@@ -151,7 +151,7 @@ export default function HomePage() {
         {/* ROI strip */}
         <div className="mb-10 grid grid-cols-3 border border-[var(--line)] rounded-[3px] divide-x divide-[var(--line)] overflow-hidden">
           <Stat k="≈ 45 min" v="saved per plan set vs manual transcription"/>
-          <Stat k="19" v="markups auto-extracted on the sample below"/>
+          <Stat k="8" v="markups auto-extracted on the sample below"/>
           <Stat k="≈ 7/10" v="reviewer markups caught on a 15-case eval set · improving each release"/>
         </div>
 

@@ -10,6 +10,11 @@ import DetailStrip from '../components/DetailStrip.jsx'
 
 const SAMPLE_ID = 'sample-demo-001'
 
+// Visual-annotation refs (e.g. "[Red cloud highlighting wall area]") are locator
+// hints the extractor emits alongside the real markup. They're not action items —
+// the parent markup already carries the instruction. Hide them everywhere.
+const isVisualAnnotationRef = (m) => /^\[.*\]$/.test((m.markup_text ?? '').trim())
+
 function buildCSV(items, projectName) {
   const headers = ['id', 'type', 'confidence', 'ambiguous', 'status', 'flagged', 'drawing_reference', 'location', 'markup_text', 'clarification']
   const esc = (v) => {
@@ -26,8 +31,9 @@ function buildCSV(items, projectName) {
 
 // ── Sample project (runs fully local, no API needed) ──────────────────────
 function SampleProjectPage() {
-  const [items, setItems] = useState(SAMPLE_ITEMS)
-  const [selectedId, setSelectedId] = useState(SAMPLE_ITEMS[0]?.id ?? null)
+  const initialItems = useMemo(() => SAMPLE_ITEMS.filter(m => !isVisualAnnotationRef(m)), [])
+  const [items, setItems] = useState(initialItems)
+  const [selectedId, setSelectedId] = useState(initialItems[0]?.id ?? null)
 
   const selectedItem = items.find(m => m.id === selectedId) ?? null
 
@@ -93,7 +99,7 @@ function SampleProjectPage() {
         </div>
       </aside>
       <main className="flex-1 flex flex-col overflow-hidden bg-[var(--bg-1)]">
-        <PdfViewer pdfUrl={`/samples/${SAMPLE_PROJECT.pdf_filename}`} selectedItem={selectedItem} onExport={exportCSV}/>
+        <PdfViewer pdfUrl={`/api/projects/${SAMPLE_PROJECT.id}/pdf`} selectedItem={selectedItem} onExport={exportCSV}/>
         <DetailStrip item={selectedItem} onStatusChange={handleStatusChange} onFlag={handleFlag}/>
       </main>
     </div>
@@ -117,10 +123,12 @@ function RealProjectPage({ id }) {
     return () => extraction.reset()
   }, [id]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const markups = extraction.markups.map(m => {
-    const local = localMarkups.find(l => l.id === m.id)
-    return local ? { ...m, ...local } : m
-  })
+  const markups = extraction.markups
+    .filter(m => !isVisualAnnotationRef(m))
+    .map(m => {
+      const local = localMarkups.find(l => l.id === m.id)
+      return local ? { ...m, ...local } : m
+    })
 
   useEffect(() => {
     if (markups.length > 0 && !selectedId) setSelectedId(markups[0].id)

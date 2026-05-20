@@ -14,27 +14,7 @@
         "markup_type": "add",
         "drawing_reference": "S4.20",
         "location_on_drawing": "Left side of drawing, pointing to exterior wall area",
-        "related_to": "MK-002",
-        "confidence": "high",
-        "ambiguous": false,
-        "page_number": 1
-      },
-      "status": "pending",
-      "drafter_notes": null,
-      "clarification_request": null,
-      "clarification_response": null,
-      "created_at": "2026-05-20T04:00:38.964Z",
-      "updated_at": "2026-05-20T04:00:38.964Z"
-    },
-    {
-      "id": "MK-002",
-      "markup": {
-        "id": "MK-002",
-        "markup_text": "[Red cloud highlighting exterior wall bearing area]",
-        "markup_type": "add",
-        "drawing_reference": "S4.20",
-        "location_on_drawing": "Left side exterior wall area",
-        "related_to": "MK-001",
+        "related_to": null,
         "confidence": "high",
         "ambiguous": false,
         "page_number": 1
@@ -54,27 +34,7 @@
         "markup_type": "add",
         "drawing_reference": "S4.20",
         "location_on_drawing": "Upper center area at ridge beam connection",
-        "related_to": "MK-004",
-        "confidence": "high",
-        "ambiguous": false,
-        "page_number": 1
-      },
-      "status": "pending",
-      "drafter_notes": null,
-      "clarification_request": null,
-      "clarification_response": null,
-      "created_at": "2026-05-20T04:00:38.964Z",
-      "updated_at": "2026-05-20T04:00:38.964Z"
-    },
-    {
-      "id": "MK-004",
-      "markup": {
-        "id": "MK-004",
-        "markup_text": "[Red cloud highlighting ridge beam connection area]",
-        "markup_type": "add",
-        "drawing_reference": "S4.20",
-        "location_on_drawing": "Upper center ridge beam area",
-        "related_to": "MK-003",
+        "related_to": null,
         "confidence": "high",
         "ambiguous": false,
         "page_number": 1
@@ -94,27 +54,7 @@
         "markup_type": "modify",
         "drawing_reference": "S4.20",
         "location_on_drawing": "Center-left area with beam sizing annotation",
-        "related_to": "MK-006",
-        "confidence": "high",
-        "ambiguous": false,
-        "page_number": 1
-      },
-      "status": "pending",
-      "drafter_notes": null,
-      "clarification_request": null,
-      "clarification_response": null,
-      "created_at": "2026-05-20T04:00:38.964Z",
-      "updated_at": "2026-05-20T04:00:38.964Z"
-    },
-    {
-      "id": "MK-006",
-      "markup": {
-        "id": "MK-006",
-        "markup_text": "[Red cloud highlighting beam size notation]",
-        "markup_type": "modify",
-        "drawing_reference": "S4.20",
-        "location_on_drawing": "Center-left beam notation area",
-        "related_to": "MK-005",
+        "related_to": null,
         "confidence": "high",
         "ambiguous": false,
         "page_number": 1
@@ -134,27 +74,7 @@
         "markup_type": "add",
         "drawing_reference": "S4.20",
         "location_on_drawing": "Right side of drawing at hip rafter location",
-        "related_to": "MK-008",
-        "confidence": "high",
-        "ambiguous": false,
-        "page_number": 1
-      },
-      "status": "pending",
-      "drafter_notes": null,
-      "clarification_request": null,
-      "clarification_response": null,
-      "created_at": "2026-05-20T04:00:38.964Z",
-      "updated_at": "2026-05-20T04:00:38.964Z"
-    },
-    {
-      "id": "MK-008",
-      "markup": {
-        "id": "MK-008",
-        "markup_text": "[Red cloud highlighting hip rafter area]",
-        "markup_type": "add",
-        "drawing_reference": "S4.20",
-        "location_on_drawing": "Right side hip rafter area",
-        "related_to": "MK-007",
+        "related_to": null,
         "confidence": "high",
         "ambiguous": false,
         "page_number": 1
@@ -205,20 +125,60 @@
       "clarification_response": null,
       "created_at": "2026-05-20T04:00:38.964Z",
       "updated_at": "2026-05-20T04:00:38.964Z"
+    },
+    {
+      "id": "MK-011",
+      "markup": {
+        "id": "MK-011",
+        "markup_type": "clarify",
+        "drawing_reference": "S4.20",
+        "related_to": null,
+        "confidence": "low",
+        "ambiguous": true,
+        "page_number": 1,
+        "markup_text": "verify?",
+        "location_on_drawing": "Lower-left area near W12x14 beam, red oval around member size"
+      },
+      "status": "flagged",
+      "drafter_notes": null,
+      "clarification_request": null,
+      "clarification_response": null,
+      "created_at": "2026-05-20T05:44:28.416Z",
+      "updated_at": "2026-05-20T05:44:28.416Z"
+    },
+    {
+      "id": "MK-012",
+      "markup": {
+        "id": "MK-012",
+        "markup_type": "clarify",
+        "drawing_reference": "S4.20",
+        "related_to": null,
+        "confidence": "low",
+        "ambiguous": true,
+        "page_number": 1,
+        "markup_text": "??",
+        "location_on_drawing": "Upper-right area near W12x19 beam, red double question mark with circle"
+      },
+      "status": "flagged",
+      "drafter_notes": null,
+      "clarification_request": null,
+      "clarification_response": null,
+      "created_at": "2026-05-20T05:44:28.416Z",
+      "updated_at": "2026-05-20T05:44:28.416Z"
     }
   ],
   "summary": {
-    "total": 10,
+    "total": 8,
     "done": 0,
-    "flagged": 0,
-    "pending": 10,
+    "flagged": 2,
+    "pending": 6,
     "in_progress": 0,
     "skipped": 0,
-    "high_confidence": 10,
-    "low_confidence": 0,
-    "ambiguous": 0,
+    "high_confidence": 6,
+    "low_confidence": 2,
+    "ambiguous": 2,
     "percent_complete": 0
   },
   "created_at": "2026-05-20T04:00:38.964Z",
-  "updated_at": "2026-05-20T04:00:38.964Z"
+  "updated_at": "2026-05-20T05:44:28.416Z"
 }
