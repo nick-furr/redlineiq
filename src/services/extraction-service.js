@@ -50,6 +50,8 @@ Your task is to extract EVERY redline markup annotation from the provided drawin
 
 7. **Be exhaustive.** Do not skip small annotations, dimension corrections, check marks, question marks, or arrows. Each one matters to the drafter.
 
+8. **Exclude non-content marks.** Skip reviewer stamps ("REVIEW SET", "ISSUED FOR REVIEW"), initials blocks, date stamps, and signature areas — these identify the reviewer but contain no actionable instruction.
+
 ## Response Format
 
 Respond with ONLY valid JSON, no markdown formatting, no backticks. Use this exact structure:

@@ -69,19 +69,19 @@ def draw(canvas):
     hand_text(canvas, 3000, 3190, "BEFORE BLDG ENTRY", size=50, rotate=2)
 
     # #8 Storm outfall end treatment not specified
-    hand_oval(d, 4600, 3100, 120, 50, width=STROKE_THIN, jitter=4)
-    hand_arrow(d, (4480, 3100), (4150, 2950), width=STROKE, head_len=26)
-    hand_text(canvas, 3600, 2850, "OUTFALL - SPEC", size=50, rotate=-1)
-    hand_text(canvas, 3600, 2910, "END TREATMENT", size=50, rotate=1)
-    hand_text(canvas, 3600, 2970, "(RIP-RAP / FES?)", size=46, rotate=-2)
+    hand_oval(d, 4000, 2900, 120, 50, width=STROKE_THIN, jitter=4)
+    hand_arrow(d, (3880, 2900), (3600, 2750), width=STROKE, head_len=26)
+    hand_text(canvas, 3050, 2620, "OUTFALL - SPEC", size=50, rotate=-1)
+    hand_text(canvas, 3050, 2680, "END TREATMENT", size=50, rotate=1)
+    hand_text(canvas, 3050, 2740, "(RIP-RAP / FES?)", size=46, rotate=-2)
 
     # #9 verify? — ambiguous near force main
     hand_oval(d, 1200, 1100, 100, 40, width=STROKE_THIN, jitter=5)
     hand_text(canvas, 1100, 990, "verify?", size=58, rotate=-3)
 
     # #10 ?? — ambiguous near NE utility cluster
-    hand_oval(d, 4100, 900, 55, 30, width=STROKE_THIN, jitter=3)
-    hand_text(canvas, 4180, 780, "??", size=100, rotate=6)
+    hand_oval(d, 3700, 1500, 55, 30, width=STROKE_THIN, jitter=3)
+    hand_text(canvas, 3780, 1370, "??", size=100, rotate=6)
 
     # Reviewer stamp
     hand_oval(d, 450, 130, 280, 80, width=STROKE+2, jitter=5, rotation_deg=-2)

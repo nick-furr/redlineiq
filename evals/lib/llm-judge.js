@@ -29,6 +29,10 @@ async function singleVote(expectedConcept, extractedMarkups) {
   const response = await client.messages.create({
     model: JUDGE_MODEL,
     max_tokens: 5,
+    system: `You are evaluating whether a redline markup extraction captured a specific reviewer concept.
+Reviewers use engineering shorthand, abbreviations, and OCR may mangle text. Judge by CONCEPTUAL equivalence, not literal text.
+Examples of matches: "DR/SWING BLOCKS EGRESS" = "door swing blocks egress width", "8\" SAN UNDERSIZED" = "8 inch sanitary sewer undersized", "ADD SIGHT TRIANGLE DIMS" = "add sight triangle dimensions".
+Answer "yes" if the concept is substantially present in any entry. Answer "no" only if genuinely absent.`,
     messages: [{
       role: 'user',
       content: `Does the extraction capture the expected concept?

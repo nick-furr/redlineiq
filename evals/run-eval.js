@@ -80,7 +80,7 @@ async function run() {
     const scores = scoreCase(matchResults, allExtracted.length);
     console.log(`  → recall=${scores.recall}  precision=${scores.precision}  specificity=${scores.specificity}\n`);
 
-    results.push({ case_id: caseId, discipline: label.discipline, sheet: label.sheet, scores, match_results: matchResults, extracted_count: allExtracted.length });
+    results.push({ case_id: caseId, discipline: label.discipline, sheet: label.sheet, scores, match_results: matchResults, extracted_count: allExtracted.length, extracted_markups: allExtracted });
   }
 
   const aggregate = {

@@ -37,10 +37,10 @@ def draw(canvas):
     hand_text(canvas, 430, 2400, "GRASS SWALE. FIX.", size=50, rotate=-1)
 
     # #3 Missing high point callout — drainage break with no label
-    hand_oval(d, 2900, 1450, 80, 40, width=STROKE_THIN, jitter=4)
-    hand_arrow(d, (2980, 1430), (3300, 1250), width=STROKE, head_len=26)
-    hand_text(canvas, 3250, 1120, "ADD HP CALLOUT", size=50, rotate=-1)
-    hand_text(canvas, 3250, 1185, "- DRAINAGE BREAK", size=46, rotate=2)
+    hand_oval(d, 2500, 2000, 80, 40, width=STROKE_THIN, jitter=4)
+    hand_arrow(d, (2580, 1980), (2800, 1820), width=STROKE, head_len=26)
+    hand_text(canvas, 2750, 1680, "ADD HP CALLOUT", size=50, rotate=-1)
+    hand_text(canvas, 2750, 1745, "- DRAINAGE BREAK", size=46, rotate=2)
 
     # #4 Catch basin rim elevation discrepancy — CB rim vs pavement grade
     hand_oval(d, 3600, 1850, 70, 35, width=STROKE, jitter=4)
@@ -62,11 +62,11 @@ def draw(canvas):
     hand_underline(d, 2200, 2885, 2680, width=STROKE)
 
     # #7 Retaining wall — designer not identified per general note
-    hand_oval(d, 900, 820, 130, 50, width=STROKE_THIN, jitter=4)
-    hand_arrow(d, (1030, 820), (1350, 700), width=STROKE_THIN, head_len=24)
-    hand_text(canvas, 1320, 570, "RET. WALL - ID", size=48, rotate=-1)
-    hand_text(canvas, 1320, 630, "WALL DESIGNER", size=48, rotate=2)
-    hand_text(canvas, 1320, 690, "PER GEN. NOTE 7", size=44, rotate=-1)
+    hand_oval(d, 1800, 1400, 130, 50, width=STROKE_THIN, jitter=4)
+    hand_arrow(d, (1930, 1400), (2200, 1280), width=STROKE_THIN, head_len=24)
+    hand_text(canvas, 2150, 1100, "RET. WALL - ID", size=48, rotate=-1)
+    hand_text(canvas, 2150, 1160, "WALL DESIGNER", size=48, rotate=2)
+    hand_text(canvas, 2150, 1220, "PER GEN. NOTE 7", size=44, rotate=-1)
 
     # #8 Emergency overflow — no overflow route shown for parking field
     hand_oval(d, 1900, 1300, 100, 45, width=STROKE, jitter=4)
@@ -79,8 +79,8 @@ def draw(canvas):
     hand_text(canvas, 490, 1840, "verify?", size=58, rotate=-3)
 
     # #10 ?? — ambiguous near east property corner
-    hand_oval(d, 4450, 1100, 55, 30, width=STROKE_THIN, jitter=3)
-    hand_text(canvas, 4530, 970, "??", size=100, rotate=7)
+    hand_oval(d, 3800, 2000, 55, 30, width=STROKE_THIN, jitter=3)
+    hand_text(canvas, 3880, 1870, "??", size=100, rotate=7)
 
     # Reviewer stamp
     hand_oval(d, 450, 130, 280, 80, width=STROKE+2, jitter=5, rotation_deg=-2)

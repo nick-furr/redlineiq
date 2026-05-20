@@ -6,7 +6,7 @@ from PIL import Image, ImageDraw
 
 HERE = Path(__file__).parent
 SOURCE_PDF = HERE.parent / "source" / "hoh_warehouse_merchant_street.pdf"
-SOURCE_PAGE = 9   # Sheet 103 Office Floorplan
+SOURCE_PAGE = 8   # Sheet 103 Office Floorplan
 RENDER_DPI = 150  # yields 2550x1650px
 
 sys.path.insert(0, str(HERE.parent / "_lib"))
