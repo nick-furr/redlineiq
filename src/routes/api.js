@@ -37,7 +37,7 @@ import { SAMPLE_ID, isSampleProject, rejectSampleWrite } from '../constants/samp
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SAMPLE_JSON_PATH = path.join(__dirname, '../../samples/demo-extraction.json');
-const SAMPLE_PDF_PATH = path.join(__dirname, '../../samples/demo-plan.pdf');
+const SAMPLE_PDF_PATH = path.join(__dirname, '../../samples/s1-framing.pdf');
 
 let sampleProject = null;
 try {
@@ -359,7 +359,7 @@ router.get('/projects/:id/pdf', async (req, res) => {
       return res.status(404).json({ error: 'Sample PDF not found on disk' });
     }
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'inline; filename="demo-plan.pdf"');
+    res.setHeader('Content-Disposition', 'inline; filename="s1-framing.pdf"');
     res.setHeader('Cache-Control', 'public, max-age=86400');
     return createReadStream(SAMPLE_PDF_PATH).pipe(res);
   }

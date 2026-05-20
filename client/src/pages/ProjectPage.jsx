@@ -57,7 +57,7 @@ function SampleProjectPage() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'sample-demo-plan-markups.csv'
+    a.download = `${SAMPLE_PROJECT.pdf_filename.replace(/\.pdf$/, '')}-markups.csv`
     a.click()
     setTimeout(() => URL.revokeObjectURL(url), 1000)
   }, [items])
@@ -93,7 +93,7 @@ function SampleProjectPage() {
         </div>
       </aside>
       <main className="flex-1 flex flex-col overflow-hidden bg-[var(--bg-1)]">
-        <PdfViewer pdfUrl="/samples/demo-plan.pdf" selectedItem={selectedItem} onExport={exportCSV}/>
+        <PdfViewer pdfUrl={`/samples/${SAMPLE_PROJECT.pdf_filename}`} selectedItem={selectedItem} onExport={exportCSV}/>
         <DetailStrip item={selectedItem} onStatusChange={handleStatusChange} onFlag={handleFlag}/>
       </main>
     </div>
