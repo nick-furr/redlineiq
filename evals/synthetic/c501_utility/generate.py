@@ -87,8 +87,6 @@ def draw(canvas):
     hand_oval(d, 450, 130, 280, 80, width=STROKE+2, jitter=5, rotation_deg=-2)
     hand_text(canvas, 220, 75, "REVIEW SET", size=64, rotate=-3)
     hand_text(canvas, 280, 155, "REV. 1 - 8/30/23", size=34, rotate=-2)
-    hand_text(canvas, 150, 3400, "JK", size=80, rotate=-5)
-    hand_text(canvas, 150, 3490, "5/17", size=40, rotate=-3)
 
 def main():
     print(f"Rendering page {SOURCE_PAGE} at {RENDER_DPI} DPI...")

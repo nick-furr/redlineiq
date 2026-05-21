@@ -1,0 +1,1859 @@
+{
+  "timestamp": "2026-05-21T01:08:42.141Z",
+  "prompt_version": "v0.6-var1",
+  "working_set_only": true,
+  "cases_evaluated": 9,
+  "aggregate": {
+    "recall": 0.618,
+    "precision": 0.621,
+    "specificity": 1.656
+  },
+  "results": [
+    {
+      "case_id": "case_001_c301_site_layout",
+      "discipline": "civil",
+      "sheet": "C-301",
+      "scores": {
+        "recall": 0.5,
+        "precision": 0.5,
+        "specificity": 1.8,
+        "matched": 5,
+        "total_expected": 10,
+        "total_extracted": 10
+      },
+      "match_results": [
+        {
+          "id": "m1",
+          "concept": "FFE elevation corrected from 442.0 to 142.0 — reference sheet C-401",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m2",
+          "concept": "5'-0\" access aisle must be 8' wide for van-accessible stall per ADA",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m3",
+          "concept": "36.7' building clearance dimension — verify with fire apparatus turning template",
+          "category": "verify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m4",
+          "concept": "8' compact parking stall — confirm town zoning allows and cite applicable section",
+          "category": "question",
+          "page": 1,
+          "specificity_target": 1,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m5",
+          "concept": "bare 'verify?' near side setback — no context, intent is unclear",
+          "category": "clarify",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": false
+        },
+        {
+          "id": "m6",
+          "concept": "duplicate PROP. MONOLITHIC CONC. WALK (TYP.) label near front entrance — remove one",
+          "category": "delete",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m7",
+          "concept": "add sight triangle dimensions per MA AOT standard at East Street driveway",
+          "category": "add",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m8",
+          "concept": "bare '??' near property corner dimension — no context, intent is unclear",
+          "category": "clarify",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": false
+        },
+        {
+          "id": "m9",
+          "concept": "24.0' two-way drive aisle crossed out and corrected to 26.0' minimum",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m10",
+          "concept": "69'-11\" building height exceeds 52' max — confirm ZBA waiver granted and attach the decision document",
+          "category": "verify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": false
+        }
+      ],
+      "extracted_count": 10,
+      "extracted_markups": [
+        {
+          "id": "MK-001",
+          "markup_text": "59'-1\" > 52' MAX. WAIVER GRANTED? ATTACH ZBA DECISION.",
+          "markup_type": "clarify",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Upper right portion of site, near building setback",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-002",
+          "markup_text": "8' COMPACT ?? TOWN ALLOW? CITE & ZONING.",
+          "markup_type": "clarify",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Left side of site plan, near parking area",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": true,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-003",
+          "markup_text": "REMOVE DUPLICATE",
+          "markup_type": "delete",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Center-right area of site plan",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-004",
+          "markup_text": "VERIFY w/ FIRE TURNING TEMPLATE",
+          "markup_type": "clarify",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Center area of site plan, near roadway",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-005",
+          "markup_text": "VERIFY?",
+          "markup_type": "clarify",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Left side of site plan, lower area",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": true,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-006",
+          "markup_text": "FFE = 442.0 ?? 30 142.0 - SEE C-401",
+          "markup_type": "clarify",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Lower left area of site plan, with red arrow pointing to elevation",
+          "related_to": null,
+          "confidence": "medium",
+          "ambiguous": true,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-007",
+          "markup_text": "26.0' MIN. SHOW 9.0'",
+          "markup_type": "modify",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Lower center area of site plan, with red circle and arrow",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-008",
+          "markup_text": "5'-0\" AISLE - ADA VAN REQ'S 8' - FIX IT.",
+          "markup_type": "modify",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Lower center area near parking spaces",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-009",
+          "markup_text": "ADD SIGHT TRIANGLE DIMS - MA ADT STD.",
+          "markup_type": "add",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Lower right area near East Street intersection",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-010",
+          "markup_text": "JK",
+          "markup_type": "note",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Lower left corner of drawing",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        }
+      ]
+    },
+    {
+      "case_id": "case_002_c401_grading",
+      "discipline": "civil",
+      "sheet": "C-401",
+      "scores": {
+        "recall": 0.5,
+        "precision": 0.417,
+        "specificity": 1.6,
+        "matched": 5,
+        "total_expected": 10,
+        "total_extracted": 12
+      },
+      "match_results": [
+        {
+          "id": "m1",
+          "concept": "FFE vs finished grade conflict at building entrance — match correction from C-301",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m2",
+          "concept": "Swale slope 0.4% is below 0.5% minimum for grass-lined swale — fix grade",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m3",
+          "concept": "Add high point callout at drainage break in parking field",
+          "category": "add",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m4",
+          "concept": "Catch basin rim elevation — verify flush with finished pavement grade",
+          "category": "verify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m5",
+          "concept": "Proposed grading extends into East Street ROW — add highway permit note",
+          "category": "add",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m6",
+          "concept": "Accessible route cross slope exceeds 2.0% ADA maximum — fix grading",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m7",
+          "concept": "Retaining wall shown without identifying wall designer per general note 7",
+          "category": "add",
+          "page": 1,
+          "specificity_target": 1,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m8",
+          "concept": "Add emergency overflow route for parking field drainage basin",
+          "category": "add",
+          "page": 1,
+          "specificity_target": 1,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m9",
+          "concept": "bare 'verify?' near west drainage swale — intent unclear",
+          "category": "clarify",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": false
+        },
+        {
+          "id": "m10",
+          "concept": "bare '??' near east property corner — no context",
+          "category": "clarify",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": false
+        }
+      ],
+      "extracted_count": 12,
+      "extracted_markups": [
+        {
+          "id": "MK-001",
+          "markup_text": "ADD OVERFLOW ROUTE FOR PARKING FIELD",
+          "markup_type": "add",
+          "drawing_reference": "C-401",
+          "location_on_drawing": "Upper left quadrant, near parking area with red circles marking specific locations",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-002",
+          "markup_text": "RET. WALL - WALL DESIGNER PER GSA NOTE",
+          "markup_type": "note",
+          "drawing_reference": "C-401",
+          "location_on_drawing": "Left side of drawing, along retaining wall alignment with red circles",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-003",
+          "markup_text": "Verify?",
+          "markup_type": "clarify",
+          "drawing_reference": "C-401",
+          "location_on_drawing": "Left side, mid-height with red circle around area",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": true
+        },
+        {
+          "id": "MK-004",
+          "markup_text": "0.4% SLOPE - MIN 0.5% FOR GRASS SWALE",
+          "markup_type": "modify",
+          "drawing_reference": "C-401",
+          "location_on_drawing": "Lower left quadrant with red circle and arrow pointing to grading area",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-005",
+          "markup_text": "FFE vs FG CONFLICT 917% vs 917 CORR",
+          "markup_type": "clarify",
+          "drawing_reference": "C-401",
+          "location_on_drawing": "Lower left area with red circle around elevation conflict",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-006",
+          "markup_text": "% SLOPE 2% MAX 30% FIX SHADE",
+          "markup_type": "modify",
+          "drawing_reference": "C-401",
+          "location_on_drawing": "Lower center area with red circle and arrow",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-007",
+          "markup_text": "READING PERM - ADD PERMIT NOTE",
+          "markup_type": "add",
+          "drawing_reference": "C-401",
+          "location_on_drawing": "Bottom center of drawing with red circle",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-008",
+          "markup_text": "EAST STREET",
+          "markup_type": "note",
+          "drawing_reference": "C-401",
+          "location_on_drawing": "Bottom of drawing with red oval around street identification",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-009",
+          "markup_text": "ADD 10' CALLOUT",
+          "markup_type": "add",
+          "drawing_reference": "C-401",
+          "location_on_drawing": "Center right area with red arrow pointing to dimension location",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-010",
+          "markup_text": "DRAINAGE BREAK",
+          "markup_type": "add",
+          "drawing_reference": "C-401",
+          "location_on_drawing": "Center area with red arrow pointing to drainage feature location",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-011",
+          "markup_text": "CB RIM - VERIFY FLUSH W/ PVMT",
+          "markup_type": "clarify",
+          "drawing_reference": "C-401",
+          "location_on_drawing": "Right side with red circle around catch basin location",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-012",
+          "markup_text": "??",
+          "markup_type": "clarify",
+          "drawing_reference": "C-401",
+          "location_on_drawing": "Right side with red circle, questioning an area or feature",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": true
+        }
+      ]
+    },
+    {
+      "case_id": "case_003_c501_utility",
+      "discipline": "civil",
+      "sheet": "C-501",
+      "scores": {
+        "recall": 0.8,
+        "precision": 0.8,
+        "specificity": 1.75,
+        "matched": 8,
+        "total_expected": 10,
+        "total_extracted": 10
+      },
+      "match_results": [
+        {
+          "id": "m1",
+          "concept": "8\" sanitary sewer undersized — flow calculations require 10\" pipe",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m2",
+          "concept": "Water main crosses storm drain with less than 18\" vertical separation — show separation or add sleeve",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m3",
+          "concept": "Manhole outgoing invert elevation is higher than incoming invert — reverse slope condition",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m4",
+          "concept": "Missing cleanout at building sanitary service connection bend per local code",
+          "category": "add",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m5",
+          "concept": "Fire hydrant 4' from curb — local standard requires 6' minimum, relocate",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m6",
+          "concept": "Verify 1\" domestic water service adequate for total unit count",
+          "category": "verify",
+          "page": 1,
+          "specificity_target": 1,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m7",
+          "concept": "Missing gate valve on water service line before building entry",
+          "category": "add",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m8",
+          "concept": "Storm drain outfall end treatment not specified — add riprap or flared end section callout",
+          "category": "add",
+          "page": 1,
+          "specificity_target": 1,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m9",
+          "concept": "bare 'verify?' near force main — intent unclear",
+          "category": "clarify",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": false
+        },
+        {
+          "id": "m10",
+          "concept": "bare '??' near northeast utility cluster — no context",
+          "category": "clarify",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": false
+        }
+      ],
+      "extracted_count": 10,
+      "extracted_markups": [
+        {
+          "id": "MK-001",
+          "markup_text": "verify?",
+          "markup_type": "clarify",
+          "drawing_reference": "C-501",
+          "location_on_drawing": "Upper left area of drawing, circled in red",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": true,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-002",
+          "markup_text": "8\" SAN - UNDERSIZED CALCS REQ 10\" FIX PIPE SIZE",
+          "markup_type": "modify",
+          "drawing_reference": "C-501",
+          "location_on_drawing": "Left side of drawing with red arrow pointing to pipe location",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-003",
+          "markup_text": "??",
+          "markup_type": "clarify",
+          "drawing_reference": "C-501",
+          "location_on_drawing": "Center-right area of drawing, circled in red",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": true,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-004",
+          "markup_text": "W/STORM XING? SHOW 18\" MIN SEP. OR SLEEVE",
+          "markup_type": "clarify",
+          "drawing_reference": "C-501",
+          "location_on_drawing": "Center-right area of drawing with red arrow pointing to pipe crossing",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-005",
+          "markup_text": "FH-4 FROM CURB MIN 6\"REGD MOVE",
+          "markup_type": "move",
+          "drawing_reference": "C-501",
+          "location_on_drawing": "Lower right area with red arrow and circle",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-006",
+          "markup_text": "ADD SO AT BEND PER LOCAL CODE",
+          "markup_type": "add",
+          "drawing_reference": "C-501",
+          "location_on_drawing": "Lower center area with red arrow",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-007",
+          "markup_text": "OUTFALL - SPEC END TREATMENT (RIP-RAP / FES?)",
+          "markup_type": "clarify",
+          "drawing_reference": "C-501",
+          "location_on_drawing": "Right side of drawing with red circle and arrow",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-008",
+          "markup_text": "INV OUT > INV IN REVERSE SLOPE !",
+          "markup_type": "modify",
+          "drawing_reference": "C-501",
+          "location_on_drawing": "Lower left area with red marking",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-009",
+          "markup_text": "VERIFY # DOM SVC FOR UNIT COUNT",
+          "markup_type": "clarify",
+          "drawing_reference": "C-501",
+          "location_on_drawing": "Bottom center area near East Street label",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-010",
+          "markup_text": "ADD GATE VALVE BEFORE BLDG ENTRY",
+          "markup_type": "add",
+          "drawing_reference": "C-501",
+          "location_on_drawing": "Bottom right area with red arrow",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        }
+      ]
+    },
+    {
+      "case_id": "case_004_hoh_103_office_floorplan",
+      "discipline": "architectural",
+      "sheet": "103",
+      "scores": {
+        "recall": 0.5,
+        "precision": 0.417,
+        "specificity": 1.8,
+        "matched": 5,
+        "total_expected": 10,
+        "total_extracted": 12
+      },
+      "match_results": [
+        {
+          "id": "m1",
+          "concept": "Restroom lavatory clear floor space 28\" — ADA minimum is 30\", fix layout",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m2",
+          "concept": "Conference room door swing blocks corridor egress width — flip door or recess",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m3",
+          "concept": "Reception counter length dimension missing from drawing",
+          "category": "add",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m4",
+          "concept": "Electrical panel clearance shown 3'-0\" — NEC 110.26 requires 3'-6\" minimum at 240V",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m5",
+          "concept": "Verify travel distance from Office 3 to exit is under 200' without sprinkler per IBC",
+          "category": "verify",
+          "page": 1,
+          "specificity_target": 1,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m6",
+          "concept": "Wall type between office and conference room not called out",
+          "category": "add",
+          "page": 1,
+          "specificity_target": 1,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m7",
+          "concept": "Two windows shown in office on this sheet but only one shown on Sheet 105 elevations — reconcile",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m8",
+          "concept": "Storage closet depth is 2'-0\" — not functional, coordinate minimum depth with owner",
+          "category": "note",
+          "page": 1,
+          "specificity_target": 1,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m9",
+          "concept": "bare 'verify?' near mechanical room — intent unclear",
+          "category": "clarify",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": false
+        },
+        {
+          "id": "m10",
+          "concept": "bare '??' near kitchenette area — no context",
+          "category": "clarify",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": false
+        }
+      ],
+      "extracted_count": 12,
+      "extracted_markups": [
+        {
+          "id": "MK-001",
+          "markup_text": "ADD COUNTER LENGTH DIM.",
+          "markup_type": "add",
+          "drawing_reference": "103",
+          "location_on_drawing": "Left side of floor plan, pointing to counter area in reception space",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-002",
+          "markup_text": "DR SWING BLOCKS EGRESS CORR. FLIP OR RECESS",
+          "markup_type": "modify",
+          "drawing_reference": "103",
+          "location_on_drawing": "Center-left of floor plan, red cloud around door between reception and office areas",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-003",
+          "markup_text": "ADD WALL TYPE CALLOUT",
+          "markup_type": "add",
+          "drawing_reference": "103",
+          "location_on_drawing": "Upper center of floor plan, pointing to wall between conference room and mechanical room",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-004",
+          "markup_text": "CONF. 120 X 165 24 PPL HERE 1 ON SHT 105 - RECONCILE",
+          "markup_type": "clarify",
+          "drawing_reference": "103",
+          "location_on_drawing": "Center of floor plan, pointing to conference room",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-005",
+          "markup_text": "Verify?",
+          "markup_type": "clarify",
+          "drawing_reference": "103",
+          "location_on_drawing": "Upper right corner, red cloud around dimension or measurement",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": true
+        },
+        {
+          "id": "MK-006",
+          "markup_text": "PANEL CLEAR. 3'-6\" MIN PER NEC 110.26",
+          "markup_type": "note",
+          "drawing_reference": "103",
+          "location_on_drawing": "Right side of floor plan, pointing to electrical panel area",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-007",
+          "markup_text": "exhaust VERIFY BAD VENT TO SPACE IN CEILING",
+          "markup_type": "clarify",
+          "drawing_reference": "103",
+          "location_on_drawing": "Lower center of floor plan, red cloud around kitchen area",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-008",
+          "markup_text": "CLOSET 2'-0\" DEEP NOT FUNCTIONAL - COORD. W/ OWNER",
+          "markup_type": "clarify",
+          "drawing_reference": "103",
+          "location_on_drawing": "Right side of floor plan, pointing to closet space",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-009",
+          "markup_text": "LAV. CFS = 26\" ADA MIN 30\" FIX LAYOUT",
+          "markup_type": "modify",
+          "drawing_reference": "103",
+          "location_on_drawing": "Lower left of floor plan, pointing to restroom lavatory area",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-010",
+          "markup_text": "??",
+          "markup_type": "clarify",
+          "drawing_reference": "103",
+          "location_on_drawing": "Lower right of floor plan, red cloud around utility room area",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": true
+        },
+        {
+          "id": "MK-011",
+          "markup_text": "exterior",
+          "markup_type": "note",
+          "drawing_reference": "103",
+          "location_on_drawing": "Lower right corner, annotation near building perimeter",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-012",
+          "markup_text": "JK",
+          "markup_type": "note",
+          "drawing_reference": "103",
+          "location_on_drawing": "Bottom left corner below title block",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        }
+      ]
+    },
+    {
+      "case_id": "case_005_hoh_105_elevations",
+      "discipline": "architectural",
+      "sheet": "105",
+      "scores": {
+        "recall": 0.7,
+        "precision": 0.778,
+        "specificity": 1.857,
+        "matched": 7,
+        "total_expected": 10,
+        "total_extracted": 9
+      },
+      "match_results": [
+        {
+          "id": "m1",
+          "concept": "Total building height dimension missing on all elevations — required for permit",
+          "category": "add",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m2",
+          "concept": "Man door header height appears 7'-0\" — IBC 1010.1.1 requires 7'-4\" minimum commercial",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m3",
+          "concept": "Roof pitch visible in profile but not labeled — add pitch callout",
+          "category": "add",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m4",
+          "concept": "Window sill height not dimensioned on west elevation — required for egress analysis",
+          "category": "add",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m5",
+          "concept": "Finish grade line on north elevation — verify matches C-401 grading plan",
+          "category": "verify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m6",
+          "concept": "Metal wall panel type, color, and manufacturer not specified on elevations",
+          "category": "add",
+          "page": 1,
+          "specificity_target": 1,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m7",
+          "concept": "Wainscot labeled 4'-0\" but graphic shows approximately 3'-6\" — which is correct",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m8",
+          "concept": "Overhead door opening size not dimensioned — required for permit",
+          "category": "add",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m9",
+          "concept": "bare 'verify?' near parapet detail reference — intent unclear",
+          "category": "clarify",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": false
+        },
+        {
+          "id": "m10",
+          "concept": "bare '??' near east corner of south elevation — no context",
+          "category": "clarify",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": false
+        }
+      ],
+      "extracted_count": 9,
+      "extracted_markups": [
+        {
+          "id": "MK-001",
+          "markup_text": "ADD BLDG HT DIM.",
+          "markup_type": "add",
+          "drawing_reference": "105",
+          "location_on_drawing": "Upper left area above south elevation, connected to cloud",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-002",
+          "markup_text": "DR HDR 7'-0\" - MIN 7'-4\" IBC 1010.1.1",
+          "markup_type": "clarify",
+          "drawing_reference": "105",
+          "location_on_drawing": "Upper center area above south elevation",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-003",
+          "markup_text": "ADD PITCH CALLOUT (~4:12)",
+          "markup_type": "add",
+          "drawing_reference": "105",
+          "location_on_drawing": "Upper center-right area above south elevation, connected to cloud over roof",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-004",
+          "markup_text": "SPEC PANEL MFR, TYPE & COLOR",
+          "markup_type": "clarify",
+          "drawing_reference": "105",
+          "location_on_drawing": "Upper right area above south elevation, connected to cloud over wall panel",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-005",
+          "markup_text": "WAINSCOT - LABEL 4'-0\" GRAPHIC 3'-6\" ?",
+          "markup_type": "clarify",
+          "drawing_reference": "105",
+          "location_on_drawing": "Left side of south elevation, connected to lower wall area",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": true
+        },
+        {
+          "id": "MK-006",
+          "markup_text": "OHD - ADD OPENING DIMS",
+          "markup_type": "add",
+          "drawing_reference": "105",
+          "location_on_drawing": "Center-right of south elevation, connected to overhead door opening",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-007",
+          "markup_text": "place address numbers on building",
+          "markup_type": "add",
+          "drawing_reference": "105",
+          "location_on_drawing": "Right side of south elevation",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-008",
+          "markup_text": "ADD STEEL ROOM - EGRESS ANALYSIS - VERIFY ?",
+          "markup_type": "clarify",
+          "drawing_reference": "105",
+          "location_on_drawing": "Connected to cloud on west elevation roof area",
+          "related_to": null,
+          "confidence": "medium",
+          "ambiguous": true
+        },
+        {
+          "id": "MK-009",
+          "markup_text": "FG LINE - VERIFY MATCHES C-401",
+          "markup_type": "clarify",
+          "drawing_reference": "105",
+          "location_on_drawing": "Lower left corner near title block, connected to cloud",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        }
+      ]
+    },
+    {
+      "case_id": "case_006_bath01_elevation",
+      "discipline": "architectural",
+      "sheet": "BATH 01-E",
+      "scores": {
+        "recall": 0.308,
+        "precision": 0.364,
+        "specificity": 1.25,
+        "matched": 4,
+        "total_expected": 13,
+        "total_extracted": 11
+      },
+      "match_results": [
+        {
+          "id": "m1",
+          "concept": "arc drawn across top — spring points and high points on all arched elements must match each other",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m2",
+          "concept": "X marks on arched top sections — arched elements or spring point locations flagged for revision",
+          "category": "clarify",
+          "page": 1,
+          "specificity_target": 1,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m3",
+          "concept": "annotation written over center door — appears to read 'B2°U' or similar, possibly door swing or hardware spec",
+          "category": "clarify",
+          "page": 1,
+          "specificity_target": 1,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m4",
+          "concept": "keep splash level across — backsplash height to be consistent across full vanity elevation",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m5",
+          "concept": "change to counter — material or product change callout in left cabinet area, paired with splash note",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m6",
+          "concept": "hatched area on left mirror — mirror flagged for removal or revision",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 1,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m7",
+          "concept": "hatched area on right mirror — mirror flagged for removal or revision",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 1,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m8",
+          "concept": "hatched area on left vanity base cabinets — base flagged for removal or revision",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 1,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m9",
+          "concept": "hatched area on right vanity base cabinets — base flagged for removal or revision",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 1,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m10",
+          "concept": "countertop thickness is 1½\" — coordinate with finish schedule",
+          "category": "verify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m11",
+          "concept": "multiple ½\" and 1½\" dimension callouts added along bottom edge of elevation",
+          "category": "add",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m12",
+          "concept": "bare notation near lower left vanity — reads approximately '9pm U' or '9mm U', intent unclear",
+          "category": "clarify",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": true
+        },
+        {
+          "id": "m13",
+          "concept": "circled dimension on left wall — value circled in red, correction or verification needed, no explicit replacement given",
+          "category": "verify",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": false
+        }
+      ],
+      "extracted_count": 11,
+      "extracted_markups": [
+        {
+          "id": "MK-001",
+          "markup_text": "Spring front & back front -> check all widths",
+          "markup_type": "clarify",
+          "drawing_reference": "BATH 01 - E",
+          "location_on_drawing": "Upper portion of drawing with red cloud encompassing both vanity areas",
+          "related_to": null,
+          "confidence": "medium",
+          "ambiguous": true,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-002",
+          "markup_text": "-6 1/2\"",
+          "markup_type": "dimension",
+          "drawing_reference": "BATH 01 - E",
+          "location_on_drawing": "Left side of drawing, vertical dimension marking",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-003",
+          "markup_text": "6\" x 6\"",
+          "markup_type": "dimension",
+          "drawing_reference": "BATH 01 - E",
+          "location_on_drawing": "Central area above middle door/opening",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-004",
+          "markup_text": "X",
+          "markup_type": "note",
+          "drawing_reference": "BATH 01 - E",
+          "location_on_drawing": "Multiple X marks across the top of both vanity mirror areas",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": true,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-005",
+          "markup_text": "change front & drawer",
+          "markup_type": "modify",
+          "drawing_reference": "BATH 01 - E",
+          "location_on_drawing": "Left vanity area, annotation pointing to cabinet drawers",
+          "related_to": null,
+          "confidence": "medium",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-006",
+          "markup_text": "1mm U",
+          "markup_type": "dimension",
+          "drawing_reference": "BATH 01 - E",
+          "location_on_drawing": "Left side of drawing, near vanity cabinet",
+          "related_to": null,
+          "confidence": "medium",
+          "ambiguous": true,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-007",
+          "markup_text": "1/2\"",
+          "markup_type": "dimension",
+          "drawing_reference": "BATH 01 - E",
+          "location_on_drawing": "Bottom left dimension line",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-008",
+          "markup_text": "1 1/2\"",
+          "markup_type": "dimension",
+          "drawing_reference": "BATH 01 - E",
+          "location_on_drawing": "Bottom center-left dimension line",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-009",
+          "markup_text": "1/2\"",
+          "markup_type": "dimension",
+          "drawing_reference": "BATH 01 - E",
+          "location_on_drawing": "Bottom center-right dimension line",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-010",
+          "markup_text": "1/2\"",
+          "markup_type": "dimension",
+          "drawing_reference": "BATH 01 - E",
+          "location_on_drawing": "Bottom right dimension line",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-011",
+          "markup_text": "Hit is wainscotg thickness coordinate w/ finish",
+          "markup_type": "note",
+          "drawing_reference": "BATH 01 - E",
+          "location_on_drawing": "Bottom left corner of drawing, below dimension lines",
+          "related_to": null,
+          "confidence": "low",
+          "ambiguous": true,
+          "raw_interpretation": "Hit is wainscotg thickness coordinate w/ finish"
+        }
+      ]
+    },
+    {
+      "case_id": "case_008_e100_electrical",
+      "discipline": "electrical",
+      "sheet": "E100",
+      "scores": {
+        "recall": 0.625,
+        "precision": 0.714,
+        "specificity": 1.6,
+        "matched": 5,
+        "total_expected": 8,
+        "total_extracted": 7
+      },
+      "match_results": [
+        {
+          "id": "m1",
+          "concept": "GFCI protection missing at wet location — NEC 210.8(B) requires GFCI within 6 feet of sink",
+          "category": "code_violation",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m2",
+          "concept": "20-amp circuit required at break room countertop — update panel schedule",
+          "category": "design_issue",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m3",
+          "concept": "Exit sign missing at egress door — required per IBC 1013",
+          "category": "code_violation",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m4",
+          "concept": "Fixture type on plan conflicts with fixture schedule — coordinate",
+          "category": "coordination_issue",
+          "page": 1,
+          "specificity_target": 1,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m5",
+          "concept": "Conduit routing conflicts with plumbing — coordinate with plumbing plan",
+          "category": "coordination_issue",
+          "page": 1,
+          "specificity_target": 1,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m6",
+          "concept": "Panel schedule not updated to reflect new circuits — add new loads",
+          "category": "missing_information",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m7",
+          "concept": "Ambiguous mark near switch — verify",
+          "category": "ambiguous",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": false
+        },
+        {
+          "id": "m8",
+          "concept": "Ambiguous mark near junction box — unclear intent",
+          "category": "ambiguous",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": false
+        }
+      ],
+      "extracted_count": 7,
+      "extracted_markups": [
+        {
+          "id": "MK-001",
+          "markup_text": "EXIT SIGN MISSING AT EGRESS PATH - ADD W BATTERY BCK",
+          "markup_type": "add",
+          "drawing_reference": "E100",
+          "location_on_drawing": "Upper portion of drawing, with red cloud circling area above first row of bathroom stalls",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-002",
+          "markup_text": "20A CIRCUIT REQ'D HERE - UPDATE PANEL SCHEDULE",
+          "markup_type": "modify",
+          "drawing_reference": "E100",
+          "location_on_drawing": "Left side, pointing to electrical panel with red cloud around fixture type 2B outlet",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-003",
+          "markup_text": "FIXTURE TYPE 2B - 6 OUTLETS W/ SPEC SEE: AS600 - VERIFY",
+          "markup_type": "clarify",
+          "drawing_reference": "E100",
+          "location_on_drawing": "Left side, with red cloud around electrical fixture on left wall",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-004",
+          "markup_text": "PANEL SCHED. NOT UPDATED FOR NEW CIRCUITS",
+          "markup_type": "modify",
+          "drawing_reference": "E100",
+          "location_on_drawing": "Center-right area, with red arrow pointing to middle bathroom area",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-005",
+          "markup_text": "OUTPUT ROOM CONFLICTS W/ PLUMBING - COORD.",
+          "markup_type": "clarify",
+          "drawing_reference": "E100",
+          "location_on_drawing": "Center area, with red cloud around middle bathroom stall area",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-006",
+          "markup_text": "verify?",
+          "markup_type": "clarify",
+          "drawing_reference": "E100",
+          "location_on_drawing": "Lower left, with red cloud around first floor restroom area",
+          "related_to": null,
+          "confidence": "medium",
+          "ambiguous": true
+        },
+        {
+          "id": "MK-007",
+          "markup_text": "??",
+          "markup_type": "clarify",
+          "drawing_reference": "E100",
+          "location_on_drawing": "Bottom center, with red cloud near section marker for 2nd floor",
+          "related_to": null,
+          "confidence": "low",
+          "ambiguous": true
+        }
+      ]
+    },
+    {
+      "case_id": "case_009_m101_mechanical",
+      "discipline": "mechanical",
+      "sheet": "M101",
+      "scores": {
+        "recall": 1,
+        "precision": 0.889,
+        "specificity": 1.25,
+        "matched": 8,
+        "total_expected": 8,
+        "total_extracted": 9
+      },
+      "match_results": [
+        {
+          "id": "m1",
+          "concept": "EF-1 exhaust fan rated 75 CFM is undersized — restroom requires 150 CFM minimum per IMC",
+          "category": "code_violation",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m2",
+          "concept": "Supply diffuser conflicts with light fixture location — coordinate with electrical",
+          "category": "coordination_issue",
+          "page": 1,
+          "specificity_target": 1,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m3",
+          "concept": "Backdraft damper required at duct penetration through rated wall — add per IMC 607",
+          "category": "code_violation",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m4",
+          "concept": "Access panel not shown for exhaust fan — required for maintenance access",
+          "category": "missing_information",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m5",
+          "concept": "Horizontal duct pitched back toward unit — re-pitch to drain away",
+          "category": "design_issue",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m6",
+          "concept": "Return air path not shown — verify or add transfer grille",
+          "category": "missing_information",
+          "page": 1,
+          "specificity_target": 1,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m7",
+          "concept": "Ambiguous mark near diffuser — verify",
+          "category": "ambiguous",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": true
+        },
+        {
+          "id": "m8",
+          "concept": "Ambiguous mark near duct run — unclear intent",
+          "category": "ambiguous",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": true
+        }
+      ],
+      "extracted_count": 9,
+      "extracted_markups": [
+        {
+          "id": "MK-001",
+          "markup_text": "DIFFUSER CONFLICTS W/ LIGHT FIXTURE - COORD W/ ELEC.",
+          "markup_type": "clarify",
+          "drawing_reference": "M101",
+          "location_on_drawing": "Upper center area, with red cloud around diffuser location in third floor group toilet plan",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-002",
+          "markup_text": "EF-1: 78 CFM UNDERSIZED - CALC RECS 150 CFM MIN",
+          "markup_type": "modify",
+          "drawing_reference": "M101",
+          "location_on_drawing": "Left side, with red cloud around exhaust fan in third floor group toilet plan",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-003",
+          "markup_text": "BKOFT DAMPER REQD AT RATED WALL PENETRATION",
+          "markup_type": "add",
+          "drawing_reference": "M101",
+          "location_on_drawing": "Right side, with red cloud around ductwork penetration in second floor group toilet plan",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-004",
+          "markup_text": "DUCT PITCHED BACK TOWARD UNIT - MUST PITCH TO EX",
+          "markup_type": "modify",
+          "drawing_reference": "M101",
+          "location_on_drawing": "Center area, with arrow pointing to ductwork in second floor group toilet plan",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-005",
+          "markup_text": "RETURN AIR PATH SHOWN - ADD TRANSFER GRILLE",
+          "markup_type": "add",
+          "drawing_reference": "M101",
+          "location_on_drawing": "Right side, with red cloud and arrow pointing to return air path in first floor group toilet plan",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-006",
+          "markup_text": "ADD ACCESS PANEL FOR EF-1 ABOVE CEILING - MIN 24X24",
+          "markup_type": "add",
+          "drawing_reference": "M101",
+          "location_on_drawing": "Lower left area, with red cloud around air distribution schedule",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-007",
+          "markup_text": "Verify?",
+          "markup_type": "clarify",
+          "drawing_reference": "M101",
+          "location_on_drawing": "Lower left area, with red cloud in third floor group toilet renovation plan",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-008",
+          "markup_text": "??",
+          "markup_type": "clarify",
+          "drawing_reference": "M101",
+          "location_on_drawing": "Lower center area, with red cloud in second floor group toilet renovation plan",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": true
+        },
+        {
+          "id": "MK-009",
+          "markup_text": "JB",
+          "markup_type": "note",
+          "drawing_reference": "M101",
+          "location_on_drawing": "Bottom left corner",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        }
+      ]
+    },
+    {
+      "case_id": "case_010_s1_framing",
+      "discipline": "structural",
+      "sheet": "S1",
+      "scores": {
+        "recall": 0.625,
+        "precision": 0.714,
+        "specificity": 2,
+        "matched": 5,
+        "total_expected": 8,
+        "total_extracted": 7
+      },
+      "match_results": [
+        {
+          "id": "m1",
+          "concept": "W12x26 beam undersized for 28-foot span — calculations require W16x31 minimum",
+          "category": "design_issue",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m2",
+          "concept": "Connection detail reference missing at ridge beam to column — add detail reference",
+          "category": "missing_information",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m3",
+          "concept": "Joist bearing condition at exterior wall not detailed — add detail",
+          "category": "missing_information",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m4",
+          "concept": "Midspan blocking missing — required for lateral stability of joists",
+          "category": "code_violation",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m5",
+          "concept": "Hip rafter size not called out on plan — add member size",
+          "category": "missing_information",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m6",
+          "concept": "Ledger-to-wall attachment detail missing — add detail with bolt pattern",
+          "category": "missing_information",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m7",
+          "concept": "Ambiguous mark near purlin connection — verify",
+          "category": "ambiguous",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": false
+        },
+        {
+          "id": "m8",
+          "concept": "Ambiguous mark near valley rafter — unclear intent",
+          "category": "ambiguous",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": false
+        }
+      ],
+      "extracted_count": 7,
+      "extracted_markups": [
+        {
+          "id": "MK-001",
+          "markup_text": "JOIST BEARING AT EXT. WALL NOT SHOWN - ADD DTL",
+          "markup_type": "add",
+          "drawing_reference": "S4.20",
+          "location_on_drawing": "Left side of drawing, red cloud around exterior wall area with arrow pointing to joist bearing location",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-002",
+          "markup_text": "CONN. DETAIL MISSING AT RIDGE BEAM TO 2PL - ADD REF.",
+          "markup_type": "add",
+          "drawing_reference": "S4.20",
+          "location_on_drawing": "Upper center of drawing, red cloud around ridge beam connection area",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-003",
+          "markup_text": "W12x26 UNDERSIZED FOR 26' SPAN - CHK. REQ'D W/G.T.",
+          "markup_type": "clarify",
+          "drawing_reference": "S4.20",
+          "location_on_drawing": "Center left area of drawing, red cloud around beam designation",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-004",
+          "markup_text": "HIP RAFTER SIZE NOT CALLED OUT - ADD MEMBER SIZE",
+          "markup_type": "add",
+          "drawing_reference": "S4.20",
+          "location_on_drawing": "Right center of drawing, red cloud around hip rafter area",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-005",
+          "markup_text": "MIDSPAN BLOCKING MISSING - REQ'D FOR LATERAL STABILITY",
+          "markup_type": "add",
+          "drawing_reference": "S4.20",
+          "location_on_drawing": "Lower center of drawing, red cloud around joist span area",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-006",
+          "markup_text": "LEDGER ATTACH. DETAIL MISSING - ADD W/ BOLT PATTERN",
+          "markup_type": "add",
+          "drawing_reference": "S4.20",
+          "location_on_drawing": "Lower left of drawing, red cloud around ledger connection area",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-007",
+          "markup_text": "VERIFY?",
+          "markup_type": "clarify",
+          "drawing_reference": "S4.20",
+          "location_on_drawing": "Bottom of drawing, red circle around area requiring verification",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        }
+      ]
+    }
+  ]
+}

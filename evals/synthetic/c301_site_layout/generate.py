@@ -124,10 +124,6 @@ def draw_redlines(canvas):
     hand_text(canvas, 220, 75, "REVIEW SET", size=64, rotate=-3)
     hand_text(canvas, 280, 155, "REV. 1 - 8/30/23", size=34, rotate=-2)
 
-    # Reviewer initials
-    hand_text(canvas, 150, 3400, "JK", size=80, rotate=-5)
-    hand_text(canvas, 150, 3490, "5/17", size=40, rotate=-3)
-
 
 def main():
     print(f"Rendering page {SOURCE_PAGE} at {RENDER_DPI} DPI...")
