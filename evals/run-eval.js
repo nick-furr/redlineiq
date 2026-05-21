@@ -3,18 +3,19 @@
  * RedlineIQ eval harness.
  *
  * Usage:
- *   node evals/run-eval.js                         # all PDFs in pdfs/
+ *   node evals/run-eval.js                         # all PDFs in pdfs/, uses prompts/active.md
  *   node evals/run-eval.js --working-set           # exclude holdout/
- *   node evals/run-eval.js --prompt v0.5           # tag run with prompt version
+ *   node evals/run-eval.js --prompt v0.7           # loads prompts/v0.7.md if exists, else uses
+ *                                                  # active.md and the tag is label-only
  *
- * Each run writes to evals/runs/YYYY-MM-DD_<version>.json + .html
+ * Each run writes to evals/runs/YYYY-MM-DD_<tag>.json + .html
  */
 import 'dotenv/config';
 import { readdir, readFile, writeFile, mkdir, access } from 'fs/promises';
-import { join } from 'path';
+import { existsSync } from 'fs';
+import { join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { pdfToImages } from '../src/utils/pdf-converter.js';
-import { extractMarkupsFromPage } from '../src/services/extraction-service.js';
 import { judgeMarkup } from './lib/llm-judge.js';
 import { scoreCase } from './lib/score.js';
 
@@ -23,11 +24,25 @@ const PDFS_DIR    = join(HERE, 'pdfs');
 const LABELS_DIR  = join(HERE, 'labels');
 const HOLDOUT_DIR = join(HERE, 'holdout');
 const RUNS_DIR    = join(HERE, 'runs');
+const REPO_ROOT   = resolve(HERE, '..');
 
 const args = process.argv.slice(2);
 const workingSetOnly = args.includes('--working-set');
 const promptIdx = args.indexOf('--prompt');
 const promptVersion = promptIdx !== -1 ? args[promptIdx + 1] : 'current';
+
+// If --prompt names a file under prompts/, point extraction-service.js at it via env var
+// before the module is dynamically imported. Otherwise fall back to prompts/active.md and
+// treat the tag as a label only (preserves the variance-baseline pattern of v0.6-var1, etc).
+const candidatePromptFile = `prompts/${promptVersion}.md`;
+if (existsSync(resolve(REPO_ROOT, candidatePromptFile))) {
+  process.env.REDLINEIQ_PROMPT_FILE = candidatePromptFile;
+  console.log(`Prompt source: ${candidatePromptFile}`);
+} else if (promptIdx !== -1) {
+  console.log(`Prompt source: prompts/active.md (no prompts/${promptVersion}.md found; --prompt tag is label-only)`);
+}
+
+const { extractMarkupsFromPage } = await import('../src/services/extraction-service.js');
 
 async function run() {
   await mkdir(RUNS_DIR, { recursive: true });

@@ -14,6 +14,9 @@
  *   - Ambiguity flagging for unclear intent
  */
 
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
 import Anthropic from '@anthropic-ai/sdk';
 import { config } from '../config/index.js';
 import { MARKUP_TYPES, CONFIDENCE } from '../models/markup.js';
@@ -22,56 +25,24 @@ import langfuse from './langfuse.js';
 const client = new Anthropic({ apiKey: config.anthropic.apiKey });
 
 // ─── The Extraction Prompt ─────────────────────────────────────
-// This is the product's core IP. Every word has been tested.
+// Loaded from prompts/active.md at module import. Version + history
+// live alongside the prompt file. See prompts/CHANGELOG.md.
 
-const SYSTEM_PROMPT = `You are an expert architectural and engineering drawing analyst specializing in interpreting redline markup annotations on construction drawings.
+// Defaults to prompts/active.md. Override at invocation with REDLINEIQ_PROMPT_FILE=prompts/v0.6.md
+// so the eval harness can A/B compare versions without swapping active.md.
+const PROMPT_PATH = resolve(
+  dirname(fileURLToPath(import.meta.url)),
+  '../../',
+  process.env.REDLINEIQ_PROMPT_FILE || 'prompts/active.md'
+);
 
-Your task is to extract EVERY redline markup annotation from the provided drawing image and return them as structured JSON.
+function loadPrompt() {
+  const raw = readFileSync(PROMPT_PATH, 'utf-8');
+  const body = raw.replace(/^---\n[\s\S]*?\n---\n/, '').trim();
+  return body.replace(/\{\{MARKUP_TYPES\}\}/g, Object.values(MARKUP_TYPES).join(', '));
+}
 
-## Rules
-
-1. **Every annotation is its own item.** If an arrow points to text, the text is one item. If a cloud circles an area, the cloud is one item. If there's a separate note explaining the cloud, that's another item linked via "related_to".
-
-2. **Cloud + text = one item.** When a revision cloud (or circle, or bubble) highlights an area AND there is a separate text annotation explaining what to do, emit ONLY ONE entry for the text annotation. Describe the cloud's position inside the "location_on_drawing" field (e.g., "Red cloud around joist bearing at exterior wall, left side"). Do NOT emit a standalone entry for the cloud itself — clouds with no text are pure locators, not action items. The exception is when a cloud has no associated text at all: then emit one entry describing the cloud and set "ambiguous" to true since the reviewer's intent is unclear.
-
-3. **Handwriting handling:**
-   - If text is completely unreadable: set markup_text to "[illegible]", confidence to "low"
-   - If partially readable: set markup_text to your best interpretation with "[partially illegible]" prefix, include "raw_interpretation" with the literal characters you can make out, confidence to "low"
-   - If readable but meaning is unclear: set text normally, confidence to "medium", ambiguous to true
-
-4. **Markup types:** Classify each annotation as one of: ${Object.values(MARKUP_TYPES).join(', ')}. Use "note" as fallback if unclear.
-
-5. **Location descriptions:** Be specific about where on the drawing each markup appears. Reference grid lines, room names, elevation markers, or relative position (e.g., "upper-left quadrant, near the kitchen island").
-
-6. **Drawing reference:** Identify the sheet number/name from title blocks, headers, or detail references on the drawing (e.g., "A-201", "C-3.1", "BATH 01 - E"). Look for circled numbers with titles, title block text at the bottom or right edge, or any sheet identification visible on the page. If multiple detail references exist (e.g., detail 3: "BATH 01 - E"), use the primary one. Only use "Unknown" if absolutely no identifying text exists anywhere on the drawing.
-
-7. **Be exhaustive — especially with short annotations.** Do not skip small or single-word annotations: standalone "?", "??", "verify?", "OK?", "ck", "TYP?", floating check marks, dimension corrections, or short arrows. These short marks are usually questions the reviewer wants answered and MUST appear in the output. When you see a "?" or short query word in red, emit it as a markup with confidence "low" and ambiguous true so the drafter sees it in the flagged queue. Never silently drop short annotations because they look incomplete — that incompleteness IS the signal.
-
-8. **Exclude non-content marks.** Skip reviewer stamps ("REVIEW SET", "ISSUED FOR REVIEW"), initials blocks, date stamps, and signature areas — these identify the reviewer but contain no actionable instruction.
-
-## Response Format
-
-Respond with ONLY valid JSON, no markdown formatting, no backticks. Use this exact structure:
-
-{
-  "page_number": <integer>,
-  "drawing_reference": "<sheet number>",
-  "drawing_title": "<title from title block or best description>",
-  "total_markups_found": <integer>,
-  "markups": [
-    {
-      "id": "MK-<three digit number starting from 001>",
-      "markup_text": "<the text/instruction content>",
-      "markup_type": "<one of the allowed types>",
-      "drawing_reference": "<sheet number>",
-      "location_on_drawing": "<specific location description>",
-      "related_to": "<ID of related markup or null>",
-      "confidence": "<high|medium|low>",
-      "ambiguous": <true|false>,
-      "raw_interpretation": "<optional: literal characters for low-confidence items>"
-    }
-  ]
-}`;
+const SYSTEM_PROMPT = loadPrompt();
 
 /**
  * Extract markups from a single page image.
@@ -105,7 +76,9 @@ export async function extractMarkupsFromPage(pageImage, context = {}) {
     const response = await client.messages.create({
       model: config.anthropic.model,
       max_tokens: 8192,
-      system: SYSTEM_PROMPT,
+      system: [
+        { type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } },
+      ],
       messages: [
         {
           role: 'user',
@@ -142,11 +115,22 @@ export async function extractMarkupsFromPage(pageImage, context = {}) {
     const result = JSON.parse(rawText);
     const normalized = normalizeExtractionResult(result, pageNumber);
 
+    const u = response.usage;
+    const cacheRead = u.cache_read_input_tokens ?? 0;
+    const cacheWrite = u.cache_creation_input_tokens ?? 0;
+    if (cacheRead || cacheWrite) {
+      console.log(
+        `  cache: read=${cacheRead} write=${cacheWrite} fresh_input=${u.input_tokens} output=${u.output_tokens}`
+      );
+    }
+
     generation?.end({
       output: rawText,
       usage: {
-        input: response.usage.input_tokens,
-        output: response.usage.output_tokens,
+        input: u.input_tokens,
+        output: u.output_tokens,
+        cache_read: cacheRead,
+        cache_write: cacheWrite,
       },
       metadata: {
         markups_found: normalized.markups.length,
