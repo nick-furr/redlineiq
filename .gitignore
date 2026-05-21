@@ -16,3 +16,10 @@ evals/synthetic/source/
 # Generated sheet outputs (regenerate with generate.py)
 evals/synthetic/*/output.pdf
 evals/synthetic/*/output.png
+
+# Real-world redline PDFs and labels from collaborators — may contain client/proprietary
+# content. Convention: case_R* for working-set, case_HR* for holdout. Local-only, never push.
+evals/pdfs/case_R*.pdf
+evals/labels/case_R*.json
+evals/holdout/case_HR*.pdf
+evals/labels/case_HR*.json

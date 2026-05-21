@@ -39,6 +39,13 @@ src/
 ├── routes/api.js               # REST API endpoints
 ├── utils/pdf-converter.js      # PDF → image conversion
 └── scripts/extract-cli.js      # CLI tool for standalone extraction
+
+prompts/
+├── active.md                   # Runtime prompt (loaded by extraction-service.js)
+├── v0.6.md, v0.7.md            # Versioned snapshots with YAML frontmatter
+└── CHANGELOG.md                # Prompt iteration history with hypothesis/delta/rationale
+
+docs/decisions/                 # Architecture Decision Records (Nygard format)
 ```
 
 ### Data model
@@ -128,7 +135,8 @@ curl http://localhost:3001/api/projects/{id}/summary
 | Variable | Required | Default | Description |
 |---|---|---|---|
 | `ANTHROPIC_API_KEY` | Yes | — | Your Anthropic API key |
-| `CLAUDE_MODEL` | No | `claude-sonnet-4-20250514` | Claude model version to use for extraction. |
+| `CLAUDE_MODEL` | No | `claude-sonnet-4-0` | Claude model version for extraction. |
+| `REDLINEIQ_PROMPT_FILE` | No | `prompts/active.md` | Override the runtime prompt source. Used by the eval harness to A/B compare versions. |
 | `DATABASE_PATH` | No | `./data/redlineiq.db` | Path to SQLite file. On Render/Railway, point this at a persistent volume (e.g. `/var/data/redlineiq.db`) so data survives redeploys. |
 | `DEMO_MODE` | No | `false` | Set to `true` to require `X-Demo-Key` header on POST /extract. GET routes stay public. |
 | `DEMO_KEY` | If DEMO_MODE=true | — | The key callers must supply in the `X-Demo-Key` request header to run extractions. |
@@ -148,13 +156,19 @@ curl http://localhost:3001/api/projects/{id}/summary
 - **SQLite over JSON file persistence** — the JSON approach required reading and rewriting the entire dataset on every checklist update. SQLite gives row-level writes, survives concurrent requests cleanly, and needs no separate database service to operate.
 - **Docker deploy to install system deps** — pdf2pic delegates PDF rendering to GraphicsMagick and Ghostscript, which are OS-level binaries. The default Render Node runtime doesn't include them. A Dockerfile makes the dependency explicit and reproducible.
 - **Per-IP rate limiting with a 10-page cap** — each extraction page hits the Claude Vision API. Without limits, a single user could run up significant API costs on a public demo. The extraction endpoint is capped at 3 jobs/hour per IP; uploads are rejected above 10 pages.
+- **Prompt loaded from `prompts/active.md` at startup** — the system prompt isn't hardcoded. The eval harness uses `REDLINEIQ_PROMPT_FILE` to point at a specific version when comparing head-to-head, so prompt iteration doesn't need a code change. System prompt has `cache_control: ephemeral` set; whether it caches depends on hitting the model's minimum token threshold (verify via `usage.cache_read_input_tokens`).
+
+Longer-form decisions live in [`docs/decisions/`](docs/decisions/). See [`prompts/CHANGELOG.md`](prompts/CHANGELOG.md) for prompt iteration history.
 
 ## Eval harness
 
 RedlineIQ includes a structured eval harness for measuring extraction quality against synthetic redlined drawings.
 
 ```bash
-# Run against all labeled PDFs
+# Score the current active prompt against the working set
+node evals/run-eval.js --prompt v0.7 --working-set
+
+# Compare a different version head-to-head — loads prompts/v0.6.md if it exists
 node evals/run-eval.js --prompt v0.6 --working-set
 ```
 
@@ -166,14 +180,16 @@ Outputs a JSON run file and an HTML report to `evals/runs/`. Each run scores thr
 | **Precision** | Fraction of extracted markups that matched something expected | ≥ 0.70 |
 | **Specificity** | Avg specificity weight of matched items (rewards detail) | ≥ 1.50 |
 
-**Current scores (v0.6):** recall=0.72 · precision=0.55 · specificity=1.58
+**Current scores (v0.7, 9 cases):** recall=0.687 · precision=0.730 · specificity=1.521
 
-Prompt versions are tracked in [`evals/PROMPT_CHANGELOG.md`](evals/PROMPT_CHANGELOG.md). Judgment uses Claude Haiku with a 3-vote majority to reduce variance, matching by conceptual equivalence rather than literal text.
+Prompt versions are tracked in [`prompts/CHANGELOG.md`](prompts/CHANGELOG.md). The active prompt is [`prompts/active.md`](prompts/active.md), loaded by `extraction-service.js` at startup. Judgment uses Claude Haiku with a 3-vote majority to reduce variance, matching by conceptual equivalence rather than literal text.
+
+Variance baseline (3x repeat runs of v0.6) established σ ≈ 0.02 on aggregate metrics — any future delta over ~5 points is signal, not noise.
 
 ## Next steps
 
-- [ ] Eval set expansion — synthesize 10 more sheets (MEP, structural, misc) to reach 15-case working set
-- [ ] Precision improvement — v0.6 at 0.55, target ≥ 0.70; C-401 mark-splitting is the main driver
+- [ ] Recall improvement — v0.7 at 0.687, target ≥ 0.80; bare "verify?" / "??" markers consistently missed across all runs
+- [ ] Real-markup integration — eval is 8/9 synthetic; case_006 (the one real drawing) sits at recall=0.31 across every prompt version, exposing synthetic-only ceiling
 - [ ] Clarification workflow — engineer response loop for ambiguous markups (currently auto-flagged but no reply path)
 - [ ] PDF export — checklist is exportable as CSV today; a formatted PDF report for handoff is not yet implemented
-- [ ] CI — `npm test` on every PR; manual-trigger eval run via `workflow_dispatch`
+- [ ] Architecture decisions — 2 ADRs written ([`docs/decisions/`](docs/decisions/)), 3 more queued
