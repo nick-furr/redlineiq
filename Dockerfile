@@ -34,6 +34,7 @@ RUN cd client && npm run build
 # ── Application source ───────────────────────────────────────────
 COPY src/ ./src/
 COPY samples/ ./samples/
+COPY prompts/ ./prompts/
 
 # Pre-create runtime write directories so the app doesn't need to mkdir on
 # first request (initProjectStore and db.js will also create them, but this
