@@ -1,6 +1,6 @@
 # RedlineIQ
 
-**[Live demo →](https://redlineiq-app.onrender.com)**
+**[Live demo →](https://redlineiq-app.onrender.com)** &nbsp;·&nbsp; **[Walkthrough video →](https://www.loom.com/share/db6edb1fedf340e3a901dd07fc224867)**
 Free-tier deploy — first request may take 30–60s to wake up.
 
 ![RedlineIQ screenshot](docs/screenshot.png)
