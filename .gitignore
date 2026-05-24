@@ -34,5 +34,8 @@ evals/synthetic/previews/unlv_structural/
 # Generated PNGs for Workbench iteration — regenerate via scripts/pdf-to-png-for-workbench.mjs
 scripts/workbench-images/
 
+# Blank synthetic plans — regenerate via scripts/generate-blank-plan.mjs
+scripts/blank-plans/
+
 # Personal BD/networking notes — local-only
 research/
