@@ -13,7 +13,7 @@ Redlined plan sets are how engineers mark up drawings for drafters to revise —
 
 - **Frontend:** React + Vite, Tailwind CSS
 - **Backend:** Node.js + Express
-- **AI:** Claude Sonnet 4 (Vision API)
+- **AI:** Claude Sonnet 4.6 (Vision API)
 - **Persistence:** SQLite via better-sqlite3
 - **PDF processing:** pdf2pic + GraphicsMagick + Ghostscript
 - **Deployment:** Docker on Render
@@ -42,7 +42,7 @@ src/
 
 prompts/
 ├── active.md                   # Runtime prompt (loaded by extraction-service.js)
-├── v0.6.md, v0.7.md            # Versioned snapshots with YAML frontmatter
+├── v0.6.md, v0.7.md, v0.8.md   # Versioned snapshots with YAML frontmatter
 └── CHANGELOG.md                # Prompt iteration history with hypothesis/delta/rationale
 
 docs/decisions/                 # Architecture Decision Records (Nygard format)
@@ -63,19 +63,13 @@ Each extracted markup contains:
 ## Setup
 
 ```bash
-# 1. Install dependencies
 npm install
-
-# 2. Configure environment
-cp .env.example .env
-# Add your ANTHROPIC_API_KEY to .env
-
-# 3. Run tests (no API key needed)
-npm test
-
-# 4. Start the server
+cp .env.example .env       # then add your ANTHROPIC_API_KEY
+npm test                   # no API key needed
 npm run dev
 ```
+
+Full setup walkthrough (Node version pinning, GraphicsMagick + Ghostscript install, platform notes, troubleshooting): [`DEV_SETUP.md`](DEV_SETUP.md).
 
 ## Usage
 
@@ -122,10 +116,11 @@ curl http://localhost:3001/api/projects/{id}/summary
 
 ## System requirements
 
-- Node.js 18+
+- Node.js 22.14.0 (pinned via `.nvmrc`; `nvm use` picks it up)
 - GraphicsMagick or ImageMagick (for pdf2pic)
   - Mac: `brew install graphicsmagick`
   - Ubuntu: `sudo apt install graphicsmagick`
+  - Windows: `scoop install graphicsmagick ghostscript`
 - An Anthropic API key
 
 ## Deployment
@@ -135,7 +130,7 @@ curl http://localhost:3001/api/projects/{id}/summary
 | Variable | Required | Default | Description |
 |---|---|---|---|
 | `ANTHROPIC_API_KEY` | Yes | — | Your Anthropic API key |
-| `CLAUDE_MODEL` | No | `claude-sonnet-4-0` | Claude model version for extraction. |
+| `CLAUDE_MODEL` | No | `claude-sonnet-4-6` | Claude model version for extraction. |
 | `REDLINEIQ_PROMPT_FILE` | No | `prompts/active.md` | Override the runtime prompt source. Used by the eval harness to A/B compare versions. |
 | `DATABASE_PATH` | No | `./data/redlineiq.db` | Path to SQLite file. On Render/Railway, point this at a persistent volume (e.g. `/var/data/redlineiq.db`) so data survives redeploys. |
 | `DEMO_MODE` | No | `false` | Set to `true` to require `X-Demo-Key` header on POST /extract. GET routes stay public. |
@@ -166,10 +161,10 @@ RedlineIQ includes a structured eval harness for measuring extraction quality ag
 
 ```bash
 # Score the current active prompt against the working set
-node evals/run-eval.js --prompt v0.7 --working-set
+npm run eval
 
-# Compare a different version head-to-head — loads prompts/v0.6.md if it exists
-node evals/run-eval.js --prompt v0.6 --working-set
+# Compare a different version head-to-head — loads prompts/v0.7.md if it exists
+node evals/run-eval.js --prompt v0.7 --working-set
 ```
 
 Outputs a JSON run file and an HTML report to `evals/runs/`. Each run scores three metrics:
@@ -180,7 +175,9 @@ Outputs a JSON run file and an HTML report to `evals/runs/`. Each run scores thr
 | **Precision** | Fraction of extracted markups that matched something expected | ≥ 0.70 |
 | **Specificity** | Avg specificity weight of matched items (rewards detail) | ≥ 1.50 |
 
-**Current scores (v0.7, 9 cases):** recall=0.687 · precision=0.730 · specificity=1.521
+**Current scores (v0.8, 9 cases):** recall=0.790 · precision=0.794 · specificity=1.535
+
+v0.8 lifted recall +0.103 over v0.7 — the entire delta came from a model swap (Sonnet 4.0 → 4.6) with the prompt body byte-identical. The v0.7 CHANGELOG had predicted the next recall gain "has to come from somewhere else"; it came from model tier, not prompt iteration.
 
 Prompt versions are tracked in [`prompts/CHANGELOG.md`](prompts/CHANGELOG.md). The active prompt is [`prompts/active.md`](prompts/active.md), loaded by `extraction-service.js` at startup. Judgment uses Claude Haiku with a 3-vote majority to reduce variance, matching by conceptual equivalence rather than literal text.
 
@@ -188,8 +185,8 @@ Variance baseline (3x repeat runs of v0.6) established σ ≈ 0.02 on aggregate 
 
 ## Next steps
 
-- [ ] Recall improvement — v0.7 at 0.687, target ≥ 0.80; bare "verify?" / "??" markers consistently missed across all runs
-- [ ] Real-markup integration — eval is 8/9 synthetic; case_006 (the one real drawing) sits at recall=0.31 across every prompt version, exposing synthetic-only ceiling
+- [ ] Bare-mark recall — 37.5% aggregate across the working set (6 of 16 bare `verify?` / `??` markers caught). The Sonnet 4.6 bump captured the easy gain; the next ~5-10 recall points need a different lever — likely a two-pass extraction rule in the prompt body
+- [ ] More real-world cases — case_R001 (real Bohler grading plan) scored recall=0.9 / precision=1.0, suggesting digital markups on real drawings extract well. case_006 (real handwritten markups, photographed) still at recall=0.538 — the handwritten/scanned input is the open ceiling question
 - [ ] Clarification workflow — engineer response loop for ambiguous markups (currently auto-flagged but no reply path)
 - [ ] PDF export — checklist is exportable as CSV today; a formatted PDF report for handoff is not yet implemented
-- [ ] Architecture decisions — 2 ADRs written ([`docs/decisions/`](docs/decisions/)), 3 more queued
+- [ ] Architecture decisions — 2 ADRs written ([`docs/decisions/`](docs/decisions/)), 3 more queued (max_tokens, sample isolation, Docker-on-Render)
