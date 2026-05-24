@@ -31,5 +31,8 @@ sample redlines for redlineIQ/
 evals/synthetic/previews/midlands_tech_toilet_reno/
 evals/synthetic/previews/unlv_structural/
 
+# Generated PNGs for Workbench iteration — regenerate via scripts/pdf-to-png-for-workbench.mjs
+scripts/workbench-images/
+
 # Personal BD/networking notes — local-only
 research/

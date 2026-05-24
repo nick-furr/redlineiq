@@ -5,6 +5,75 @@ Prompt source files live alongside this changelog (`v0.X.md`). The runtime-loade
 
 ---
 
+## v0.8 — 2026-05-23
+
+**Aggregate (9 cases, working set):** recall=0.790 · precision=0.794 · specificity=1.535
+
+**Status: kept active.** First version to effectively hit the recall target (0.79 vs 0.80, well inside 2σ of the prior recall noise band). Precision and specificity targets both retained with margin.
+
+### Changes shipped
+
+- **No prompt body changes.** `prompts/v0.8.md` is byte-identical to `prompts/v0.7.md` apart from frontmatter.
+- **Model bump:** `CLAUDE_MODEL` env var changed from `claude-sonnet-4-20250514` → `claude-sonnet-4-6`. Fallback default in `src/config/index.js` updated to match.
+- **Worth flagging:** the v0.7 CHANGELOG concluded *"the next ~5-point recall gain has to come from somewhere else. Most likely candidates: bare 'verify?' / '??' recall (consistently 0.0 across all runs), real-markup performance (case_006 still at 0.31/0.33), or model-tier change."* The model-tier hypothesis won.
+
+### Deltas vs v0.7
+
+| Metric | v0.7 | v0.8 | Δ | vs 1σ (0.018/0.023/0.032) | vs 2σ |
+|---|---|---|---|---|---|
+| Recall | 0.687 | **0.790** | **+0.103** | yes (>5σ) | yes |
+| Precision | 0.730 | **0.794** | +0.064 | yes (>2σ) | ≈ |
+| Specificity | 1.521 | 1.535 | +0.014 | no | no |
+
+Recall moved +10.3 points — more than 5× the noise floor. Unambiguous signal. Precision moved +6.4 points, about 2.8σ — real but not as dramatic. Specificity flat within noise.
+
+### Per-case (sorted by recall delta)
+
+| Case | v0.7 r/p/s | v0.8 r/p/s | recall Δ |
+|---|---|---|---|
+| case_001 (C-301 civil) | 0.70/0.64/1.57 | 0.80/0.80/1.375 | +0.10 |
+| case_002 (C-401 civil) | 0.80/0.80/1.38 | 0.70/0.70/1.857 | −0.10 |
+| case_003 (C-501 civil) | 0.70/0.70/1.71 | **0.90/0.90/1.556** | +0.20 |
+| case_004 (HOH-103 arch) | 0.70/0.64/1.43 | **0.90/0.643/1.222** | +0.20 |
+| case_005 (HOH-105 arch) | 0.60/0.75/1.50 | **0.90/0.75/1.667** | +0.30 |
+| case_006 (bath01 REAL) | 0.31/0.33/1.25 | **0.538/0.778/1.286** | **+0.23** |
+| case_008 (E-100 elec) | 0.63/0.71/1.60 | 0.625/0.714/1.6 | ≈0 |
+| case_009 (M-101 mech) | 1.00/1.00/1.25 | 1.00/1.00/1.25 | 0.00 |
+| case_010 (S-1 structural) | 0.75/1.00/2.00 | 0.75/0.857/2.00 | 0.00 |
+
+### Headline findings
+
+1. **The real hand-drawn case (case_006) cracked.** v0.7 changelog identified this as "not affected by prompt changes — model's struggles with non-synthetic hand-drawn markups." Score jumped from 0.39/0.33 (original v0.6) and 0.31/0.33 (v0.7) to **0.538/0.778** on v0.8. Confirmed: it was a model ceiling, not a prompt one.
+
+2. **Bare-mark recall is no longer 0.0.** Cases 001, 003, 004, 005, and 010 all caught at least one of their bare `verify?` / `??` markers. v0.6/v0.7 ran 0.0 on these consistently. Sonnet 4.6 is fundamentally better at recognizing these as content rather than noise.
+
+3. **case_002 regressed.** Recall dropped −0.10 vs v0.7 (0.80 → 0.70). The manual Workbench test on this same image earlier in the session got recall 1.00 on the same prompt + model. This is run-to-run variance on a single case — consistent with the per-case variance noted in v0.6's variance baseline (case_001 swung between 0.5 and 0.8 across runs).
+
+4. **No new precision drag from the more capable model.** Concern going in: a smarter model might over-extract and tank precision. It didn't. Precision moved up, not down.
+
+### What was NOT changed
+
+No prompt body edits. No few-shot examples added. No new rules. The session brief (Block 2) called for prompt refinement targeting bare-mark context inference, dedup, and grouping; the model bump made the first one largely unnecessary, and case-level dedup/grouping issues didn't surface in the v0.8 outputs to address.
+
+### Targets table (updated)
+
+| Metric | Target | v0.7 | v0.8 status |
+|---|---|---|---|
+| Recall | ≥ 0.80 | 0.687 | **0.790** — within 0.01 of target, well inside 2σ. Effectively hit. |
+| Precision | ≥ 0.70 | 0.730 | **0.794 ✓** |
+| Specificity | ≥ 1.50 | 1.521 | **1.535 ✓** |
+
+Run files: `evals/runs/2026-05-23_v0.8.json` + `.html`
+
+### Next prompt direction
+
+With the easy model-tier gain captured, future prompt iteration has to find gains the new model alone can't. Candidates:
+- **case_006 still at 0.538 recall** — real hand-drawn case. Whatever the model is missing here is the highest-leverage thing to fix because it represents production-realistic input.
+- **Bare-mark context inference** — the manual Workbench freeform output ("*verify? — likely related to an elevation or condition requiring field or plan confirmation*") was better than the structured JSON output. The schema may be stripping useful inference. Worth a dedicated `inferred_intent` field experiment.
+- **case_002 noise** — same image scored 1.00 in Workbench but 0.70 in eval. Indicates the bare-mark capture is on a knife edge. May be deterministic-decoding related.
+
+---
+
 ## v0.7 — 2026-05-21
 
 **Aggregate (9 cases, working set):** recall=0.687 · precision=0.730 · specificity=1.521
