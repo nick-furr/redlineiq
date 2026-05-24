@@ -7,8 +7,8 @@ How to get RedlineIQ running locally on a new machine. Assumes you already have 
 ## Quick start
 
 ```bash
-git clone https://github.com/nick-furr/redlineiq.git ~/Desktop/RedlineIQ
-cd ~/Desktop/RedlineIQ
+git clone https://github.com/nick-furr/redlineiq.git ~/projects/RedlineIQ
+cd ~/projects/RedlineIQ
 nvm use                       # picks up .nvmrc (Node 22.14.0)
 npm install
 cp .env.example .env          # then populate values — see below
@@ -35,7 +35,9 @@ If `node -v` returns the wrong version after `nvm use`, run `nvm install 22.14.0
 
 ## Repo location
 
-Both machines clone to `~/Desktop/RedlineIQ` (which is `C:\Users\<you>\Desktop\RedlineIQ` on Windows). Keeping the path consistent across machines means `CLAUDE.md`, scripts, and any absolute paths in tooling just work.
+Both machines clone to `~/projects/RedlineIQ` (which is `C:\Users\<you>\projects\RedlineIQ` on Windows). Keeping the path consistent across machines means `CLAUDE.md`, scripts, and any absolute paths in tooling just work.
+
+> Don't put dev projects on the Desktop. Google Drive sync corrupts `.git/` and uploads `node_modules/`. Keep them under `~/projects/`.
 
 ---
 
@@ -61,7 +63,7 @@ The repo has a `CLAUDE.md` at the root that defines project conventions. Claude 
 To start a session:
 
 ```bash
-cd ~/Desktop/RedlineIQ
+cd ~/projects/RedlineIQ
 claude
 ```
 
@@ -95,7 +97,7 @@ npm run build
 
 - **Shell:** Git Bash (MINGW64). Not PowerShell, not WSL.
 - **Line endings:** `core.autocrlf=input` globally — keeps LF in the working tree, no CRLF noise in commits.
-- **Path:** `~/Desktop/RedlineIQ`
+- **Path:** `~/projects/RedlineIQ` (not Desktop — see Repo location section)
 - **Node:** installed via nvm-windows, not the official .msi. `nvm use` in this directory picks up `.nvmrc` automatically.
 
 ### If `nvm use` fails with "exit status 1"
@@ -136,4 +138,4 @@ git remote set-url origin https://github.com/nick-furr/redlineiq.git
 
 ---
 
-*Last updated: 2026-05-22 (laptop alignment session)*
+*Last updated: 2026-05-23 (path migration: Desktop → ~/projects/)*
