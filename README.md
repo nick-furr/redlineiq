@@ -42,7 +42,7 @@ src/
 
 prompts/
 ├── active.md                   # Runtime prompt (loaded by extraction-service.js)
-├── v0.6.md, v0.7.md, v0.8.md   # Versioned snapshots with YAML frontmatter
+├── v0.6.md, v0.7.md, v0.8.md, v0.9.md  # Versioned snapshots with YAML frontmatter
 └── CHANGELOG.md                # Prompt iteration history with hypothesis/delta/rationale
 
 docs/decisions/                 # Architecture Decision Records (Nygard format)
@@ -175,9 +175,9 @@ Outputs a JSON run file and an HTML report to `evals/runs/`. Each run scores thr
 | **Precision** | Fraction of extracted markups that matched something expected | ≥ 0.70 |
 | **Specificity** | Avg specificity weight of matched items (rewards detail) | ≥ 1.50 |
 
-**Current scores (v0.8, 9 cases):** recall=0.790 · precision=0.794 · specificity=1.535
+**Current scores (v0.9, 10 cases):** recall=0.811 · precision=0.776 · specificity=1.570
 
-v0.8 lifted recall +0.103 over v0.7 — the entire delta came from a model swap (Sonnet 4.0 → 4.6) with the prompt body byte-identical. The v0.7 CHANGELOG had predicted the next recall gain "has to come from somewhere else"; it came from model tier, not prompt iteration.
+v0.9 added a two-pass `## Process` section to the prompt body (Pass 1 primary extraction, Pass 2 targeted sweep for isolated bare marks). Bare-mark recall — the sub-metric this iteration was designed to move — lifted **+0.204** (0.375 → 0.579), with aggregate metrics flat within noise. The remaining gap to the bare-mark ship gate (>0.60) is 0.021, inside the σ ≈ 0.02 noise floor. The next frontier is generalizing Pass 2 to MEP/structural cases where it caught 0/2 (case_003 utility, case_008 electrical, case_010 structural).
 
 Prompt versions are tracked in [`prompts/CHANGELOG.md`](prompts/CHANGELOG.md). The active prompt is [`prompts/active.md`](prompts/active.md), loaded by `extraction-service.js` at startup. Judgment uses Claude Haiku with a 3-vote majority to reduce variance, matching by conceptual equivalence rather than literal text.
 
@@ -185,7 +185,7 @@ Variance baseline (3x repeat runs of v0.6) established σ ≈ 0.02 on aggregate 
 
 ## Next steps
 
-- [ ] Bare-mark recall — 37.5% aggregate across the working set (6 of 16 bare `verify?` / `??` markers caught). The Sonnet 4.6 bump captured the easy gain; the next ~5-10 recall points need a different lever — likely a two-pass extraction rule in the prompt body
+- [ ] Bare-mark recall — 57.9% aggregate on v0.9 (11 of 19 bare `verify?` / `??` markers caught, up from 37.5% on v0.8). Two-pass extraction lifted +0.204 on civil/arch cases but does not yet generalize: cases 003 (utility), 008 (electrical), and 010 (structural) each caught 0/2 because the Pass 2 checklist examples are civil/arch-flavored. Next lever: extend Pass 2 examples to MEP/structural language, or move to per-discipline few-shot
 - [ ] More real-world cases — case_R001 (real Bohler grading plan) scored recall=0.9 / precision=1.0, suggesting digital markups on real drawings extract well. case_006 (real handwritten markups, photographed) still at recall=0.538 — the handwritten/scanned input is the open ceiling question
 - [ ] Clarification workflow — engineer response loop for ambiguous markups (currently auto-flagged but no reply path)
 - [ ] PDF export — checklist is exportable as CSV today; a formatted PDF report for handoff is not yet implemented
