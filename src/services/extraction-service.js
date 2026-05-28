@@ -68,7 +68,7 @@ export async function extractMarkupsFromPage(pageImage, context = {}) {
   const generation = context.langfuseTrace?.generation({
     name: `extract-page-${pageNumber}`,
     model: config.anthropic.model,
-    modelParameters: { max_tokens: 8192 },
+    modelParameters: { max_tokens: 8192, temperature: 0 },
     input: { system: SYSTEM_PROMPT, user: userMessage },
   });
 
@@ -76,6 +76,7 @@ export async function extractMarkupsFromPage(pageImage, context = {}) {
     const response = await client.messages.create({
       model: config.anthropic.model,
       max_tokens: 8192,
+      temperature: 0,
       system: [
         { type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } },
       ],
