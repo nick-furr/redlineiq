@@ -16,6 +16,7 @@ import { existsSync } from 'fs';
 import { join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { pdfToImages } from '../src/utils/pdf-converter.js';
+import { pdfToTiledImages } from '../src/utils/pdf-tiler.js';
 import { judgeMarkup } from './lib/llm-judge.js';
 import { scoreCase } from './lib/score.js';
 
@@ -28,6 +29,7 @@ const REPO_ROOT   = resolve(HERE, '..');
 
 const args = process.argv.slice(2);
 const workingSetOnly = args.includes('--working-set');
+const tileMode = args.includes('--tile');
 const promptIdx = args.indexOf('--prompt');
 const promptVersion = promptIdx !== -1 ? args[promptIdx + 1] : 'current';
 
@@ -43,6 +45,7 @@ if (existsSync(resolve(REPO_ROOT, candidatePromptFile))) {
 }
 
 const { extractMarkupsFromPage } = await import('../src/services/extraction-service.js');
+const { extractMarkupsFromTiledPage } = await import('../src/services/tiled-extraction-service.js');
 
 async function run() {
   await mkdir(RUNS_DIR, { recursive: true });
@@ -58,7 +61,7 @@ async function run() {
     process.exit(0);
   }
 
-  console.log(`\nRedlineIQ eval — prompt: ${promptVersion} — ${pdfs.length} PDF(s)${workingSetOnly ? ' (working set)' : ''}\n`);
+  console.log(`\nRedlineIQ eval — prompt: ${promptVersion} — ${pdfs.length} PDF(s)${workingSetOnly ? ' (working set)' : ''}${tileMode ? ' [TILED]' : ''}\n`);
 
   const results = [];
 
@@ -76,12 +79,27 @@ async function run() {
     const label = JSON.parse(await readFile(labelPath, 'utf-8'));
     console.log(`${caseId}  [${label.discipline}]  ${label.expected_markups.length} expected`);
 
-    const pageImages = await pdfToImages(join(PDFS_DIR, pdfFile));
-
     const allExtracted = [];
-    for (const pageImage of pageImages) {
-      const result = await extractMarkupsFromPage(pageImage, { projectName: label.sheet });
-      allExtracted.push(...result.markups);
+
+    if (tileMode) {
+      // Tiled path: render N tiles per page, run per-tile extraction + merge
+      const tiles = await pdfToTiledImages(join(PDFS_DIR, pdfFile));
+      const tilesByPage = new Map();
+      for (const tile of tiles) {
+        if (!tilesByPage.has(tile.pageNumber)) tilesByPage.set(tile.pageNumber, []);
+        tilesByPage.get(tile.pageNumber).push(tile);
+      }
+      for (const [, pageTiles] of tilesByPage) {
+        const result = await extractMarkupsFromTiledPage(pageTiles, { projectName: label.sheet });
+        allExtracted.push(...result.markups);
+      }
+    } else {
+      // Standard path: one image per page
+      const pageImages = await pdfToImages(join(PDFS_DIR, pdfFile));
+      for (const pageImage of pageImages) {
+        const result = await extractMarkupsFromPage(pageImage, { projectName: label.sheet });
+        allExtracted.push(...result.markups);
+      }
     }
     console.log(`  extracted: ${allExtracted.length}`);
 
@@ -105,10 +123,11 @@ async function run() {
   };
 
   const timestamp = new Date().toISOString().slice(0, 10);
-  const runPath = join(RUNS_DIR, `${timestamp}_${promptVersion}.json`);
+  const tagSuffix = tileMode ? '_tile' : '';
+  const runPath = join(RUNS_DIR, `${timestamp}_${promptVersion}${tagSuffix}.json`);
   const htmlPath = runPath.replace('.json', '.html');
 
-  const output = { timestamp: new Date().toISOString(), prompt_version: promptVersion, working_set_only: workingSetOnly, cases_evaluated: results.length, aggregate, results };
+  const output = { timestamp: new Date().toISOString(), prompt_version: promptVersion, working_set_only: workingSetOnly, tile_mode: tileMode, cases_evaluated: results.length, aggregate, results };
 
   await writeFile(runPath, JSON.stringify(output, null, 2));
   await writeFile(htmlPath, buildHtml(output));

@@ -270,6 +270,10 @@ function buildUserMessage(pageNumber, context) {
   if (context.expectedSheets) {
     msg += ` Known sheet numbers in this set: ${context.expectedSheets}.`;
   }
+  if (context.tileInfo) {
+    const { gridRow, gridCol, gridRows, gridCols } = context.tileInfo;
+    msg += ` This image is tile (row ${gridRow + 1}, col ${gridCol + 1}) of a ${gridRows}x${gridCols} grid covering this page; other tiles cover the rest of the sheet and are extracted separately. Only report markups visible in this tile. Tiles overlap by ~10% at each edge, so markups near tile boundaries may also appear in neighbor tiles — that's expected and will be deduped downstream.`;
+  }
 
   msg += '\n\nReturn ONLY the JSON object. No explanation, no markdown.';
   return msg;
