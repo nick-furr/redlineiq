@@ -175,18 +175,21 @@ Outputs a JSON run file and an HTML report to `evals/runs/`. Each run scores thr
 | **Precision** | Fraction of extracted markups that matched something expected | ≥ 0.70 |
 | **Specificity** | Avg specificity weight of matched items (rewards detail) | ≥ 1.50 |
 
-**Current scores (v0.9, 10 cases):** recall=0.811 · precision=0.776 · specificity=1.570
+**Current pinned baseline (v0.9, 9 working-set cases, fully deterministic config):** recall=0.665 · precision=0.687 · specificity=1.509
 
-v0.9 added a two-pass `## Process` section to the prompt body (Pass 1 primary extraction, Pass 2 targeted sweep for isolated bare marks). Bare-mark recall — the sub-metric this iteration was designed to move — lifted **+0.204** (0.375 → 0.579), with aggregate metrics flat within noise. The remaining gap to the bare-mark ship gate (>0.60) is 0.021, inside the σ ≈ 0.02 noise floor. The next frontier is generalizing Pass 2 to MEP/structural cases where it caught 0/2 (case_003 utility, case_008 electrical, case_010 structural).
+The earlier 5/24 figure of 0.811 was measured against a non-deterministic stack (both extraction and judge defaulted to API `temperature: 1.0`). After pinning `temperature: 0` on both calls per ADR 0003, the eval is stable across runs (aggregate σ ≈ 0.003). The lower number is honest signal, not a regression. v0.9's two-pass `## Process` prompt change still earns its keep — bare-mark recall, the sub-metric it was designed to move, holds at the pinned config.
 
-Prompt versions are tracked in [`prompts/CHANGELOG.md`](prompts/CHANGELOG.md). The active prompt is [`prompts/active.md`](prompts/active.md), loaded by `extraction-service.js` at startup. Judgment uses Claude Haiku with a 3-vote majority to reduce variance, matching by conceptual equivalence rather than literal text.
+**Experimental: v0.9 + tiling.** For sheets where source resolution exceeds Anthropic's ~1568 px server-side resize cap for Sonnet 4.6, splitting the PDF into ≤1568 px-long-edge tiles and merging per-tile extractions cracks the model-resolution ceiling. **case_006** (real hand-drawn bathroom elevation, stuck at recall ≤0.538 for two weeks across every prompt iteration) lifted to recall=0.538 + precision=0.636 (vs pinned baseline 0.231 / 0.273) — biggest single-case recall gain in the project to date. Precision regression on clean synthetic sheets is real (indiscriminate tiling triples extracted count), so this isn't shipped to production yet — iteration to conditional/source-aware tiling is the next ship target.
 
-Variance baseline (3x repeat runs of v0.6) established σ ≈ 0.02 on aggregate metrics — any future delta over ~5 points is signal, not noise.
+Prompt versions are tracked in [`prompts/CHANGELOG.md`](prompts/CHANGELOG.md). The active prompt is [`prompts/active.md`](prompts/active.md), loaded by `extraction-service.js` at startup. Judgment uses Claude Haiku at `temperature: 0` (single deterministic call per pair; the prior 3x majority-vote pattern was a band-aid for the temperature default and is now removed), matching by conceptual equivalence rather than literal text.
+
+Determinism characterization: aggregate σ ≈ 0.003 across runs. Per-case has soft variance (σ ≈ 0.05) on borderline judgments due to Anthropic-side residual non-determinism at temp=0. Rule of thumb: aggregate moves >0.02 are signal; per-case moves >0.1 on borderline cases are signal. See `prompts/CHANGELOG.md` "v0.9 (rebaselined)" entry for full numbers and ADR 0003 for the architectural decision.
 
 ## Next steps
 
 - [ ] Bare-mark recall — 57.9% aggregate on v0.9 (11 of 19 bare `verify?` / `??` markers caught, up from 37.5% on v0.8). Two-pass extraction lifted +0.204 on civil/arch cases but does not yet generalize: cases 003 (utility), 008 (electrical), and 010 (structural) each caught 0/2 because the Pass 2 checklist examples are civil/arch-flavored. Next lever: extend Pass 2 examples to MEP/structural language, or move to per-discipline few-shot
-- [ ] More real-world cases — case_R001 (real Bohler grading plan) scored recall=0.9 / precision=1.0, suggesting digital markups on real drawings extract well. case_006 (real handwritten markups, photographed) still at recall=0.538 — the handwritten/scanned input is the open ceiling question
+- [ ] More real-world cases — case_R001 (real Bohler grading plan) scored well on digital markups. case_006 (real handwritten bathroom elevation) had been the ceiling case — recall 0.231 at the pinned baseline — until the 5/28 tiling experiment lifted it to 0.538. Conditional tiling (only tile detected hand-drawn/scanned sources) is the next ship target for that gain to land in production
+- [ ] Tile-large-sheets productionization — current tiling prototype is eval-only; needs source detection (vector vs raster) + tighter dedup before becoming the default extraction path for big sheets
 - [ ] Clarification workflow — engineer response loop for ambiguous markups (currently auto-flagged but no reply path)
 - [ ] PDF export — checklist is exportable as CSV today; a formatted PDF report for handoff is not yet implemented
-- [ ] Architecture decisions — 2 ADRs written ([`docs/decisions/`](docs/decisions/)), 3 more queued (max_tokens, sample isolation, Docker-on-Render)
+- [ ] Architecture decisions — 3 ADRs written ([`docs/decisions/`](docs/decisions/)), 3 more queued (max_tokens, sample isolation, Docker-on-Render)
