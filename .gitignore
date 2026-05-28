@@ -27,9 +27,12 @@ evals/labels/case_HR*.json
 # Tooling caches and local-only scratch
 .playwright-mcp/
 .tmp.driveupload/
-sample redlines for redlineIQ/
 evals/synthetic/previews/midlands_tech_toilet_reno/
 evals/synthetic/previews/unlv_structural/
+
+# Dogfood source PDFs — may contain client/proprietary content from real reviews
+# the journals (dogfood/*.md) ARE committed; only the source PDFs are local-only
+dogfood/sources/
 
 # Generated PNGs for Workbench iteration — regenerate via scripts/pdf-to-png-for-workbench.mjs
 scripts/workbench-images/
