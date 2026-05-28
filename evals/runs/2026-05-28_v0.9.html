@@ -1,0 +1,549 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<title>RedlineIQ Eval — 2026-05-28 v0.9</title>
+<style>
+  body{font-family:system-ui,sans-serif;padding:2rem;background:#0f0f0f;color:#e0e0e0;margin:0}
+  h1{font-size:1.1rem;color:#f0f0f0;margin:0 0 0.25rem}
+  .meta{color:#666;font-size:0.8rem;margin-bottom:1.5rem}
+  .agg{display:flex;gap:1.5rem;margin-bottom:2rem}
+  .m{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:0.75rem 1.25rem}
+  .m .v{font-size:1.75rem;font-weight:700;color:#fff}
+  .m .l{font-size:0.7rem;color:#666;text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+  table{width:100%;border-collapse:collapse;font-size:0.82rem}
+  th{background:#161616;padding:.45rem .6rem;text-align:left;color:#666;font-weight:500;border-bottom:1px solid #2a2a2a}
+  td{padding:.35rem .6rem;border-bottom:1px solid #1a1a1a;vertical-align:top}
+  tr.ok td:nth-child(3){color:#4ade80}
+  tr.miss td:nth-child(3){color:#f87171}
+  tr.miss{opacity:.65}
+</style></head><body>
+<h1>RedlineIQ Eval</h1>
+<div class="meta">2026-05-28 05:55 · prompt: v0.9 · 9 case(s)</div>
+<div class="agg">
+  <div class="m"><div class="v">0.665</div><div class="l">Recall</div></div>
+  <div class="m"><div class="v">0.687</div><div class="l">Precision</div></div>
+  <div class="m"><div class="v">1.509</div><div class="l">Specificity</div></div>
+</div>
+<table><thead><tr><th>Case</th><th>ID</th><th>Match</th><th>Category</th><th>Spec</th><th>Amb</th><th>Expected concept</th></tr></thead>
+<tbody><tr class="miss">
+      <td>case_001_c301_site_layout</td><td>m1</td>
+      <td>✗</td>
+      <td>modify</td><td>2</td>
+      <td></td>
+      <td>FFE elevation corrected from 442.0 to 142.0 — reference sheet C-401</td>
+    </tr><tr class="miss">
+      <td>case_001_c301_site_layout</td><td>m2</td>
+      <td>✗</td>
+      <td>modify</td><td>2</td>
+      <td></td>
+      <td>5'-0" access aisle must be 8' wide for van-accessible stall per ADA</td>
+    </tr><tr class="ok">
+      <td>case_001_c301_site_layout</td><td>m3</td>
+      <td>✓</td>
+      <td>verify</td><td>2</td>
+      <td></td>
+      <td>36.7' building clearance dimension — verify with fire apparatus turning template</td>
+    </tr><tr class="ok">
+      <td>case_001_c301_site_layout</td><td>m4</td>
+      <td>✓</td>
+      <td>question</td><td>1</td>
+      <td></td>
+      <td>8' compact parking stall — confirm town zoning allows and cite applicable section</td>
+    </tr><tr class="ok">
+      <td>case_001_c301_site_layout</td><td>m5</td>
+      <td>✓</td>
+      <td>clarify</td><td>0</td>
+      <td>●</td>
+      <td>bare 'verify?' near side setback — no context, intent is unclear</td>
+    </tr><tr class="miss">
+      <td>case_001_c301_site_layout</td><td>m6</td>
+      <td>✗</td>
+      <td>delete</td><td>2</td>
+      <td></td>
+      <td>duplicate PROP. MONOLITHIC CONC. WALK (TYP.) label near front entrance — remove one</td>
+    </tr><tr class="ok">
+      <td>case_001_c301_site_layout</td><td>m7</td>
+      <td>✓</td>
+      <td>add</td><td>2</td>
+      <td></td>
+      <td>add sight triangle dimensions per MA AOT standard at East Street driveway</td>
+    </tr><tr class="ok">
+      <td>case_001_c301_site_layout</td><td>m8</td>
+      <td>✓</td>
+      <td>clarify</td><td>0</td>
+      <td>●</td>
+      <td>bare '??' near property corner dimension — no context, intent is unclear</td>
+    </tr><tr class="miss">
+      <td>case_001_c301_site_layout</td><td>m9</td>
+      <td>✗</td>
+      <td>modify</td><td>2</td>
+      <td></td>
+      <td>24.0' two-way drive aisle crossed out and corrected to 26.0' minimum</td>
+    </tr><tr class="miss">
+      <td>case_001_c301_site_layout</td><td>m10</td>
+      <td>✗</td>
+      <td>verify</td><td>2</td>
+      <td></td>
+      <td>69'-11" building height exceeds 52' max — confirm ZBA waiver granted and attach the decision document</td>
+    </tr><tr class="ok">
+      <td>case_002_c401_grading</td><td>m1</td>
+      <td>✓</td>
+      <td>modify</td><td>2</td>
+      <td></td>
+      <td>FFE vs finished grade conflict at building entrance — match correction from C-301</td>
+    </tr><tr class="ok">
+      <td>case_002_c401_grading</td><td>m2</td>
+      <td>✓</td>
+      <td>modify</td><td>2</td>
+      <td></td>
+      <td>Swale slope 0.4% is below 0.5% minimum for grass-lined swale — fix grade</td>
+    </tr><tr class="ok">
+      <td>case_002_c401_grading</td><td>m3</td>
+      <td>✓</td>
+      <td>add</td><td>2</td>
+      <td></td>
+      <td>Add high point callout at drainage break in parking field</td>
+    </tr><tr class="ok">
+      <td>case_002_c401_grading</td><td>m4</td>
+      <td>✓</td>
+      <td>verify</td><td>2</td>
+      <td></td>
+      <td>Catch basin rim elevation — verify flush with finished pavement grade</td>
+    </tr><tr class="ok">
+      <td>case_002_c401_grading</td><td>m5</td>
+      <td>✓</td>
+      <td>add</td><td>2</td>
+      <td></td>
+      <td>Proposed grading extends into East Street ROW — add highway permit note</td>
+    </tr><tr class="miss">
+      <td>case_002_c401_grading</td><td>m6</td>
+      <td>✗</td>
+      <td>modify</td><td>2</td>
+      <td></td>
+      <td>Accessible route cross slope exceeds 2.0% ADA maximum — fix grading</td>
+    </tr><tr class="ok">
+      <td>case_002_c401_grading</td><td>m7</td>
+      <td>✓</td>
+      <td>add</td><td>1</td>
+      <td></td>
+      <td>Retaining wall shown without identifying wall designer per general note 7</td>
+    </tr><tr class="ok">
+      <td>case_002_c401_grading</td><td>m8</td>
+      <td>✓</td>
+      <td>add</td><td>1</td>
+      <td></td>
+      <td>Add emergency overflow route for parking field drainage basin</td>
+    </tr><tr class="miss">
+      <td>case_002_c401_grading</td><td>m9</td>
+      <td>✗</td>
+      <td>clarify</td><td>0</td>
+      <td>●</td>
+      <td>bare 'verify?' near west drainage swale — intent unclear</td>
+    </tr><tr class="miss">
+      <td>case_002_c401_grading</td><td>m10</td>
+      <td>✗</td>
+      <td>clarify</td><td>0</td>
+      <td>●</td>
+      <td>bare '??' near east property corner — no context</td>
+    </tr><tr class="ok">
+      <td>case_003_c501_utility</td><td>m1</td>
+      <td>✓</td>
+      <td>modify</td><td>2</td>
+      <td></td>
+      <td>8" sanitary sewer undersized — flow calculations require 10" pipe</td>
+    </tr><tr class="ok">
+      <td>case_003_c501_utility</td><td>m2</td>
+      <td>✓</td>
+      <td>modify</td><td>2</td>
+      <td></td>
+      <td>Water main crosses storm drain with less than 18" vertical separation — show separation or add sleeve</td>
+    </tr><tr class="ok">
+      <td>case_003_c501_utility</td><td>m3</td>
+      <td>✓</td>
+      <td>modify</td><td>2</td>
+      <td></td>
+      <td>Manhole outgoing invert elevation is higher than incoming invert — reverse slope condition</td>
+    </tr><tr class="ok">
+      <td>case_003_c501_utility</td><td>m4</td>
+      <td>✓</td>
+      <td>add</td><td>2</td>
+      <td></td>
+      <td>Missing cleanout at building sanitary service connection bend per local code</td>
+    </tr><tr class="ok">
+      <td>case_003_c501_utility</td><td>m5</td>
+      <td>✓</td>
+      <td>modify</td><td>2</td>
+      <td></td>
+      <td>Fire hydrant 4' from curb — local standard requires 6' minimum, relocate</td>
+    </tr><tr class="ok">
+      <td>case_003_c501_utility</td><td>m6</td>
+      <td>✓</td>
+      <td>verify</td><td>1</td>
+      <td></td>
+      <td>Verify 1" domestic water service adequate for total unit count</td>
+    </tr><tr class="miss">
+      <td>case_003_c501_utility</td><td>m7</td>
+      <td>✗</td>
+      <td>add</td><td>2</td>
+      <td></td>
+      <td>Missing gate valve on water service line before building entry</td>
+    </tr><tr class="ok">
+      <td>case_003_c501_utility</td><td>m8</td>
+      <td>✓</td>
+      <td>add</td><td>1</td>
+      <td></td>
+      <td>Storm drain outfall end treatment not specified — add riprap or flared end section callout</td>
+    </tr><tr class="miss">
+      <td>case_003_c501_utility</td><td>m9</td>
+      <td>✗</td>
+      <td>clarify</td><td>0</td>
+      <td>●</td>
+      <td>bare 'verify?' near force main — intent unclear</td>
+    </tr><tr class="miss">
+      <td>case_003_c501_utility</td><td>m10</td>
+      <td>✗</td>
+      <td>clarify</td><td>0</td>
+      <td>●</td>
+      <td>bare '??' near northeast utility cluster — no context</td>
+    </tr><tr class="ok">
+      <td>case_004_hoh_103_office_floorplan</td><td>m1</td>
+      <td>✓</td>
+      <td>modify</td><td>2</td>
+      <td></td>
+      <td>Restroom lavatory clear floor space 28" — ADA minimum is 30", fix layout</td>
+    </tr><tr class="ok">
+      <td>case_004_hoh_103_office_floorplan</td><td>m2</td>
+      <td>✓</td>
+      <td>modify</td><td>2</td>
+      <td></td>
+      <td>Conference room door swing blocks corridor egress width — flip door or recess</td>
+    </tr><tr class="ok">
+      <td>case_004_hoh_103_office_floorplan</td><td>m3</td>
+      <td>✓</td>
+      <td>add</td><td>2</td>
+      <td></td>
+      <td>Reception counter length dimension missing from drawing</td>
+    </tr><tr class="ok">
+      <td>case_004_hoh_103_office_floorplan</td><td>m4</td>
+      <td>✓</td>
+      <td>modify</td><td>2</td>
+      <td></td>
+      <td>Electrical panel clearance shown 3'-0" — NEC 110.26 requires 3'-6" minimum at 240V</td>
+    </tr><tr class="miss">
+      <td>case_004_hoh_103_office_floorplan</td><td>m5</td>
+      <td>✗</td>
+      <td>verify</td><td>1</td>
+      <td></td>
+      <td>Verify travel distance from Office 3 to exit is under 200' without sprinkler per IBC</td>
+    </tr><tr class="ok">
+      <td>case_004_hoh_103_office_floorplan</td><td>m6</td>
+      <td>✓</td>
+      <td>add</td><td>1</td>
+      <td></td>
+      <td>Wall type between office and conference room not called out</td>
+    </tr><tr class="ok">
+      <td>case_004_hoh_103_office_floorplan</td><td>m7</td>
+      <td>✓</td>
+      <td>modify</td><td>2</td>
+      <td></td>
+      <td>Two windows shown in office on this sheet but only one shown on Sheet 105 elevations — reconcile</td>
+    </tr><tr class="ok">
+      <td>case_004_hoh_103_office_floorplan</td><td>m8</td>
+      <td>✓</td>
+      <td>note</td><td>1</td>
+      <td></td>
+      <td>Storage closet depth is 2'-0" — not functional, coordinate minimum depth with owner</td>
+    </tr><tr class="ok">
+      <td>case_004_hoh_103_office_floorplan</td><td>m9</td>
+      <td>✓</td>
+      <td>clarify</td><td>0</td>
+      <td>●</td>
+      <td>bare 'verify?' near mechanical room — intent unclear</td>
+    </tr><tr class="miss">
+      <td>case_004_hoh_103_office_floorplan</td><td>m10</td>
+      <td>✗</td>
+      <td>clarify</td><td>0</td>
+      <td>●</td>
+      <td>bare '??' near kitchenette area — no context</td>
+    </tr><tr class="ok">
+      <td>case_005_hoh_105_elevations</td><td>m1</td>
+      <td>✓</td>
+      <td>add</td><td>2</td>
+      <td></td>
+      <td>Total building height dimension missing on all elevations — required for permit</td>
+    </tr><tr class="ok">
+      <td>case_005_hoh_105_elevations</td><td>m2</td>
+      <td>✓</td>
+      <td>modify</td><td>2</td>
+      <td></td>
+      <td>Man door header height appears 7'-0" — IBC 1010.1.1 requires 7'-4" minimum commercial</td>
+    </tr><tr class="ok">
+      <td>case_005_hoh_105_elevations</td><td>m3</td>
+      <td>✓</td>
+      <td>add</td><td>2</td>
+      <td></td>
+      <td>Roof pitch visible in profile but not labeled — add pitch callout</td>
+    </tr><tr class="miss">
+      <td>case_005_hoh_105_elevations</td><td>m4</td>
+      <td>✗</td>
+      <td>add</td><td>2</td>
+      <td></td>
+      <td>Window sill height not dimensioned on west elevation — required for egress analysis</td>
+    </tr><tr class="ok">
+      <td>case_005_hoh_105_elevations</td><td>m5</td>
+      <td>✓</td>
+      <td>verify</td><td>2</td>
+      <td></td>
+      <td>Finish grade line on north elevation — verify matches C-401 grading plan</td>
+    </tr><tr class="ok">
+      <td>case_005_hoh_105_elevations</td><td>m6</td>
+      <td>✓</td>
+      <td>add</td><td>1</td>
+      <td></td>
+      <td>Metal wall panel type, color, and manufacturer not specified on elevations</td>
+    </tr><tr class="ok">
+      <td>case_005_hoh_105_elevations</td><td>m7</td>
+      <td>✓</td>
+      <td>modify</td><td>2</td>
+      <td></td>
+      <td>Wainscot labeled 4'-0" but graphic shows approximately 3'-6" — which is correct</td>
+    </tr><tr class="ok">
+      <td>case_005_hoh_105_elevations</td><td>m8</td>
+      <td>✓</td>
+      <td>add</td><td>2</td>
+      <td></td>
+      <td>Overhead door opening size not dimensioned — required for permit</td>
+    </tr><tr class="miss">
+      <td>case_005_hoh_105_elevations</td><td>m9</td>
+      <td>✗</td>
+      <td>clarify</td><td>0</td>
+      <td>●</td>
+      <td>bare 'verify?' near parapet detail reference — intent unclear</td>
+    </tr><tr class="ok">
+      <td>case_005_hoh_105_elevations</td><td>m10</td>
+      <td>✓</td>
+      <td>clarify</td><td>0</td>
+      <td>●</td>
+      <td>bare '??' near east corner of south elevation — no context</td>
+    </tr><tr class="miss">
+      <td>case_006_bath01_elevation</td><td>m1</td>
+      <td>✗</td>
+      <td>modify</td><td>2</td>
+      <td></td>
+      <td>arc drawn across top — spring points and high points on all arched elements must match each other</td>
+    </tr><tr class="ok">
+      <td>case_006_bath01_elevation</td><td>m2</td>
+      <td>✓</td>
+      <td>clarify</td><td>1</td>
+      <td></td>
+      <td>X marks on arched top sections — arched elements or spring point locations flagged for revision</td>
+    </tr><tr class="miss">
+      <td>case_006_bath01_elevation</td><td>m3</td>
+      <td>✗</td>
+      <td>clarify</td><td>1</td>
+      <td></td>
+      <td>annotation written over center door — appears to read 'B2°U' or similar, possibly door swing or hardware spec</td>
+    </tr><tr class="miss">
+      <td>case_006_bath01_elevation</td><td>m4</td>
+      <td>✗</td>
+      <td>modify</td><td>2</td>
+      <td></td>
+      <td>keep splash level across — backsplash height to be consistent across full vanity elevation</td>
+    </tr><tr class="miss">
+      <td>case_006_bath01_elevation</td><td>m5</td>
+      <td>✗</td>
+      <td>modify</td><td>2</td>
+      <td></td>
+      <td>change to counter — material or product change callout in left cabinet area, paired with splash note</td>
+    </tr><tr class="miss">
+      <td>case_006_bath01_elevation</td><td>m6</td>
+      <td>✗</td>
+      <td>modify</td><td>1</td>
+      <td></td>
+      <td>hatched area on left mirror — mirror flagged for removal or revision</td>
+    </tr><tr class="miss">
+      <td>case_006_bath01_elevation</td><td>m7</td>
+      <td>✗</td>
+      <td>modify</td><td>1</td>
+      <td></td>
+      <td>hatched area on right mirror — mirror flagged for removal or revision</td>
+    </tr><tr class="miss">
+      <td>case_006_bath01_elevation</td><td>m8</td>
+      <td>✗</td>
+      <td>modify</td><td>1</td>
+      <td></td>
+      <td>hatched area on left vanity base cabinets — base flagged for removal or revision</td>
+    </tr><tr class="miss">
+      <td>case_006_bath01_elevation</td><td>m9</td>
+      <td>✗</td>
+      <td>modify</td><td>1</td>
+      <td></td>
+      <td>hatched area on right vanity base cabinets — base flagged for removal or revision</td>
+    </tr><tr class="miss">
+      <td>case_006_bath01_elevation</td><td>m10</td>
+      <td>✗</td>
+      <td>verify</td><td>2</td>
+      <td></td>
+      <td>countertop thickness is 1½" — coordinate with finish schedule</td>
+    </tr><tr class="ok">
+      <td>case_006_bath01_elevation</td><td>m11</td>
+      <td>✓</td>
+      <td>add</td><td>2</td>
+      <td></td>
+      <td>multiple ½" and 1½" dimension callouts added along bottom edge of elevation</td>
+    </tr><tr class="ok">
+      <td>case_006_bath01_elevation</td><td>m12</td>
+      <td>✓</td>
+      <td>clarify</td><td>0</td>
+      <td>●</td>
+      <td>bare notation near lower left vanity — reads approximately '9pm U' or '9mm U', intent unclear</td>
+    </tr><tr class="miss">
+      <td>case_006_bath01_elevation</td><td>m13</td>
+      <td>✗</td>
+      <td>verify</td><td>0</td>
+      <td>●</td>
+      <td>circled dimension on left wall — value circled in red, correction or verification needed, no explicit replacement given</td>
+    </tr><tr class="miss">
+      <td>case_008_e100_electrical</td><td>m1</td>
+      <td>✗</td>
+      <td>code_violation</td><td>2</td>
+      <td></td>
+      <td>GFCI protection missing at wet location — NEC 210.8(B) requires GFCI within 6 feet of sink</td>
+    </tr><tr class="ok">
+      <td>case_008_e100_electrical</td><td>m2</td>
+      <td>✓</td>
+      <td>design_issue</td><td>2</td>
+      <td></td>
+      <td>20-amp circuit required at break room countertop — update panel schedule</td>
+    </tr><tr class="ok">
+      <td>case_008_e100_electrical</td><td>m3</td>
+      <td>✓</td>
+      <td>code_violation</td><td>2</td>
+      <td></td>
+      <td>Exit sign missing at egress door — required per IBC 1013</td>
+    </tr><tr class="ok">
+      <td>case_008_e100_electrical</td><td>m4</td>
+      <td>✓</td>
+      <td>coordination_issue</td><td>1</td>
+      <td></td>
+      <td>Fixture type on plan conflicts with fixture schedule — coordinate</td>
+    </tr><tr class="ok">
+      <td>case_008_e100_electrical</td><td>m5</td>
+      <td>✓</td>
+      <td>coordination_issue</td><td>1</td>
+      <td></td>
+      <td>Conduit routing conflicts with plumbing — coordinate with plumbing plan</td>
+    </tr><tr class="ok">
+      <td>case_008_e100_electrical</td><td>m6</td>
+      <td>✓</td>
+      <td>missing_information</td><td>2</td>
+      <td></td>
+      <td>Panel schedule not updated to reflect new circuits — add new loads</td>
+    </tr><tr class="miss">
+      <td>case_008_e100_electrical</td><td>m7</td>
+      <td>✗</td>
+      <td>ambiguous</td><td>0</td>
+      <td>●</td>
+      <td>Ambiguous mark near switch — verify</td>
+    </tr><tr class="miss">
+      <td>case_008_e100_electrical</td><td>m8</td>
+      <td>✗</td>
+      <td>ambiguous</td><td>0</td>
+      <td>●</td>
+      <td>Ambiguous mark near junction box — unclear intent</td>
+    </tr><tr class="ok">
+      <td>case_009_m101_mechanical</td><td>m1</td>
+      <td>✓</td>
+      <td>code_violation</td><td>2</td>
+      <td></td>
+      <td>EF-1 exhaust fan rated 75 CFM is undersized — restroom requires 150 CFM minimum per IMC</td>
+    </tr><tr class="ok">
+      <td>case_009_m101_mechanical</td><td>m2</td>
+      <td>✓</td>
+      <td>coordination_issue</td><td>1</td>
+      <td></td>
+      <td>Supply diffuser conflicts with light fixture location — coordinate with electrical</td>
+    </tr><tr class="ok">
+      <td>case_009_m101_mechanical</td><td>m3</td>
+      <td>✓</td>
+      <td>code_violation</td><td>2</td>
+      <td></td>
+      <td>Backdraft damper required at duct penetration through rated wall — add per IMC 607</td>
+    </tr><tr class="ok">
+      <td>case_009_m101_mechanical</td><td>m4</td>
+      <td>✓</td>
+      <td>missing_information</td><td>2</td>
+      <td></td>
+      <td>Access panel not shown for exhaust fan — required for maintenance access</td>
+    </tr><tr class="ok">
+      <td>case_009_m101_mechanical</td><td>m5</td>
+      <td>✓</td>
+      <td>design_issue</td><td>2</td>
+      <td></td>
+      <td>Horizontal duct pitched back toward unit — re-pitch to drain away</td>
+    </tr><tr class="ok">
+      <td>case_009_m101_mechanical</td><td>m6</td>
+      <td>✓</td>
+      <td>missing_information</td><td>1</td>
+      <td></td>
+      <td>Return air path not shown — verify or add transfer grille</td>
+    </tr><tr class="ok">
+      <td>case_009_m101_mechanical</td><td>m7</td>
+      <td>✓</td>
+      <td>ambiguous</td><td>0</td>
+      <td>●</td>
+      <td>Ambiguous mark near diffuser — verify</td>
+    </tr><tr class="miss">
+      <td>case_009_m101_mechanical</td><td>m8</td>
+      <td>✗</td>
+      <td>ambiguous</td><td>0</td>
+      <td>●</td>
+      <td>Ambiguous mark near duct run — unclear intent</td>
+    </tr><tr class="ok">
+      <td>case_010_s1_framing</td><td>m1</td>
+      <td>✓</td>
+      <td>design_issue</td><td>2</td>
+      <td></td>
+      <td>W12x26 beam undersized for 28-foot span — calculations require W16x31 minimum</td>
+    </tr><tr class="ok">
+      <td>case_010_s1_framing</td><td>m2</td>
+      <td>✓</td>
+      <td>missing_information</td><td>2</td>
+      <td></td>
+      <td>Connection detail reference missing at ridge beam to column — add detail reference</td>
+    </tr><tr class="ok">
+      <td>case_010_s1_framing</td><td>m3</td>
+      <td>✓</td>
+      <td>missing_information</td><td>2</td>
+      <td></td>
+      <td>Joist bearing condition at exterior wall not detailed — add detail</td>
+    </tr><tr class="ok">
+      <td>case_010_s1_framing</td><td>m4</td>
+      <td>✓</td>
+      <td>code_violation</td><td>2</td>
+      <td></td>
+      <td>Midspan blocking missing — required for lateral stability of joists</td>
+    </tr><tr class="ok">
+      <td>case_010_s1_framing</td><td>m5</td>
+      <td>✓</td>
+      <td>missing_information</td><td>2</td>
+      <td></td>
+      <td>Hip rafter size not called out on plan — add member size</td>
+    </tr><tr class="ok">
+      <td>case_010_s1_framing</td><td>m6</td>
+      <td>✓</td>
+      <td>missing_information</td><td>2</td>
+      <td></td>
+      <td>Ledger-to-wall attachment detail missing — add detail with bolt pattern</td>
+    </tr><tr class="miss">
+      <td>case_010_s1_framing</td><td>m7</td>
+      <td>✗</td>
+      <td>ambiguous</td><td>0</td>
+      <td>●</td>
+      <td>Ambiguous mark near purlin connection — verify</td>
+    </tr><tr class="miss">
+      <td>case_010_s1_framing</td><td>m8</td>
+      <td>✗</td>
+      <td>ambiguous</td><td>0</td>
+      <td>●</td>
+      <td>Ambiguous mark near valley rafter — unclear intent</td>
+    </tr></tbody></table>
+</body></html>
