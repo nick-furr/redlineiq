@@ -2,7 +2,8 @@
   "case_id": "case_004_hoh_103_office_floorplan",
   "discipline": "architectural",
   "sheet": "103",
-  "source": "synthetic",
+  "substrate_source": "synthetic",
+  "markup_source": "synthetic",
   "page_count": 1,
   "expected_markups": [
     {"id": "m1", "concept": "Restroom lavatory clear floor space 28\" — ADA minimum is 30\", fix layout", "category": "modify", "page": 1, "specificity_target": 2, "is_ambiguous": false},

@@ -1,8 +1,9 @@
 {
-  "case_id": "case_h04",
+  "case_id": "case_h04_c901_erosion_control",
   "discipline": "civil",
   "sheet": "C-901",
-  "source": "synthetic",
+  "substrate_source": "synthetic",
+  "markup_source": "synthetic",
   "page_count": 1,
   "expected_markups": [
     {

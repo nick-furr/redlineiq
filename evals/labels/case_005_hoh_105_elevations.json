@@ -2,7 +2,8 @@
   "case_id": "case_005_hoh_105_elevations",
   "discipline": "architectural",
   "sheet": "105",
-  "source": "synthetic",
+  "substrate_source": "synthetic",
+  "markup_source": "synthetic",
   "page_count": 1,
   "expected_markups": [
     {"id": "m1", "concept": "Total building height dimension missing on all elevations — required for permit", "category": "add", "page": 1, "specificity_target": 2, "is_ambiguous": false},

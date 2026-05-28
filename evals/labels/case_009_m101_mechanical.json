@@ -1,8 +1,9 @@
 {
-  "case_id": "case_009",
+  "case_id": "case_009_m101_mechanical",
   "discipline": "mechanical",
   "sheet": "M101",
-  "source": "synthetic",
+  "substrate_source": "synthetic",
+  "markup_source": "synthetic",
   "page_count": 1,
   "expected_markups": [
     {

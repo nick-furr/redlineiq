@@ -1,8 +1,9 @@
 {
-  "case_id": "case_h03",
+  "case_id": "case_h03_s0_foundation",
   "discipline": "structural",
   "sheet": "S0",
-  "source": "synthetic",
+  "substrate_source": "synthetic",
+  "markup_source": "synthetic",
   "page_count": 1,
   "expected_markups": [
     {

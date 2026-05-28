@@ -2,7 +2,8 @@
   "case_id": "case_001_c301_site_layout",
   "discipline": "civil",
   "sheet": "C-301",
-  "source": "synthetic",
+  "substrate_source": "synthetic",
+  "markup_source": "synthetic",
   "page_count": 1,
   "expected_markups": [
     {

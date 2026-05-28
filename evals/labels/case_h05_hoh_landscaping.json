@@ -1,8 +1,9 @@
 {
-  "case_id": "case_h05",
+  "case_id": "case_h05_hoh_landscaping",
   "discipline": "civil",
   "sheet": "site-landscaping",
-  "source": "synthetic",
+  "substrate_source": "synthetic",
+  "markup_source": "synthetic",
   "page_count": 1,
   "expected_markups": [
     {

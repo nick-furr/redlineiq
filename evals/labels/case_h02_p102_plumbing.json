@@ -1,8 +1,9 @@
 {
-  "case_id": "case_h02",
+  "case_id": "case_h02_p102_plumbing",
   "discipline": "plumbing",
   "sheet": "P102",
-  "source": "synthetic",
+  "substrate_source": "synthetic",
+  "markup_source": "synthetic",
   "page_count": 1,
   "expected_markups": [
     {

@@ -1,0 +1,91 @@
+{
+  "case_id": "case_011_walpole_c401_grading",
+  "discipline": "civil",
+  "sheet": "C-401",
+  "substrate_source": "real_public",
+  "markup_source": "self_authored",
+  "page_count": 1,
+  "notes": "Real Bohler Engineering C-401 Grading & Drainage Plan from the Town of Walpole public permit documents (KIG Silverstrand Walpole project). Page 5 of the bound Bohler civil set. Redlines added by hand in PDF-XChange Editor — civil reviewer-style comments mixing clear instructions with two bare ambiguous marks. Originally tracked as case_R001 under the retired R-prefix convention; renamed to case_011 once it was clear the substrate was public-record and the markup was self-authored (see evals/CONVENTIONS.md). Pairs with case_006 (real_public + real_reviewer) to isolate substrate complexity vs. real reviewer prose.",
+  "expected_markups": [
+    {
+      "id": "m1",
+      "concept": "FFE vs finished grade conflict at proposed building entrance — match correction from C-301",
+      "category": "modify",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m2",
+      "concept": "Storm drain pipe slope 0.78% flagged — verify minimum slope or hydraulic grade adequacy",
+      "category": "verify",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m3",
+      "concept": "Add high point callout at ridge / drainage break in parking field — spot elevation needed",
+      "category": "add",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m4",
+      "concept": "Catch basin CB-201 rim elevation — verify flush with finished pavement grade",
+      "category": "verify",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m5",
+      "concept": "Proposed grading extends into East Street public ROW — add highway/public works permit note",
+      "category": "add",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m6",
+      "concept": "Accessible route cross slope exceeds 2.0% ADA maximum at curb ramp — fix grading",
+      "category": "modify",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m7",
+      "concept": "Storm drain invert conflict at pipe crossing — verify separation or correct invert elevations",
+      "category": "verify",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m8",
+      "concept": "Add emergency overflow route for parking field drainage to street",
+      "category": "add",
+      "page": 1,
+      "specificity_target": 2,
+      "is_ambiguous": false
+    },
+    {
+      "id": "m9",
+      "concept": "bare 'verify?' notation in empty area — no associated context, intent unclear",
+      "category": "clarify",
+      "page": 1,
+      "specificity_target": 0,
+      "is_ambiguous": true
+    },
+    {
+      "id": "m10",
+      "concept": "bare '??' notation in empty area — no associated context, intent unclear",
+      "category": "clarify",
+      "page": 1,
+      "specificity_target": 0,
+      "is_ambiguous": true
+    }
+  ]
+}

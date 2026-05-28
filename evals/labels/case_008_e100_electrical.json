@@ -1,8 +1,9 @@
 {
-  "case_id": "case_008",
+  "case_id": "case_008_e100_electrical",
   "discipline": "electrical",
   "sheet": "E100",
-  "source": "synthetic",
+  "substrate_source": "synthetic",
+  "markup_source": "synthetic",
   "page_count": 1,
   "expected_markups": [
     {

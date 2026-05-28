@@ -17,12 +17,13 @@ evals/synthetic/source/
 evals/synthetic/*/output.pdf
 evals/synthetic/*/output.png
 
-# Real-world redline PDFs and labels from collaborators — may contain client/proprietary
-# content. Convention: case_R* for working-set, case_HR* for holdout. Local-only, never push.
-evals/pdfs/case_R*.pdf
-evals/labels/case_R*.json
-evals/holdout/case_HR*.pdf
-evals/labels/case_HR*.json
+# Collaborator-proprietary cases — real plans shared by third parties that may carry
+# confidentiality expectations. Convention: case_C* for working-set, case_hC* for holdout.
+# Local-only, never push. See evals/CONVENTIONS.md for the full naming + metadata scheme.
+evals/pdfs/case_C*.pdf
+evals/labels/case_C*.json
+evals/holdout/case_hC*.pdf
+evals/labels/case_hC*.json
 
 # Tooling caches and local-only scratch
 .playwright-mcp/

@@ -2,7 +2,8 @@
   "case_id": "case_003_c501_utility",
   "discipline": "civil",
   "sheet": "C-501",
-  "source": "synthetic",
+  "substrate_source": "synthetic",
+  "markup_source": "synthetic",
   "page_count": 1,
   "expected_markups": [
     {"id": "m1", "concept": "8\" sanitary sewer undersized — flow calculations require 10\" pipe", "category": "modify", "page": 1, "specificity_target": 2, "is_ambiguous": false},

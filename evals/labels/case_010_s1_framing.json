@@ -1,8 +1,9 @@
 {
-  "case_id": "case_010",
+  "case_id": "case_010_s1_framing",
   "discipline": "structural",
   "sheet": "S1",
-  "source": "synthetic",
+  "substrate_source": "synthetic",
+  "markup_source": "synthetic",
   "page_count": 1,
   "expected_markups": [
     {
