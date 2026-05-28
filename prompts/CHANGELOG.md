@@ -7,6 +7,10 @@ Prompt source files live alongside this changelog (`v0.X.md`). The runtime-loade
 
 ## v0.9 — 2026-05-24
 
+> **⚠ Addendum 2026-05-28 — baseline invalidated.** Re-running the v0.9 eval on 5/28 against identical code, prompt, and inputs produced aggregate recall **0.654** (vs the 5/24 baseline of 0.811). Three separate runs at three file states converged on the same lower number, including after pinning `temperature=0` in `src/services/extraction-service.js` to eliminate sampling variance. The only remaining explanation is that the `claude-sonnet-4-6` model alias was bumped by Anthropic to a different underlying snapshot between those dates. **Treat the 0.811 number below as a snapshot of a specific alias state, not a stable reference.** Re-baselining is gated on the Notion ticket "Pin claude-sonnet-4-6 to a dated snapshot; re-baseline eval at temp=0" and ADR 0003 ("Pin Claude model versions"). Until then, every aggregate comparison against this entry is contaminated.
+>
+> Also of note from the 5/28 investigation: the `σ ≈ 0.02 noise floor` claim below is based on three v0.6 runs at the API's default `temperature=1.0`. Per-case variance was substantially higher; the aggregate just happened to cancel out. Future eval entries written under the pinned `temperature=0` setup will have honest, much-tighter noise bands. Full session capture: `notes/extraction-quality-levers.md`.
+
 **Aggregate (10 cases incl. case_R001):** recall=0.811 · precision=0.776 · specificity=1.570
 
 **Status: kept active.** Targeted sub-metric — bare-mark recall — moved 0.375 → 0.579 (+0.204, ~10× the σ ≈ 0.02 aggregate noise floor). The self-imposed ship gate (>0.60) was missed by 0.021, which is inside one standard deviation of the noise floor. Shipped on the strength of the headline gain rather than chasing the last 2 points.
