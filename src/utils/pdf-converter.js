@@ -8,7 +8,8 @@
  * - High DPI (200-300) needed to preserve handwriting legibility
  * - Large architectural sheets may need to be split or downscaled
  *   to fit within Claude's image size limits
- * - Claude Vision accepts images up to ~20MB / 8000x8000px
+ * - Claude Vision base64 payload limit is 5 MB; binary cap of 3.5 MB leaves
+ *   margin for the ~33% base64 inflation.
  */
 
 import { fromPath } from 'pdf2pic';
@@ -18,8 +19,10 @@ import path from 'path';
 
 // Claude Vision limits
 const MAX_IMAGE_DIMENSION = 8000;
-const MAX_IMAGE_SIZE_BYTES = 20 * 1024 * 1024; // 20MB
-const TARGET_DPI = 200; // Balance between legibility and size
+// Anthropic's API rejects base64 payloads >5 MB; ~33% base64 inflation means
+// the binary PNG must stay under ~3.75 MB. 3.5 MB leaves margin.
+const MAX_IMAGE_SIZE_BYTES = 3.5 * 1024 * 1024;
+const TARGET_DPI = 200;
 
 /**
  * Convert a PDF file to an array of base64-encoded page images.
@@ -148,7 +151,7 @@ async function processImage(buffer) {
 
   let { width, height } = metadata;
 
-  // Downscale if exceeding Claude's limits
+  // Downscale if exceeding Claude's dimension limit
   if (width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION) {
     const scale = Math.min(
       MAX_IMAGE_DIMENSION / width,
@@ -159,19 +162,20 @@ async function processImage(buffer) {
     image = image.resize(width, height, { fit: 'inside' });
   }
 
-  // Convert to PNG buffer with reasonable quality
   const outputBuffer = await image
     .png({ quality: 90, compressionLevel: 6 })
     .toBuffer();
 
-  // If still too large, reduce quality further
+  // Iteratively downscale until under the byte cap. PNG quality has little
+  // effect on line drawings; resolution does the work.
   let finalBuffer = outputBuffer;
-  if (outputBuffer.length > MAX_IMAGE_SIZE_BYTES) {
-    finalBuffer = await sharp(outputBuffer)
+  let downscalePasses = 0;
+  while (finalBuffer.length > MAX_IMAGE_SIZE_BYTES && downscalePasses < 5) {
+    downscalePasses++;
+    finalBuffer = await sharp(finalBuffer)
       .resize(Math.round(width * 0.75), Math.round(height * 0.75), { fit: 'inside' })
       .png({ quality: 80, compressionLevel: 8 })
       .toBuffer();
-    
     const newMeta = await sharp(finalBuffer).metadata();
     width = newMeta.width;
     height = newMeta.height;
