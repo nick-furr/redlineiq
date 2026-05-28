@@ -50,8 +50,8 @@ A catalog of things tried or considered that turned out to be dead ends — so w
 - **Model tier change.** v0.7 → v0.8 was `claude-sonnet-4-20250514` → `claude-sonnet-4-6`, +0.103 aggregate recall. Pure model lift, no prompt change. Documented in `prompts/CHANGELOG.md` v0.8 entry.
 - **Two-pass extraction with explicit bare-mark sweep.** v0.8 → v0.9, +0.204 on the targeted bare-mark sub-metric. Documented in v0.9 entry.
 - **Pinning `temperature=0`** for deterministic eval. Doesn't move *quality* per se but removes a major source of variance that was masking which other changes actually moved scores. Committed 02b756c.
-- **(Future, untested) Tiling for big sheets.** Hypothesis above; not verified.
-- **(Future, untested) Model bump to Opus 4.7.** 2576 px long edge gives 64% more pixels per image. Hand-drawn-content quality improvements likely come along too (Anthropic's vision-heavy benchmark improvements have historically been on Opus first).
+- **Tiling for hand-drawn / low-source-resolution content (VALIDATED 2026-05-28 on case_006).** The eval-only tiling prototype lifted case_006 from recall 0.231 → 0.538 + precision 0.273 → 0.636 with no other change. This is the biggest single-case recall gain in the project to date. Caveat: indiscriminate tiling tanks precision on clean synthetic sheets (extracted counts triple, dedup doesn't catch all overlap dupes). The lever is real but needs either conditional application (only tile scanned sources) or tighter dedup before it goes to production. See `prompts/CHANGELOG.md` "Experiment: v0.9 + tiling" entry and commits `24e8783` / `de38aa6`.
+- **(Future, untested) Model bump to Opus 4.7.** 2576 px long edge gives 64% more pixels per image. Hand-drawn-content quality improvements likely come along too (Anthropic's vision-heavy benchmark improvements have historically been on Opus first). Less urgent now that tiling is validated for the hand-drawn case.
 
 ## The temperature=1.0 silent default story
 

@@ -55,6 +55,23 @@ See ADR 0003 ("Make eval deterministic — pin temperatures and follow per-gener
 - case_006 stayed in the "hand-drawn ceiling" zone — consistent with the v0.8 finding that real hand-drawn content needs tiling or a model-tier change, not prompt work.
 - If the residual per-case noise band becomes a problem (e.g., when comparing close prompt iterations), the path is run 3-5 times and report median, not chase byte-determinism.
 
+### Experiment: v0.9 + tiling (2026-05-28)
+
+First test of the tiling hypothesis (split large sheets into N tiles ≤1568 px long edge, extract per tile, dedup-merge). Same v0.9 prompt, same pinned config; only the eval path changes via the new `--tile` flag.
+
+**Aggregate:** recall=0.724 · precision=0.373 · specificity=1.639 (vs pinned baseline 0.665 / 0.687 / 1.509).
+
+**Headline:** case_006 (the real hand-drawn case stuck at recall ≤0.538 since v0.8 through every prompt iteration) lifted to **recall=0.538, precision=0.636** from baseline (0.231, 0.273). Largest single-case recall gain in the project to date, achieved without a prompt or model change.
+
+**Caveat:** every synthetic Bluebeam-style case had precision tank (e.g., case_010 0.857 → 0.231) because extracted counts roughly tripled. Indiscriminate tiling either fails dedup at overlap zones, hallucinates per-tile, or catches real markups not in the label set — investigation needed. Do NOT productionize tiling as-is.
+
+**Iteration paths captured in the Notion ticket** "Tile large sheets for extraction" (P2 Next):
+1. Tighter dedup (text similarity + spatial proximity, not just normalized exact match)
+2. Conditional tiling — detect hand-drawn/scanned source vs vector PDF, only tile the former
+3. Smaller tile counts on synthetic sheets
+
+Tiled run file: `evals/runs/2026-05-28_v0.9_tile.json`. Commits: `24e8783` (prototype code), `de38aa6` (eval data + analysis).
+
 ---
 
 ## v0.9 — 2026-05-24
