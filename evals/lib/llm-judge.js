@@ -1,6 +1,8 @@
 /**
  * LLM-as-judge: determines whether an expected markup concept is captured
- * anywhere in the extracted output. Uses 3x majority vote to reduce variance.
+ * anywhere in the extracted output. Single call at temperature=0 for
+ * determinism (prior 3x majority-vote pattern existed to mitigate API
+ * default temperature=1.0 variance; redundant once temperature is pinned).
  */
 import Anthropic from '@anthropic-ai/sdk';
 
@@ -13,12 +15,7 @@ const JUDGE_MODEL = 'claude-haiku-4-5-20251001';
  * @returns {Promise<boolean>} true if concept is captured in the extraction
  */
 export async function judgeMarkup(expectedConcept, extractedMarkups) {
-  // Sequential votes to stay within 50 req/min Haiku rate limit
-  const votes = [];
-  for (let i = 0; i < 3; i++) {
-    votes.push(await singleVote(expectedConcept, extractedMarkups));
-  }
-  return votes.filter(Boolean).length >= 2;
+  return singleVote(expectedConcept, extractedMarkups);
 }
 
 async function sleep(ms) {
@@ -35,6 +32,7 @@ async function singleVote(expectedConcept, extractedMarkups, retries = 4) {
           const response = await client.messages.create({
         model: JUDGE_MODEL,
         max_tokens: 5,
+        temperature: 0,
         system: `You are evaluating whether a redline markup extraction captured a specific reviewer concept.
 Reviewers use engineering shorthand, abbreviations, and OCR may mangle text. Judge by CONCEPTUAL equivalence, not literal text.
 Examples of matches: "DR/SWING BLOCKS EGRESS" = "door swing blocks egress width", "8\" SAN UNDERSIZED" = "8 inch sanitary sewer undersized", "ADD SIGHT TRIANGLE DIMS" = "add sight triangle dimensions".
