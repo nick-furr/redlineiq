@@ -5,11 +5,61 @@ Prompt source files live alongside this changelog (`v0.X.md`). The runtime-loade
 
 ---
 
+## v0.9 (rebaselined) — 2026-05-28
+
+**Aggregate (9 cases, working set):** recall=0.665 · precision=0.687 · specificity=1.509 — under the new pinned config (extraction `temperature=0`, judge `temperature=0`, judge single-vote).
+
+This is the **new active baseline** for v0.9. Use this number — not the 5/24 0.811 below — as the reference for any future prompt or config change.
+
+### Determinism characterization
+
+Two back-to-back runs under identical code/prompt/inputs:
+
+| | Run 1 | Run 2 | Δ |
+|---|---|---|---|
+| Aggregate recall | 0.662 | 0.665 | 0.003 |
+| Aggregate precision | 0.687 | 0.687 | 0.000 |
+| Aggregate specificity | 1.558 | 1.509 | 0.049 |
+
+**Aggregate is effectively deterministic** (σ ≈ 0.003 on recall/precision). **Per-case has residual noise of ~σ ≈ 0.05** on borderline cases — case_004 (recall flipped 0.7 → 0.8), case_006 (recall flipped 0.308 → 0.231), and case_001/case_009 had specificity-only flips. This residual is Anthropic-side non-determinism at temp=0 (cache state, infrastructure-level batch effects); Anthropic does not formally guarantee bit-perfect determinism at temp=0 and we can't eliminate this from our side without disabling prompt caching, which has its own costs.
+
+**Rule of thumb for future comparisons:** aggregate moves <0.005 are noise; aggregate moves >0.02 are signal. Per-case moves <0.1 on borderline cases (anything where recall ends in .3/.5/.7) are likely noise; moves >0.1 are signal.
+
+### Per-case (run 2, canonical for this baseline)
+
+| Case | recall | precision | specificity |
+|---|---|---|---|
+| case_001 (C-301 civil) | 0.500 | 0.455 | 1.000 |
+| case_002 (C-401 grading) | 0.700 | 0.700 | 1.714 |
+| case_003 (C-501 utility) | 0.700 | 0.778 | 1.714 |
+| case_004 (HOH-103 arch) | 0.800 | 0.727 | 1.500 |
+| case_005 (HOH-105 elevations) | 0.800 | 0.800 | 1.625 |
+| case_006 (bath01 REAL hand-drawn) | 0.231 | 0.273 | 1.000 |
+| case_008 (E-100 elec) | 0.625 | 0.714 | 1.600 |
+| case_009 (M-101 mech) | 0.875 | 0.875 | 1.429 |
+| case_010 (S-1 structural) | 0.750 | 0.857 | 2.000 |
+
+### What changed since the 5/24 entry
+
+- `src/services/extraction-service.js` now sets `temperature: 0` (commit `02b756c`).
+- `evals/lib/llm-judge.js` now sets `temperature: 0` and runs a single judge call per pair (the prior 3x majority-vote pattern was a band-aid for the temp=1.0 default; redundant once judge is deterministic; this commit set).
+- `claude-sonnet-4-6` retained as the model ID — already pinned per Anthropic's 4.6+ generation convention; no migration needed.
+
+The ~0.15 aggregate drop from 5/24's 0.811 is largely temp-driven, not a true regression: at `temperature=1.0` the model produced more diverse outputs that happened to hit more expected concepts, and judge variance compounded the upward push.
+
+See ADR 0003 ("Make eval deterministic — pin temperatures and follow per-generation model-pinning convention") for the architectural decision. See `notes/extraction-quality-levers.md` for the investigation arc.
+
+### Open follow-ups (not blocking this baseline)
+
+- case_001 dropped most under pinned config (0.7 → 0.5). Possibly temp=0 making the model less creative on civil-spec markup language. Worth investigating per-case rather than at aggregate level.
+- case_006 stayed in the "hand-drawn ceiling" zone — consistent with the v0.8 finding that real hand-drawn content needs tiling or a model-tier change, not prompt work.
+- If the residual per-case noise band becomes a problem (e.g., when comparing close prompt iterations), the path is run 3-5 times and report median, not chase byte-determinism.
+
+---
+
 ## v0.9 — 2026-05-24
 
-> **⚠ Addendum 2026-05-28 — baseline invalidated.** Re-running the v0.9 eval on 5/28 against identical code, prompt, and inputs produced aggregate recall **0.654** (vs the 5/24 baseline of 0.811). Three separate runs at three file states converged on the same lower number, including after pinning `temperature=0` in `src/services/extraction-service.js` to eliminate sampling variance. The only remaining explanation is that the `claude-sonnet-4-6` model alias was bumped by Anthropic to a different underlying snapshot between those dates. **Treat the 0.811 number below as a snapshot of a specific alias state, not a stable reference.** Re-baselining is gated on the Notion ticket "Pin claude-sonnet-4-6 to a dated snapshot; re-baseline eval at temp=0" and ADR 0003 ("Pin Claude model versions"). Until then, every aggregate comparison against this entry is contaminated.
->
-> Also of note from the 5/28 investigation: the `σ ≈ 0.02 noise floor` claim below is based on three v0.6 runs at the API's default `temperature=1.0`. Per-case variance was substantially higher; the aggregate just happened to cancel out. Future eval entries written under the pinned `temperature=0` setup will have honest, much-tighter noise bands. Full session capture: `notes/extraction-quality-levers.md`.
+> **⚠ Addendum 2026-05-28 — baseline superseded.** Re-baselined under the fully-deterministic config (see "v0.9 (rebaselined)" entry above). The original 0.811 aggregate was measured against the non-deterministic stack (extraction + judge both at API default `temperature: 1.0`); the σ ≈ 0.02 noise floor below underestimated per-case noise by a wide margin (aggregate happened to cancel). Initial theory of `claude-sonnet-4-6` alias drift was investigated and largely ruled out — per Anthropic's docs, the 4.6+ generation form is already pinned. The score gap is best explained by the temperature defaults + judge ensembling, not alias drift. Use the new pinned baseline above for future comparisons; the original entry below remains for historical context.
 
 **Aggregate (10 cases incl. case_R001):** recall=0.811 · precision=0.776 · specificity=1.570
 

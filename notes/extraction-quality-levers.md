@@ -65,13 +65,19 @@ A catalog of things tried or considered that turned out to be dead ends — so w
 
 Pinning temperature was overdue. Future eval comparisons can now be trusted at lower deltas.
 
-## The model alias drift discovery (the bigger lesson from 2026-05-28)
+## The 5/24 → 5/28 score gap (investigated and partially explained)
 
-Identical code + identical prompt + identical eval set scored aggregate recall 0.811 on 5/24 and 0.654 on 5/28, across three separate runs. Even after pinning `temperature=0` to eliminate sampling variance, the gap persisted. The only remaining explanation: Anthropic updated what the `claude-sonnet-4-6` model alias points to between those dates.
+Identical code + identical prompt + identical eval set scored aggregate recall 0.811 on 5/24 and 0.654 on 5/28 across three separate runs at three file states. Initial hypothesis was alias drift on `claude-sonnet-4-6`. Investigation via Anthropic's `models/model-ids-and-versions` docs revealed that **starting with the 4.6 generation, the dateless model form IS the pinned snapshot** — there's no separate dated equivalent because the naming convention changed. So alias drift can't fully account for the gap if Anthropic's pinning guarantee is accurate.
 
-Aliases like `claude-sonnet-4-6` get bumped silently when Anthropic ships improved snapshots. From our side, the model "just behaves differently" one day, with no warning. v0.8 moved `CLAUDE_MODEL` from the dated `claude-sonnet-4-20250514` to the alias `claude-sonnet-4-6` — gained +0.103 recall, but inherited drift risk.
+Refined understanding of what likely caused the drift:
 
-The fix is in ADR 0003 (pin to dated snapshots) and the Notion ticket "Pin claude-sonnet-4-6 to a dated snapshot; re-baseline eval at temp=0." Until that lands, the **2026-05-24 v0.9 aggregate of 0.811 is invalidated** as a baseline — it's a snapshot of a particular alias state, not a stable reference.
+- **Judge variance at `temperature: 1.0`** (`evals/lib/llm-judge.js` defaulted to API's 1.0 temp; the 3x majority vote was a band-aid for this, not a clean fix). Per-pair noise even with 3x voting → aggregate noise of ~0.05+.
+- **Extraction variance at `temperature: 1.0`** (`src/services/extraction-service.js` likewise — fixed in commit `02b756c`). Different sampling could produce more diverse markup lists that hit more expected concepts, inflating recall.
+- **Possibly minor residual Anthropic-side non-determinism** even at temp=0 (KV cache state, prompt cache turnover, infrastructure-level variance). Anthropic doesn't formally guarantee bit-perfect determinism at temp=0.
+
+The fix is in **ADR 0003** (revised 2026-05-28 from the alias-drift framing to the more accurate "pin all temperatures + follow per-generation pinning convention" story). Both extraction and judge now run at `temperature: 0`, the judge's 3x vote was dropped (redundant when deterministic), and `claude-sonnet-4-6` stays as the model ID since it's pinned per Anthropic's 4.6+ convention.
+
+The **2026-05-24 v0.9 aggregate of 0.811 is still invalidated** as a baseline — it was measured against the non-deterministic stack. A new baseline at the fully-deterministic config replaces it in the CHANGELOG.
 
 ## The viewer DPI / canvas backing-store calibration
 

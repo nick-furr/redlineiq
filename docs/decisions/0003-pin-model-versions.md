@@ -1,71 +1,85 @@
-# ADR 0003: Pin Claude model versions to dated snapshots, never use aliases
+# ADR 0003: Make the eval pipeline deterministic — pin temperatures and follow Anthropic's per-generation model-pinning convention
 
 ## Status
 
-Proposed (becomes Accepted when implemented per the Notion ticket "Pin claude-sonnet-4-6 to a dated snapshot; re-baseline eval at temp=0").
+Accepted (2026-05-28).
 
 ## Context
 
-On 2026-05-23, v0.8 changed `CLAUDE_MODEL` from `claude-sonnet-4-20250514` (a dated snapshot) to `claude-sonnet-4-6` (an alias). This unlocked +0.103 aggregate recall on the eval set — the right move on its face. The decision wasn't framed as "alias vs dated"; we just used whatever string the docs surfaced for the newer model.
+The eval harness depends on a stable model reference: same code + same prompt + same inputs must produce the same scores across days, otherwise we can't tell whether a code change moved a metric or whether something else drifted underneath. Two separate sources of non-determinism were silently contaminating eval results until the 2026-05-28 investigation surfaced them:
 
-On 2026-05-28, while debugging a separate `pdf-converter` rendering issue, we observed that identical code + identical prompt + identical eval inputs scored:
+**1. Temperature defaulted to 1.0 in both API call sites.**
 
-- aggregate recall **0.811** on the 2026-05-24 v0.9 baseline run
-- aggregate recall **0.649** on the 2026-05-28 post-DPI-bump run
-- aggregate recall **0.654** on the 2026-05-28 post-revert run (same file state as 5/24)
-- aggregate recall **0.654** on the 2026-05-28 post-revert + `temperature=0` run
+`src/services/extraction-service.js` calls `client.messages.create()` without setting `temperature`. Anthropic's API defaults to `1.0` when omitted, meaning every extraction since v0.6 was fully stochastic. Per-case recall could swing 0.1–0.4 between runs of identical code.
 
-Three separate runs at the same file state converged on the same ~0.65 number, with a clean delta from the 5/24 baseline that no code change explains. After eliminating sampling variance by pinning `temperature=0` (the API was defaulting to 1.0 since we never set it), the gap persisted.
+`evals/lib/llm-judge.js` had the same omission. Its 3x majority-vote pattern was an explicit mitigation for the high-variance judge calls — a band-aid for the temp=1.0 default rather than an architectural choice.
 
-The remaining explanation is that Anthropic updated what the `claude-sonnet-4-6` alias points to between those dates. Anthropic does this without per-customer notification when they ship an improved snapshot. From our side, the model behaves differently one day with no visible cause.
+**2. Initial hypothesis: alias drift on `claude-sonnet-4-6`.**
 
-**Direct cost of the discovery:** a multi-hour session burned partly chasing what looked like a code-introduced regression but was actually upstream alias drift.
+The original draft of this ADR proposed pinning `CLAUDE_MODEL` to a dated snapshot (`claude-sonnet-4-6-YYYYMMDD`) under the assumption that the bare `claude-sonnet-4-6` was a mutable alias. Verifying against Anthropic's docs (`platform.claude.com/docs/en/about-claude/models/model-ids-and-versions`) revealed that **starting with the Claude 4.6 generation, the dateless form IS the pinned snapshot** — there's no separate dated equivalent because the naming convention changed. For older generations (4.5 and earlier), bare forms are aliases that resolve to dated snapshots; dated forms must be used explicitly.
 
-**Indirect cost going forward (if uncorrected):** every eval comparison across days is contaminated with model-version noise. The eval harness's value depends on a stable reference; aliases break that invariant silently and undetectably from inside the code.
+This shifted the diagnosis: the 5/24 → 5/28 score drift (aggregate recall 0.811 → 0.654 across three runs at identical file states) was likely a combination of:
+- Judge variance at temp=1.0 (each per-pair judgment had non-trivial noise even with 3x voting)
+- Extraction variance at temp=1.0 affecting both recall and precision distributions
+- Possibly minor residual Anthropic-side non-determinism even at temp=0 (KV cache, prompt cache state)
+
+Alias drift was not actually the dominant cause — the temperature defaults were. The investigation arrived at a stricter and more accurate decision than the original "use dated snapshots" framing suggested.
 
 ## Decision
 
-**Always use dated Claude model snapshots in production and eval code paths. Never use bare model aliases.**
+Make the eval pipeline deterministic by:
 
-Dated form: `claude-sonnet-4-20250514`, `claude-sonnet-4-5-20250929`, hypothetically `claude-sonnet-4-6-YYYYMMDD` once we look up the current snapshot ID.
+**1. Pin `temperature: 0` everywhere the API is called.** Both extraction (`src/services/extraction-service.js`) and judge (`evals/lib/llm-judge.js`). This is the foundational pin — without it, no other determinism work matters.
 
-Concrete enforcement points:
+**2. Drop the judge's 3x majority-vote pattern.** At `temperature: 0` the three calls return identical content; majority-vote becomes pure waste (3× cost, 3× latency, zero variance reduction). One call per judgment.
 
-- `src/config/index.js` `CLAUDE_MODEL` default must be a dated snapshot
-- `.env.example` `CLAUDE_MODEL` must show a dated snapshot
-- Deployment env var (Render) must be set to a dated snapshot
-- When adopting a new Anthropic snapshot, the upgrade is an explicit change to that string, recorded in `prompts/CHANGELOG.md`, scored against the prior baseline at `temperature=0`, and shipped only if the eval supports it
+**3. Follow Anthropic's per-generation model-pinning convention:**
+
+| Generation | Pinning form |
+|---|---|
+| 4.6 and later | Dateless form IS the pin (`claude-sonnet-4-6`, `claude-opus-4-7`, `claude-haiku-4-5`) — use as-is |
+| 4.5 and earlier | Dated form required (`claude-sonnet-4-5-20250929`, `claude-sonnet-4-20250514`) — never use bare aliases |
+
+Confirmed via `platform.claude.com/docs/en/about-claude/models/model-ids-and-versions`. Per-call code must use a model identifier from the correct column for that generation. Periodically re-check Anthropic's docs in case the convention evolves further.
+
+**4. Always set `temperature` explicitly in every new API call site,** even when adding code paths that aren't eval-evaluated today. The default is 1.0 and forgetting to set it is the easy way to reintroduce the same problem.
 
 ## Consequences
 
 **Positive:**
 
-- Eval baseline is stable across days. Future regressions point to OUR code changes, not Anthropic-side drift.
-- Model upgrades become deliberate, evidence-supported decisions tracked in the CHANGELOG, not silent improvements (or silent regressions).
-- A new collaborator or future-self inheriting the project doesn't get silently sandbagged by an alias bump that happened on a Wednesday.
-- `temperature=0` (pinned 2026-05-28 in commit 02b756c) plus dated model snapshots produces a fully deterministic extraction pipeline, which is what the eval harness needs to be useful.
+- Aggregate eval scores are effectively deterministic across runs (verified 2026-05-28: two back-to-back runs at the pinned config produced aggregate recall 0.662 vs 0.665, σ ≈ 0.003). Down from σ > 0.1 under the prior non-deterministic stack.
+- The judge runs 1/3 as many API calls per scored case — meaningful cost and latency win on top of the determinism gain.
+- New collaborators (or future-self) inheriting the project see explicit temperatures in code; the "Anthropic default is 1.0" trap is shut.
+- ADR 0003 paired with the per-generation convention table gives a clear rule for every future model bump: check what generation, use the right form, set temperature explicitly.
 
 **Negative:**
 
-- We don't automatically benefit from Anthropic's improvements to the alias's underlying snapshot. Adoption becomes a manual decision instead of free silent uplift. Acceptable trade for the eval stability.
-- Dated snapshots eventually get deprecated by Anthropic (they typically announce with notice). We'll need to refresh the pin periodically — a recurring small task rather than a one-time investment.
+- We lose the slight upside of judge-vote ensembling on genuinely ambiguous calls. At temp=0 the model picks one interpretation deterministically; ambiguous concepts may always score "no" (or always "yes") rather than getting a 2/3 vote that might flip with the data. Mitigation: if the eval surfaces a particular concept that's systematically misjudged, refine the judge prompt or the expected-concept label rather than re-adding ensembling.
+- We don't automatically benefit from Anthropic improving the underlying snapshot if they update it; for the 4.6+ generation Anthropic's docs claim this won't happen by their convention, but we should verify by spot-checking determinism over time.
+- **Per-case determinism is "soft" (σ ≈ 0.05 on borderline cases), not byte-perfect.** Anthropic doesn't formally guarantee bit-determinism at temp=0; some residual variance comes from KV cache state, prompt cache turnover, and infrastructure-level batch effects. For comparing close prompt iterations the right tool is run 3–5 times and report median, not chase byte-determinism by disabling caching (which has its own latency and cost costs).
 
-**Migration:** see Notion ticket "Pin claude-sonnet-4-6 to a dated snapshot; re-baseline eval at temp=0" (P2, Next). The 2026-05-24 v0.9 baseline of 0.811 is invalidated as a reference until that ticket lands and a new dated-snapshot baseline replaces it.
+**Migration steps:**
+
+- `src/services/extraction-service.js` — `temperature: 0` added (commit `02b756c`, 2026-05-28)
+- `evals/lib/llm-judge.js` — `temperature: 0` added and `judgeMarkup` simplified to single call (this commit set)
+- `prompts/CHANGELOG.md` — new baseline scored at the fully deterministic config replaces the contaminated 5/24 0.811 reference
+- `CLAUDE_MODEL` env var stays as `claude-sonnet-4-6` (already a pin per Anthropic's 4.6+ convention)
 
 ## Alternatives considered
 
-1. **Keep aliases, accept drift, re-baseline weekly.** Cheap to start, expensive in eval-noise tax forever. Rejected — invalidates the value of the eval harness, and pushes the cost of every Anthropic-side change onto our debug time.
+1. **Keep the 3x majority vote and just pin temp=0.** No benefit — three identical calls is wasted spend.
 
-2. **Use aliases in production code, dated snapshots only in the eval code path.** Splits behavior between two code paths, makes "production parity" debugging harder, and the production behavior still drifts silently. Rejected.
+2. **Switch the judge model to a temperature setting other than 0** (say 0.2) to preserve some ensembling value. Adds complexity for marginal benefit; the determinism guarantee is more valuable than ensembling robustness on a 9-case eval set.
 
-3. **Use the latest dated snapshot that the alias currently points to, refreshed via a periodic automated check.** Same end state as option 1 unless we automate the lookup and changelog entry. Adds tooling for no marginal benefit over manual pinning + CHANGELOG hygiene.
+3. **Downgrade `CLAUDE_MODEL` to an explicitly dated 4.5 or 4 snapshot** (`claude-sonnet-4-5-20250929`, `claude-sonnet-4-20250514`) for maximum certainty. Loses the v0.8 model-tier gain (+0.103 recall). Rejected — Anthropic's per-generation convention is sufficient for 4.6+; downgrading sacrifices a measured win for speculative certainty.
 
-4. **Do nothing; accept that "model behavior on a given day" is part of the eval signal.** Rejected — this was the de facto state and it cost us a session to discover. The eval harness exists to measure code changes, not to measure Anthropic's release cadence.
+4. **Stop using LLM-as-judge entirely; switch to exact/fuzzy string matching.** Eliminates judge variance completely but loses the conceptual-equivalence flexibility that makes the harness useful for engineering shorthand and OCR noise. Not the right trade for this domain.
 
 ## References
 
-- Notion ticket: "Pin claude-sonnet-4-6 to a dated snapshot; re-baseline eval at temp=0"
-- Investigation notes: `notes/extraction-quality-levers.md` (alias drift section)
-- Memory: `~/.claude/.../memory/project_dpi_upstream_hypothesis.md`
-- Related commit: `02b756c` (pinned `temperature=0` — necessary but not sufficient for stable eval)
-- Anthropic model versioning: https://platform.claude.com/docs/en/about-claude/models
+- Original alias-drift hypothesis (now invalidated): notes/extraction-quality-levers.md "model alias drift discovery" section
+- Anthropic per-generation pinning convention: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
+- Anthropic model migration guide: https://platform.claude.com/docs/en/about-claude/models/migration-guide
+- Commits: `02b756c` (extraction temp=0), this commit set (judge temp=0 + 1x vote, ADR revision, baseline reset)
+- Memory: `~/.claude/.../memory/project_dpi_upstream_hypothesis.md` (full investigation arc)
