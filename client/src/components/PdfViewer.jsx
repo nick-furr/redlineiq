@@ -119,6 +119,7 @@ export default function PdfViewer({ project, pdfUrl: pdfUrlProp, selectedItem, o
                     <Page
                       pageNumber={pageNum}
                       width={pageWidth}
+                      devicePixelRatio={Math.max(2, Math.min(6, 4000 / pageWidth))}
                       renderAnnotationLayer={false}
                       renderTextLayer={false}
                       className="shadow-xl"
