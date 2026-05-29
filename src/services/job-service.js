@@ -10,8 +10,8 @@
  */
 
 import { EventEmitter } from 'events';
-import { pdfToImages } from '../utils/pdf-converter.js';
-import { extractAllPages } from './extraction-service.js';
+import { pdfToTiledImages } from '../utils/pdf-tiler.js';
+import { extractAllPagesTiled } from './tiled-extraction-service.js';
 import { addExtractionResults, getProject } from './project-service.js';
 
 // ─── Job Store ─────────────────────────────────────────────────
@@ -96,21 +96,24 @@ async function runJob(job) {
     totalPages: project.total_pages,
   });
 
-  console.log(`[Job ${job.id}] Converting PDF to images...`);
-  const pageImages = await pdfToImages(project.pdf_path);
+  console.log(`[Job ${job.id}] Converting PDF to tiles...`);
+  const tiles = await pdfToTiledImages(project.pdf_path);
+  // tiles is a flat array across all pages; conditional tiling is internal
+  // (small sheets emit one tile, dense sheets emit a grid). Progress is per-page.
+  const totalPages = new Set(tiles.map(t => t.pageNumber)).size;
 
-  job.progress.totalPages = pageImages.length;
+  job.progress.totalPages = totalPages;
 
   emitter.emit('conversion_complete', {
     jobId: job.id,
-    totalPages: pageImages.length,
+    totalPages,
   });
 
   // Step 2: Extract markups page by page
   job.status = JOB_STATUS.EXTRACTING;
 
-  const extractionResult = await extractAllPages(
-    pageImages,
+  const extractionResult = await extractAllPagesTiled(
+    tiles,
     { projectName: project.name },
     (pageNum, total, result) => {
       const success = !result.error;
