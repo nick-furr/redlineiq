@@ -33,6 +33,12 @@ const tileMode = args.includes('--tile');
 const promptIdx = args.indexOf('--prompt');
 const promptVersion = promptIdx !== -1 ? args[promptIdx + 1] : 'current';
 
+// --only=sub1,sub2 restricts the run to PDFs whose filename contains any of the
+// comma-separated substrings (e.g. --only=case_012,case_007). Keeps cost down when
+// you only need to re-check a few cases instead of the whole working set.
+const onlyArg = args.find(a => a.startsWith('--only='));
+const onlyFilters = onlyArg ? onlyArg.slice('--only='.length).split(',').map(s => s.trim()).filter(Boolean) : null;
+
 // If --prompt names a file under prompts/, point extraction-service.js at it via env var
 // before the module is dynamically imported. Otherwise fall back to prompts/active.md and
 // treat the tag as a label only (preserves the variance-baseline pattern of v0.6-var1, etc).
@@ -54,10 +60,13 @@ async function run() {
   const holdoutNames = new Set(
     (await readdir(HOLDOUT_DIR).catch(() => [])).filter(f => f.endsWith('.pdf'))
   );
-  const pdfs = workingSetOnly ? allPdfs.filter(f => !holdoutNames.has(f)) : allPdfs;
+  let pdfs = workingSetOnly ? allPdfs.filter(f => !holdoutNames.has(f)) : allPdfs;
+  if (onlyFilters) pdfs = pdfs.filter(f => onlyFilters.some(sub => f.includes(sub)));
 
   if (pdfs.length === 0) {
-    console.log('No PDFs found. Add marked-up PDFs to evals/pdfs/ and labels to evals/labels/.');
+    console.log(onlyFilters
+      ? `No PDFs matched --only=${onlyFilters.join(',')}`
+      : 'No PDFs found. Add marked-up PDFs to evals/pdfs/ and labels to evals/labels/.');
     process.exit(0);
   }
 
@@ -123,7 +132,7 @@ async function run() {
   };
 
   const timestamp = new Date().toISOString().slice(0, 10);
-  const tagSuffix = tileMode ? '_tile' : '';
+  const tagSuffix = `${tileMode ? '_tile' : ''}${onlyFilters ? '_only' : ''}`;
   const runPath = join(RUNS_DIR, `${timestamp}_${promptVersion}${tagSuffix}.json`);
   const htmlPath = runPath.replace('.json', '.html');
 

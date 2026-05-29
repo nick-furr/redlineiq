@@ -1,0 +1,105 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<title>RedlineIQ Eval — 2026-05-29 current</title>
+<style>
+  body{font-family:system-ui,sans-serif;padding:2rem;background:#0f0f0f;color:#e0e0e0;margin:0}
+  h1{font-size:1.1rem;color:#f0f0f0;margin:0 0 0.25rem}
+  .meta{color:#666;font-size:0.8rem;margin-bottom:1.5rem}
+  .agg{display:flex;gap:1.5rem;margin-bottom:2rem}
+  .m{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:0.75rem 1.25rem}
+  .m .v{font-size:1.75rem;font-weight:700;color:#fff}
+  .m .l{font-size:0.7rem;color:#666;text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+  table{width:100%;border-collapse:collapse;font-size:0.82rem}
+  th{background:#161616;padding:.45rem .6rem;text-align:left;color:#666;font-weight:500;border-bottom:1px solid #2a2a2a}
+  td{padding:.35rem .6rem;border-bottom:1px solid #1a1a1a;vertical-align:top}
+  tr.ok td:nth-child(3){color:#4ade80}
+  tr.miss td:nth-child(3){color:#f87171}
+  tr.miss{opacity:.65}
+</style></head><body>
+<h1>RedlineIQ Eval</h1>
+<div class="meta">2026-05-29 07:11 · prompt: current · 1 case(s)</div>
+<div class="agg">
+  <div class="m"><div class="v">0.846</div><div class="l">Recall</div></div>
+  <div class="m"><div class="v">0.379</div><div class="l">Precision</div></div>
+  <div class="m"><div class="v">1.818</div><div class="l">Specificity</div></div>
+</div>
+<table><thead><tr><th>Case</th><th>ID</th><th>Match</th><th>Category</th><th>Spec</th><th>Amb</th><th>Expected concept</th></tr></thead>
+<tbody><tr class="ok">
+      <td>case_012_sanmarcos_s201_framing</td><td>m1</td>
+      <td>✓</td>
+      <td>missing_information</td><td>2</td>
+      <td></td>
+      <td>Individual pier sizes not called out at each location — only Pier Legend shown; add pier marks/schedule</td>
+    </tr><tr class="ok">
+      <td>case_012_sanmarcos_s201_framing</td><td>m2</td>
+      <td>✓</td>
+      <td>design_issue</td><td>2</td>
+      <td></td>
+      <td>6-inch slab-on-grade reinforcing not verified for fire-apparatus floor loading — confirm design load</td>
+    </tr><tr class="ok">
+      <td>case_012_sanmarcos_s201_framing</td><td>m3</td>
+      <td>✓</td>
+      <td>missing_information</td><td>2</td>
+      <td></td>
+      <td>Fire-brick slab recess extents not dimensioned — add limits</td>
+    </tr><tr class="ok">
+      <td>case_012_sanmarcos_s201_framing</td><td>m4</td>
+      <td>✓</td>
+      <td>missing_information</td><td>2</td>
+      <td></td>
+      <td>Beam marks S1-S3 referenced on plan but not defined — add member schedule or sizes</td>
+    </tr><tr class="ok">
+      <td>case_012_sanmarcos_s201_framing</td><td>m5</td>
+      <td>✓</td>
+      <td>missing_information</td><td>2</td>
+      <td></td>
+      <td>Floor access opening header/trimmer framing not shown — verify per detail 1/S301</td>
+    </tr><tr class="ok">
+      <td>case_012_sanmarcos_s201_framing</td><td>m6</td>
+      <td>✓</td>
+      <td>design_issue</td><td>2</td>
+      <td></td>
+      <td>Post detail 4/S201 referenced but detail not located on this set — verify reference</td>
+    </tr><tr class="ok">
+      <td>case_012_sanmarcos_s201_framing</td><td>m7</td>
+      <td>✓</td>
+      <td>code_violation</td><td>2</td>
+      <td></td>
+      <td>10x16 beam bearing at CMU not detailed — provide bearing and anchorage detail</td>
+    </tr><tr class="ok">
+      <td>case_012_sanmarcos_s201_framing</td><td>m8</td>
+      <td>✓</td>
+      <td>design_issue</td><td>2</td>
+      <td></td>
+      <td>S1 beam span at re-entrant corner not verified for attic loading — check deflection</td>
+    </tr><tr class="ok">
+      <td>case_012_sanmarcos_s201_framing</td><td>m9</td>
+      <td>✓</td>
+      <td>design_issue</td><td>2</td>
+      <td></td>
+      <td>C8x11.5 purlins at 24 inch o.c. span full bay with no intermediate support — verify span</td>
+    </tr><tr class="ok">
+      <td>case_012_sanmarcos_s201_framing</td><td>m10</td>
+      <td>✓</td>
+      <td>missing_information</td><td>2</td>
+      <td></td>
+      <td>Rafter-to-support connection at HSS6x6 post not detailed — add connection detail</td>
+    </tr><tr class="miss">
+      <td>case_012_sanmarcos_s201_framing</td><td>m11</td>
+      <td>✗</td>
+      <td>code_violation</td><td>2</td>
+      <td></td>
+      <td>Roof diaphragm plywood fastening schedule not referenced — add per general notes</td>
+    </tr><tr class="miss">
+      <td>case_012_sanmarcos_s201_framing</td><td>m12</td>
+      <td>✗</td>
+      <td>ambiguous</td><td>0</td>
+      <td>●</td>
+      <td>Ambiguous cloud with no comment — unclear intent</td>
+    </tr><tr class="ok">
+      <td>case_012_sanmarcos_s201_framing</td><td>m13</td>
+      <td>✓</td>
+      <td>ambiguous</td><td>0</td>
+      <td>●</td>
+      <td>Bare question mark near detail bubble — verify</td>
+    </tr></tbody></table>
+</body></html>

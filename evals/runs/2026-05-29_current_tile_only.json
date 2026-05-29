@@ -1,0 +1,453 @@
+{
+  "timestamp": "2026-05-29T07:11:35.300Z",
+  "prompt_version": "current",
+  "working_set_only": false,
+  "tile_mode": true,
+  "cases_evaluated": 1,
+  "aggregate": {
+    "recall": 0.846,
+    "precision": 0.379,
+    "specificity": 1.818
+  },
+  "results": [
+    {
+      "case_id": "case_012_sanmarcos_s201_framing",
+      "discipline": "structural",
+      "sheet": "S201",
+      "scores": {
+        "recall": 0.846,
+        "precision": 0.379,
+        "specificity": 1.818,
+        "matched": 11,
+        "total_expected": 13,
+        "total_extracted": 29
+      },
+      "match_results": [
+        {
+          "id": "m1",
+          "concept": "Individual pier sizes not called out at each location — only Pier Legend shown; add pier marks/schedule",
+          "category": "missing_information",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m2",
+          "concept": "6-inch slab-on-grade reinforcing not verified for fire-apparatus floor loading — confirm design load",
+          "category": "design_issue",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m3",
+          "concept": "Fire-brick slab recess extents not dimensioned — add limits",
+          "category": "missing_information",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m4",
+          "concept": "Beam marks S1-S3 referenced on plan but not defined — add member schedule or sizes",
+          "category": "missing_information",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m5",
+          "concept": "Floor access opening header/trimmer framing not shown — verify per detail 1/S301",
+          "category": "missing_information",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m6",
+          "concept": "Post detail 4/S201 referenced but detail not located on this set — verify reference",
+          "category": "design_issue",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m7",
+          "concept": "10x16 beam bearing at CMU not detailed — provide bearing and anchorage detail",
+          "category": "code_violation",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m8",
+          "concept": "S1 beam span at re-entrant corner not verified for attic loading — check deflection",
+          "category": "design_issue",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m9",
+          "concept": "C8x11.5 purlins at 24 inch o.c. span full bay with no intermediate support — verify span",
+          "category": "design_issue",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m10",
+          "concept": "Rafter-to-support connection at HSS6x6 post not detailed — add connection detail",
+          "category": "missing_information",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m11",
+          "concept": "Roof diaphragm plywood fastening schedule not referenced — add per general notes",
+          "category": "code_violation",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m12",
+          "concept": "Ambiguous cloud with no comment — unclear intent",
+          "category": "ambiguous",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": false
+        },
+        {
+          "id": "m13",
+          "concept": "Bare question mark near detail bubble — verify",
+          "category": "ambiguous",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": true
+        }
+      ],
+      "extracted_count": 29,
+      "extracted_markups": [
+        {
+          "id": "MK-001",
+          "markup_text": "Red cloud around recess slab area with arrow pointing to detail",
+          "markup_type": "clarify",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Red revision cloud around recess slab detail area between grid lines D and E, with red arrow pointing to the detail callout",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-001",
+          "markup_text": "Red cloud around TOC 100'-0\" TYP. U.N.O. note with slab specifications",
+          "markup_type": "clarify",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Upper right area, around detail callout with slab specifications",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-002",
+          "markup_text": "Red cloud around lower left area with slab and brick specifications",
+          "markup_type": "clarify",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Lower left corner, around text describing slab 2 3/8\" and brick specifications",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-003",
+          "markup_text": "Red cloud around pier diameter note",
+          "markup_type": "clarify",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Right side, around pier diameter specification near grid line D",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-001",
+          "markup_text": "SOG reinf not verified for fire-apparatus floor loading — confirm",
+          "markup_type": "clarify",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Upper left area, red cloud around foundation element with leader line to red text box",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-002",
+          "markup_text": "Beam marks S1-S3 not defined — add member schedule",
+          "markup_type": "add",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Center area near beam S2, red text box with leader line pointing to structural elements",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-003",
+          "markup_text": "Pier sizes not called out per location — add pier schedule",
+          "markup_type": "add",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Lower left area, red cloud around pier legend with leader line to red text box",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-001",
+          "markup_text": "Red cloud around floor access hole and surrounding structural elements",
+          "markup_type": "clarify",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Center-left area, around floor access hole with reference to ARCH. & DTL. 11/S301",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": true,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-002",
+          "markup_text": "HATCHED AREAS (TYP.)",
+          "markup_type": "note",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Lower left area, near recess slab notation for fire brick at brick",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-003",
+          "markup_text": "Red cloud around TOC elevation and grid reference",
+          "markup_type": "clarify",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Upper center area, around TOC = 109'-6 1/2\" (TYP. @ GRID B) notation",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": true,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-001",
+          "markup_text": "[illegible]",
+          "markup_type": "note",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Red line or mark at bottom left edge of tile, below grid line E",
+          "related_to": null,
+          "confidence": "low",
+          "ambiguous": true,
+          "raw_interpretation": "red horizontal line"
+        },
+        {
+          "id": "MK-001",
+          "markup_text": "Fire-brick recess extents not dimensioned — add limits",
+          "markup_type": "add",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Red text box with leader line pointing to fire brick hatched area in upper portion of drawing, near grid line E",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-001",
+          "markup_text": "Red zigzag line along upper edge",
+          "markup_type": "note",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Upper right corner of foundation plan, along the top edge",
+          "related_to": null,
+          "confidence": "medium",
+          "ambiguous": true,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-001",
+          "markup_text": "8x11.5 @ 24\" o.c. full-bay span — verify, no intermediate support",
+          "markup_type": "clarify",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Red box annotation in right portion of drawing, near plywood over metal roof deck notation",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-001",
+          "markup_text": "OC = 109'-9\" (TYP. CURB HEIGHT @ CMU BEARING SECOND LEVEL. U.N.O.)",
+          "markup_type": "note",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Red cloud around detail callout DTL. 11/S301 in upper right area",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-002",
+          "markup_text": "Floor access opening framing not shown — verify per 1/S301",
+          "markup_type": "clarify",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Red text box with leader line pointing to upper right area near grid line 5",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-003",
+          "markup_text": "C8x11.5 @ 2'-0\" O.C.",
+          "markup_type": "note",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Red cloud around structural notation in lower portion between grid lines 2 and 3",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-001",
+          "markup_text": "access opening not shown — per 1/S301",
+          "markup_type": "note",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Upper left area, near grid line E, red text annotation in rectangular box",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-001",
+          "markup_text": "Detail 4/S201 referenced but not on set — verify",
+          "markup_type": "clarify",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Red rectangular callout box on left side, between grid lines B and C, pointing to POST REF. 4/S201",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-002",
+          "markup_text": "Red cloud markup",
+          "markup_type": "note",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Red revision cloud on right side near grid line D, around structural connection detail",
+          "related_to": null,
+          "confidence": "medium",
+          "ambiguous": true,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-001",
+          "markup_text": "10x16 beam bearing at CMU not detailed — add detail",
+          "markup_type": "add",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Red cloud around beam bearing area between grid lines 3-4, with red text box below",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-002",
+          "markup_text": "S1 span at re-entrant corner — check deflection",
+          "markup_type": "clarify",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Red text box at lower right, connected by red arrow to grid line 5 area",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-001",
+          "markup_text": "W8x15 RAFTERS W8x15 SUPPORT HSS6x6x3/8 POST",
+          "markup_type": "note",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Red cloud around structural members between grid lines B and C",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-002",
+          "markup_text": "Rafter-to-HSS post connection not detailed — add",
+          "markup_type": "add",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Red text box with leader line pointing to connection at grid line D",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-003",
+          "markup_text": "?",
+          "markup_type": "clarify",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Red question mark in box near grid line D, lower portion",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": true
+        },
+        {
+          "id": "MK-004",
+          "markup_text": "PLYWOOD OVER 1 1/2\" METAL ROOF DECK REFER TO SECTIONS AND GEN. NOTES",
+          "markup_type": "note",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Red cloud with leader line at lower right, near grid line 1",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-001",
+          "markup_text": "Red cloud around C8x11.5 @ 2'-0\" O.C. beam specification",
+          "markup_type": "clarify",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Upper portion of drawing, around beam specification between grid lines 2-3",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-002",
+          "markup_text": "Red cloud marking area on left side",
+          "markup_type": "clarify",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Left side of drawing, vertical red cloud near grid line 1",
+          "related_to": null,
+          "confidence": "medium",
+          "ambiguous": true
+        },
+        {
+          "id": "MK-003",
+          "markup_text": "Red cloud marking empty area",
+          "markup_type": "clarify",
+          "drawing_reference": "S201",
+          "location_on_drawing": "Right side of drawing, between grid lines 4-5, row D-E",
+          "related_to": null,
+          "confidence": "medium",
+          "ambiguous": true
+        }
+      ]
+    }
+  ]
+}

@@ -6,6 +6,30 @@ Each entry below is a self-contained capture: what happened, the specific number
 
 ---
 
+## 2026-05-29 session — confabulation discovery + tiling confirmed on a new real case
+
+**One-line summary:** Built a real civil/structural eval case by hand, watched the model *invent* markups that weren't there when it couldn't read them, proved a prompt "don't fabricate" guard couldn't fix it — then proved tiling could, lifting that case from recall 0 → 0.85.
+
+### Recommended post angle: "The model didn't fail — it lied, confidently. Here's the fix."
+
+**Hook:**
+> I gave my redline-extraction AI a real structural drawing I'd marked up by hand. It returned 12 confident findings. Not one was real — it had invented all of them. Here's why, and the one change that fixed it.
+
+**Body:**
+1. **The setup.** Hand-marked a real public structural sheet (San Marcos fire-training center, S201) in PDF-XChange as a ground-truth eval case — 13 redline comments, known answers.
+2. **The failure.** Extraction scored 0/13. But it didn't return *nothing* — it returned 12 markups at **high confidence**, all fabricated ("BEAM NEEDS TO BE INSTALLED BEFORE CEILING JOISTS" ×4 — text nowhere on the sheet). A redline tool that *invents* comments is worse than one that misses them.
+3. **Wrong fix #1: just tell it not to.** Added an explicit prompt guard — "never fabricate, flag illegible instead." Re-ran. Still confabulated, still high-confidence, just *different* invented text. A prose prohibition can't overcome physically unreadable input.
+4. **Root cause.** The Claude API downsamples every image to 1568px on the long edge. On a dense 4-plan sheet, my callouts shrank below readable — so the model saw "a structural drawing with red marks it can't read" and its drive to be helpful filled the gap with plausible-sounding notes.
+5. **The fix: tiling.** Split the sheet into 15 overlapping tiles, each under 1568px, extract per tile, merge. Same sheet, same prompt: **recall 0 → 0.846.** It read the *actual* comments (pier sizes, beam marks, bearing details). Confabulation gone — not because we told it to stop, but because it could finally read.
+6. **The catch.** Tiling tripled extracted counts on sheets that *didn't* need it and tanked precision (0.78 → 0.28 on a clean civil sheet). So the real product move is **conditional tiling** — detect dense/illegible sheets and tile only those. Also: tiling the whole eval set in one batch burned through the API credit balance mid-run — a vivid reminder that the lever has a cost, and routing matters.
+
+**Bonus finding (own post):** while labeling, realized one "case" wasn't comment-markup at all — the reviewer had *redrawn* the casework geometry in red. That's a different task (geometric diff, not OCR). Added a third eval taxonomy axis (`markup_modality`: annotation / design_overlay / mixed) and pulled those cases out of the headline metric so they stop measuring a capability the tool doesn't target.
+
+**Closer:**
+> Two lessons. One: an AI that can't see will confidently make things up — design for that. Two: you can't prompt your way out of a resolution problem.
+
+---
+
 ## 2026-05-27 → 2026-05-28 session — DPI investigation arc + tiling breakthrough
 
 **One-line summary:** Spent a long stretch diagnosing why hand-drawn redlines were failing; the obvious hypothesis was wrong twice, and the actual lever turned out to be tiling — not DPI. Along the way, found and fixed a silent bug that had been contaminating every eval comparison for weeks.

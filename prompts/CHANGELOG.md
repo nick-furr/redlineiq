@@ -21,6 +21,8 @@ Prompt source files live alongside this changelog (`v0.X.md`). The runtime-loade
 
 **Status:** superseded approach — proceed to tiling.
 
+**CONFIRMED 2026-05-29 (`runs/2026-05-29_current_tile_only.json`):** case_012 **tiled** → recall **0 → 0.846** (11/13), confabulation gone — it read the real callouts instead of inventing notes. Proves confabulation is an illegibility artifact, not prompt-permissiveness; tiling is the fix, not the v0.10 guard. Cost: precision 0.379 (29 extracted vs 13) from over-tiling + loose cross-tile dedup → next work is **conditional tiling** (route dense sheets only) + tighter merge. Partial full-tiled run also showed recall up / precision down across synthetic cases (e.g. case_001 precision 0.73→0.28), and exhausted the API credit balance mid-run — both reinforce conditional routing.
+
 ---
 
 ## v0.9 (rebaselined) — 2026-05-28
