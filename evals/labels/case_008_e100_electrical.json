@@ -4,6 +4,7 @@
   "sheet": "E100",
   "substrate_source": "synthetic",
   "markup_source": "synthetic",
+  "markup_modality": "annotation",
   "page_count": 1,
   "expected_markups": [
     {

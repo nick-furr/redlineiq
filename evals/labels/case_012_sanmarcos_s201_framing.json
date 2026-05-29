@@ -4,6 +4,7 @@
   "sheet": "S201",
   "substrate_source": "real_public",
   "markup_source": "self_authored",
+  "markup_modality": "annotation",
   "page_count": 1,
   "expected_markups": [
     { "id": "m1", "concept": "Individual pier sizes not called out at each location — only Pier Legend shown; add pier marks/schedule", "category": "missing_information", "page": 1, "specificity_target": 2, "is_ambiguous": false },

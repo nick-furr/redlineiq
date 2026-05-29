@@ -4,6 +4,7 @@
   "sheet": "C-401",
   "substrate_source": "real_public",
   "markup_source": "self_authored",
+  "markup_modality": "annotation",
   "page_count": 1,
   "notes": "Real Bohler Engineering C-401 Grading & Drainage Plan from the Town of Walpole public permit documents (KIG Silverstrand Walpole project). Page 5 of the bound Bohler civil set. Redlines added by hand in PDF-XChange Editor — civil reviewer-style comments mixing clear instructions with two bare ambiguous marks. Originally tracked as case_R001 under the retired R-prefix convention; renamed to case_011 once it was clear the substrate was public-record and the markup was self-authored (see evals/CONVENTIONS.md). Pairs with case_006 (real_public + real_reviewer) to isolate substrate complexity vs. real reviewer prose.",
   "expected_markups": [

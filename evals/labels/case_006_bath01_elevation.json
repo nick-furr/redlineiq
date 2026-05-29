@@ -4,6 +4,7 @@
   "sheet": "BATH 01-E",
   "substrate_source": "real_public",
   "markup_source": "real_reviewer",
+  "markup_modality": "mixed",
   "page_count": 1,
   "notes": "Real marked-up interior elevation. Also used as live demo sheet. Markups are handwritten in red pen. PDF contains clean drawing (top) and redlined copy (bottom) on same page.",
   "expected_markups": [

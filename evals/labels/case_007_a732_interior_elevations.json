@@ -1,0 +1,77 @@
+{
+  "case_id": "case_007_a732_interior_elevations",
+  "discipline": "architectural",
+  "sheet": "A732",
+  "substrate_source": "real_public",
+  "markup_source": "real_reviewer",
+  "markup_modality": "mixed",
+  "page_count": 1,
+  "_note": "Mixed-modality: reviewer redrew casework geometry in red (overlay = noise, not labeled) AND added dense text comments (captured below). Score under the design_overlay/mixed slice, NOT the annotation-only headline metric. Transcribed from a hand-marked scan; a few reads remain uncertain (flagged is_ambiguous). Elevation attribution between the two Mudroom views may be approximate.",
+  "expected_markups": [
+    { "id": "m1", "concept": "[Mudroom W] Upper cabinets to be fixed shelves", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m2", "concept": "[Mudroom W] Middle shelves adjustable", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m3", "concept": "[Mudroom W] Closet rod at left bay", "category": "missing_information", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m4", "concept": "[Mudroom W] Casework dimensions — 48\"/12\"/eq/1½\"/1'-0\" — verify", "category": "missing_information", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m5", "concept": "[Mudroom W] what is this double line?", "category": "ambiguous", "page": 1, "specificity_target": 0, "is_ambiguous": true },
+    { "id": "m6", "concept": "[Mudroom W] no base trim", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+
+    { "id": "m7", "concept": "[Mudroom S] We need elevations + design for island — see me to review and discuss", "category": "missing_information", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+
+    { "id": "m8", "concept": "[Mudroom/Corridor E] 42\" upper cabinets / 24\" upper", "category": "missing_information", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m9", "concept": "[Mudroom/Corridor E] 'open' shelf at uppers", "category": "design_issue", "page": 1, "specificity_target": 1, "is_ambiguous": false },
+    { "id": "m10", "concept": "[Mudroom/Corridor E] Tile TBD (x2)", "category": "missing_information", "page": 1, "specificity_target": 1, "is_ambiguous": false },
+    { "id": "m11", "concept": "[Mudroom/Corridor E] Dog wash", "category": "design_issue", "page": 1, "specificity_target": 1, "is_ambiguous": false },
+    { "id": "m12", "concept": "[Mudroom/Corridor E] Pull out", "category": "design_issue", "page": 1, "specificity_target": 1, "is_ambiguous": false },
+    { "id": "m13", "concept": "[Mudroom/Corridor E] Keep stone splash level — do not follow counter", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m14", "concept": "[Mudroom/Corridor E] Rail at wall", "category": "missing_information", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m15", "concept": "[Mudroom/Corridor E] Curb tile / no round base — partially illegible", "category": "ambiguous", "page": 1, "specificity_target": 0, "is_ambiguous": true },
+
+    { "id": "m16", "concept": "[Mudroom N] Fixed shelves above, adjustable shelves below (left tower)", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m17", "concept": "[Mudroom N] Align (soffit/ceiling)", "category": "design_issue", "page": 1, "specificity_target": 1, "is_ambiguous": false },
+    { "id": "m18", "concept": "[Mudroom N] bare '?' near ceiling", "category": "ambiguous", "page": 1, "specificity_target": 0, "is_ambiguous": true },
+    { "id": "m19", "concept": "[Mudroom N] Light note at right", "category": "missing_information", "page": 1, "specificity_target": 1, "is_ambiguous": false },
+    { "id": "m20", "concept": "[Mudroom N] Higher curb", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+
+    { "id": "m21", "concept": "[Corridor 02 S] What is the header height for these windows? Coordinate with ICF coursing", "category": "missing_information", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m22", "concept": "[Corridor 02 S] 9° angle callout at top", "category": "design_issue", "page": 1, "specificity_target": 1, "is_ambiguous": false },
+
+    { "id": "m23", "concept": "[Corridor 02 N] Raise ceiling in corridor, align with top of window casing", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+
+    { "id": "m24", "concept": "[Family Room N] 'pen weight' — linework weight note on door", "category": "design_issue", "page": 1, "specificity_target": 1, "is_ambiguous": false },
+
+    { "id": "m25", "concept": "[PR 01 N] We need to start indicating paper hangers + towel bars (TYPICAL)", "category": "missing_information", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m26", "concept": "[PR 01 N] Tile base", "category": "missing_information", "page": 1, "specificity_target": 1, "is_ambiguous": false },
+    { "id": "m27", "concept": "[PR 01 E] Update to framed mirror", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m28", "concept": "[PR 01 S] Tile base", "category": "missing_information", "page": 1, "specificity_target": 1, "is_ambiguous": false },
+
+    { "id": "m29", "concept": "[Mil Bath W] Linear (drain?)", "category": "missing_information", "page": 1, "specificity_target": 1, "is_ambiguous": false },
+    { "id": "m30", "concept": "[Mil Bath W] Tile pattern 01", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m31", "concept": "[Mil Bath W] Tile base", "category": "missing_information", "page": 1, "specificity_target": 1, "is_ambiguous": false },
+    { "id": "m32", "concept": "[Mil Bath W] Align (mirror) / align wall soffit", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m33", "concept": "[Mil Bath W] T.P. 01", "category": "missing_information", "page": 1, "specificity_target": 1, "is_ambiguous": false },
+    { "id": "m34", "concept": "[Mil Bath W] T.P. 02 (4x4)", "category": "missing_information", "page": 1, "specificity_target": 1, "is_ambiguous": false },
+    { "id": "m35", "concept": "[Mil Bath W] Add stem wall", "category": "missing_information", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m36", "concept": "[Mil Bath W] Shorten cabinet to accommodate stem wall thickness", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+
+    { "id": "m37", "concept": "[Mil Bath S] Should we have wainscot?", "category": "ambiguous", "page": 1, "specificity_target": 0, "is_ambiguous": true },
+    { "id": "m38", "concept": "[Mil Bath S] bare '?' mark", "category": "ambiguous", "page": 1, "specificity_target": 0, "is_ambiguous": true },
+
+    { "id": "m39", "concept": "[Mil Bath E] We need a different size tile", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m40", "concept": "[Mil Bath E] Tile #1 / Tile #2 callouts", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m41", "concept": "[Mil Bath E] Solid [surface] callout", "category": "design_issue", "page": 1, "specificity_target": 1, "is_ambiguous": false },
+
+    { "id": "m42", "concept": "[Mil Bath N] Add a wall here", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+
+    { "id": "m43", "concept": "[Mil Bed S] Fixed panels", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m44", "concept": "[Mil Bed S] Toe kick", "category": "missing_information", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m45", "concept": "[Mil Bed S] Base", "category": "missing_information", "page": 1, "specificity_target": 1, "is_ambiguous": false },
+    { "id": "m46", "concept": "[Mil Bed S] Add arched opening, not open to ceiling", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m47", "concept": "[Mil Bed S] Mask windows beyond", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m48", "concept": "[Mil Bed S] Panelize door — 1 leaf not 2", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m49", "concept": "[Mil Bed S] Always 1½\" radius at the wall", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m50", "concept": "[Mil Bed S] 4 adjustable shelves", "category": "missing_information", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m51", "concept": "[Mil Bed S] 1 door", "category": "design_issue", "page": 1, "specificity_target": 1, "is_ambiguous": false },
+    { "id": "m52", "concept": "[Mil Bed S] Continuous 1½\" rail", "category": "missing_information", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m53", "concept": "[Mil Bed S] Inset cabinet from soffit per plan", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false }
+  ]
+}

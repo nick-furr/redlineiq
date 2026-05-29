@@ -4,6 +4,7 @@
   "sheet": "C-401",
   "substrate_source": "synthetic",
   "markup_source": "synthetic",
+  "markup_modality": "annotation",
   "page_count": 1,
   "expected_markups": [
     {"id": "m1", "concept": "FFE vs finished grade conflict at building entrance — match correction from C-301", "category": "modify", "page": 1, "specificity_target": 2, "is_ambiguous": false},

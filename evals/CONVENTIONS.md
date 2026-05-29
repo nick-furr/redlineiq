@@ -15,13 +15,14 @@ The `case_C*` prefix is the *policy hook*: anything matching it is `.gitignore`d
 
 > Historical note: an earlier convention used `case_R*` and `case_HR*` as a one-bit "real vs synthetic" flag. That conflated substrate-realism with markup-realism (see below) and was retired when case_R001 was renamed to case_011. Anything currently called `case_R*` predates this convention.
 
-## Metadata: substrate × markup
+## Metadata: substrate × markup × modality
 
-Each label JSON carries two independent realism fields:
+Each label JSON carries three independent fields:
 
 ```json
 "substrate_source": "synthetic" | "real_self" | "real_public" | "real_collaborator",
-"markup_source":    "synthetic" | "self_authored" | "real_reviewer"
+"markup_source":    "synthetic" | "self_authored" | "real_reviewer",
+"markup_modality":  "annotation" | "design_overlay" | "mixed"
 ```
 
 **`substrate_source`** — where the underlying plan PDF came from:
@@ -35,16 +36,22 @@ Each label JSON carries two independent realism fields:
 - `self_authored` — the user added the redlines by hand in PDF-XChange or similar, possibly from a Claude-suggested list
 - `real_reviewer` — actual reviewer comments from a real project review cycle
 
-## Why two fields, not one
+**`markup_modality`** — *what kind* of redline it is (orthogonal to who authored it):
+- `annotation` — text-based redlines that point at existing content: clouds, callouts, comments, questions, dimension corrections. **This is RedlineIQ's extraction target** — the task is to read the comment and put it in a checklist. Almost every case is this.
+- `design_overlay` — new geometry drawn in red *over* the existing linework: re-sketched casework, moved walls, redesigned layout. The information lives in the lines, not in text. This is a **geometric-diff** problem, NOT comment extraction — it is out of current scope. The model tends to confabulate here (lots of red, few actual comments). For these cases, label *only* the genuine text comments and treat the redrawn geometry as noise the extractor must see past.
+- `mixed` — meaningful amounts of both (e.g. case_006: hatching/X-marks over elements *plus* text notes).
 
-The two dimensions test different things:
+## Why three fields, not one
 
-- **Substrate realism** stresses the *vision pipeline*: dense sheets, real abbreviations, real symbol density, scale, line weight, scanned vs vector PDFs.
-- **Markup realism** stresses the *extraction prompt*: how a real engineer phrases a comment vs how a synthetic generator phrases one. Real reviewers are terse, idiomatic, and often ambiguous in ways the prompt has to learn to flag.
+The three fields test different things:
 
-A `real_public + self_authored` case (e.g. case_011) isolates substrate complexity. A `real_public + real_reviewer` case (e.g. case_006) is the ceiling test — both axes maxed.
+- **Substrate realism** (`substrate_source`) stresses the *vision pipeline*: dense sheets, real abbreviations, real symbol density, scale, line weight, scanned vs vector PDFs.
+- **Markup realism** (`markup_source`) stresses the *extraction prompt*: how a real engineer phrases a comment vs how a synthetic generator phrases one. Real reviewers are terse, idiomatic, and often ambiguous in ways the prompt has to learn to flag.
+- **Markup modality** (`markup_modality`) determines whether the case is even *in scope* for the extraction task. `annotation` = the task. `design_overlay` = a different (geometric) task the pipeline isn't built for.
 
-When scoring, you can slice the run JSON by either field to see which axis a regression is on.
+A `real_public + self_authored + annotation` case (e.g. case_011) isolates substrate complexity. A `real_public + real_reviewer + mixed` case (e.g. case_006) is the ceiling test — all axes maxed.
+
+When scoring, you can slice the run JSON by any field to see which axis a regression is on. **Critically: the headline recall/precision metric should be computed over `annotation`-modality cases only.** `design_overlay`/`mixed` cases measure a capability RedlineIQ doesn't currently target — folding them into the aggregate conflates two tasks and makes the prompt look worse than it is (this is what dragged case_007 to ~0 and is a big part of case_006's floor).
 
 ## Authoring `self_authored` markups
 
@@ -58,12 +65,13 @@ When you hand-draw redlines on a real substrate (PDF-XChange or similar), follow
 
 ## Current cases
 
-| Case | substrate_source | markup_source |
-|---|---|---|
-| case_001 – case_005 | synthetic | synthetic |
-| case_006 | real_public | real_reviewer |
-| case_008 – case_010 | synthetic | synthetic |
-| case_011 (was case_R001) | real_public | self_authored |
-| case_h02 – case_h05 (holdout) | synthetic | synthetic |
+| Case | substrate_source | markup_source | markup_modality |
+|---|---|---|---|
+| case_001 – case_005 | synthetic | synthetic | annotation |
+| case_006 | real_public | real_reviewer | mixed |
+| case_008 – case_010 | synthetic | synthetic | annotation |
+| case_011 (was case_R001) | real_public | self_authored | annotation |
+| case_012 | real_public | self_authored | annotation |
+| case_h02 – case_h05 (holdout) | synthetic | synthetic | annotation |
 
-(case_007 has a PDF in `pdfs/` but no label — orphaned, skipped by the runner.)
+case_007 (a732 interior elevations, `real_public`, `real_reviewer`) is a **`mixed`** case — the reviewer redrew casework geometry in red over the existing linework (overlay, treated as noise) AND added dense text comments. It is **labeled** (53 markups: every text comment captured, geometry left as noise). It does **not** belong in the annotation-only headline metric — score it under the design_overlay/mixed slice. case_h01 (a734) is its holdout sibling, same modality, still unlabeled.

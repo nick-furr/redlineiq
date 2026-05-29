@@ -9,6 +9,20 @@ Prompt source files live alongside this changelog (`v0.X.md`). The runtime-loade
 
 ---
 
+## v0.10 — 2026-05-29
+
+**Change:** Added a "Critical constraint — never fabricate" section above Process, plus a balancing clause on Rule 6.
+
+**Why:** The 2026-05-29 working-set run (`runs/2026-05-29_current.json`) exposed confabulation under illegibility. On case_012 (dense real structural sheet), the model could not read the self-authored callouts at the API's 1568px downsample, so instead of using the existing `[illegible]` path it INVENTED markups — emitting `BEAM UNDER 2X10 JOISTS @ 16" O.C.` 10× (text absent from the sheet) and misreading one base-drawing note, scoring 0/0/0. Rule 2's illegibility handling wasn't enough: the failure isn't "I see a mark I can't read," it's wholesale invention driven by the exhaustiveness pressure. The new constraint forbids inferring markup text from drawing content and makes "few/zero markups" an acceptable answer.
+
+**Validation target:** case_012 stops confabulating (fabricated count → 0; honest `[illegible]`/ambiguous flags or empty instead of invented notes).
+
+**Result — FAILED its objective (re-run `runs/2026-05-29_current.json`, v0.9 baseline preserved as `runs/2026-05-29_v0.9_pre-guard.json`).** case_012 still confabulated, now at `high` confidence — invented "BEAM NEEDS TO BE INSTALLED BEFORE CEILING JOISTS" ×4, "NEED TO SPECIFY BEAM SIZE" ×3, etc. Only 1 of 12 extractions became an honest ambiguous flag. A prose prohibition cannot overcome physically unreadable text — the model's drive to produce plausible content on a structural sheet it can't read dominates the instruction. Aggregate nominally rose (recall 0.526→0.569) but is unattributable: the guard's core mechanism plainly didn't fire, and case_011 regressed 0.3→0.1 (dropped marks it previously caught). **Conclusion: confabulation is an illegibility problem, not a prompt-permissiveness problem. Fix is tiling (root cause); a future guard should be grounding-based (require literal-character evidence per markup), not a prose plea.** v0.10 language retained as reasonable defense-in-depth but is NOT the fix.
+
+**Status:** superseded approach — proceed to tiling.
+
+---
+
 ## v0.9 (rebaselined) — 2026-05-28
 
 **Aggregate (9 cases, working set):** recall=0.665 · precision=0.687 · specificity=1.509 — under the new pinned config (extraction `temperature=0`, judge `temperature=0`, judge single-vote).

@@ -4,6 +4,7 @@
   "sheet": "103",
   "substrate_source": "synthetic",
   "markup_source": "synthetic",
+  "markup_modality": "annotation",
   "page_count": 1,
   "expected_markups": [
     {"id": "m1", "concept": "Restroom lavatory clear floor space 28\" — ADA minimum is 30\", fix layout", "category": "modify", "page": 1, "specificity_target": 2, "is_ambiguous": false},
