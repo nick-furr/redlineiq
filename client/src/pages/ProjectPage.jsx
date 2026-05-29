@@ -99,7 +99,9 @@ function SampleProjectPage() {
         </div>
       </aside>
       <main className="flex-1 flex flex-col overflow-hidden bg-[var(--bg-1)]">
-        <PdfViewer pdfUrl={`/api/projects/${SAMPLE_PROJECT.id}/pdf`} selectedItem={selectedItem} onExport={exportCSV}/>
+        {/* ?v=<filename> busts the browser/CDN cache when the sample PDF is swapped —
+            the URL is otherwise identical across swaps and the route sets a long max-age. */}
+        <PdfViewer pdfUrl={`/api/projects/${SAMPLE_PROJECT.id}/pdf?v=${encodeURIComponent(SAMPLE_PROJECT.pdf_filename)}`} selectedItem={selectedItem} onExport={exportCSV}/>
         <DetailStrip item={selectedItem} onStatusChange={handleStatusChange} onFlag={handleFlag}/>
       </main>
     </div>
