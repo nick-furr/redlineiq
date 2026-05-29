@@ -1,0 +1,23 @@
+{
+  "case_id": "case_012_sanmarcos_s201_framing",
+  "discipline": "structural",
+  "sheet": "S201",
+  "substrate_source": "real_public",
+  "markup_source": "self_authored",
+  "page_count": 1,
+  "expected_markups": [
+    { "id": "m1", "concept": "Individual pier sizes not called out at each location — only Pier Legend shown; add pier marks/schedule", "category": "missing_information", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m2", "concept": "6-inch slab-on-grade reinforcing not verified for fire-apparatus floor loading — confirm design load", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m3", "concept": "Fire-brick slab recess extents not dimensioned — add limits", "category": "missing_information", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m4", "concept": "Beam marks S1-S3 referenced on plan but not defined — add member schedule or sizes", "category": "missing_information", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m5", "concept": "Floor access opening header/trimmer framing not shown — verify per detail 1/S301", "category": "missing_information", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m6", "concept": "Post detail 4/S201 referenced but detail not located on this set — verify reference", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m7", "concept": "10x16 beam bearing at CMU not detailed — provide bearing and anchorage detail", "category": "code_violation", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m8", "concept": "S1 beam span at re-entrant corner not verified for attic loading — check deflection", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m9", "concept": "C8x11.5 purlins at 24 inch o.c. span full bay with no intermediate support — verify span", "category": "design_issue", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m10", "concept": "Rafter-to-support connection at HSS6x6 post not detailed — add connection detail", "category": "missing_information", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m11", "concept": "Roof diaphragm plywood fastening schedule not referenced — add per general notes", "category": "code_violation", "page": 1, "specificity_target": 2, "is_ambiguous": false },
+    { "id": "m12", "concept": "Ambiguous cloud with no comment — unclear intent", "category": "ambiguous", "page": 1, "specificity_target": 0, "is_ambiguous": true },
+    { "id": "m13", "concept": "Bare question mark near detail bubble — verify", "category": "ambiguous", "page": 1, "specificity_target": 0, "is_ambiguous": true }
+  ]
+}

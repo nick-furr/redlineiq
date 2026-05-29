@@ -3,6 +3,10 @@
 Tracks what changed in the extraction prompt and eval harness between scored versions.
 Prompt source files live alongside this changelog (`v0.X.md`). The runtime-loaded prompt is `active.md`. Run results are in `evals/runs/YYYY-MM-DD_<version>.json`.
 
+### Eval-set errata
+- **2026-05-28 — case_011 (walpole) re-authored.** Recolored its mixed black/red callouts to uniform red (black text was reading as substrate, not markup). Its pre-5/28 scores (v0.9 entry below: 0.900/1.000/1.556; bare-marks 2/2) are **not comparable** to any post-edit re-run. Label unchanged. See `evals/CONVENTIONS.md` § "Authoring self_authored markups".
+- **2026-05-28 — case_012 (sanmarcos S201) added.** New `real_public + self_authored` structural case, 13 markups (11 comments + 2 ambiguous). Not yet scored.
+
 ---
 
 ## v0.9 (rebaselined) — 2026-05-28

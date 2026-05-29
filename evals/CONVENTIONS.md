@@ -46,6 +46,16 @@ A `real_public + self_authored` case (e.g. case_011) isolates substrate complexi
 
 When scoring, you can slice the run JSON by either field to see which axis a regression is on.
 
+## Authoring `self_authored` markups
+
+When you hand-draw redlines on a real substrate (PDF-XChange or similar), follow these rules so the case is valid:
+
+1. **Author the label JSON first, then mark up to it.** Ground truth is written before the PDF is touched — no post-hoc labeling, no ambiguity about the expected answer.
+2. **Every markup must be uniform red** — clouds, callouts, leaders, and text. Black callout text blends into the base drawing and the vision model reads it as substrate, not markup, which silently undercounts what the pipeline can detect. (Discovered on case_011, which had mixed red/black callouts; recoloring changed its behavior and its pre-fix runs were disregarded.)
+3. **Comments must be drawn on the page** as text boxes/callouts, not typed into the editor's comments sidebar — the sidebar lives in PDF metadata and never reaches the rasterized image the pipeline sees.
+4. **Flattening is optional — skip it.** pdf2pic/ghostscript renders live annotation appearance streams (see `src/utils/pdf-converter.js`, which passes no `-dShowAnnots=false`), confirmed on case_011. Flattening would only future-proof against render-path changes, and **free PDF-XChange gates Flatten behind a license — using it stamps "DEMO" watermarks on every page**, which corrupts the substrate. So for this toolchain: save the marked-up PDF un-flattened straight to `evals/pdfs/`. Keep the editable copy in `dogfood/sources/` anyway.
+5. **Seed 1-2 deliberately ambiguous marks** per sheet (`is_ambiguous: true`, `specificity_target: 0`) — a commentless cloud, a bare `?` — to measure the orphaned-cloud / hallucinated-comment failure mode.
+
 ## Current cases
 
 | Case | substrate_source | markup_source |
