@@ -14,19 +14,26 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 
-import { pdfToImages, getPdfPageCount } from '../src/utils/pdf-converter.js';
-import { extractAllPages } from '../src/services/extraction-service.js';
+import { getPdfPageCount } from '../src/utils/pdf-converter.js';
+import { pdfToTiledImages } from '../src/utils/pdf-tiler.js';
+import { extractAllPagesTiled } from '../src/services/tiled-extraction-service.js';
 import { createChecklistItem, computeSummary } from '../src/models/markup.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '..');
-const PDF_FILENAME = 's1-framing.pdf';
+const PDF_FILENAME = 's201-sanmarcos-framing.pdf';
 const PDF_PATH = path.join(REPO_ROOT, 'samples', PDF_FILENAME);
 const SERVER_OUTPUT_PATH = path.join(REPO_ROOT, 'samples', 'demo-extraction.json');
 const CLIENT_OUTPUT_PATH = path.join(REPO_ROOT, 'client', 'src', 'sampleData.js');
 
 const PROJECT_ID = 'sample-demo-001';
-const PROJECT_NAME = 'Sample: Structural Framing (S1)';
+const PROJECT_NAME = 'Sample: Structural Framing — San Marcos S201';
+
+// NOTE: the committed demo-extraction.json was HAND-CURATED (full extraction
+// emits ~24 markups including substrate-text false positives; the live sample
+// keeps the 11 real reviewer markups). Re-running this script regenerates the
+// RAW tiled extraction — sane and non-confabulating, but uncurated. Curate
+// before shipping, or treat the output as a fresh baseline.
 
 async function main() {
   console.log('RedlineIQ — Demo Sample Generator');
@@ -41,17 +48,18 @@ async function main() {
   const totalPages = await getPdfPageCount(PDF_PATH);
   console.log(`Total pages: ${totalPages}`);
 
-  // Step 2: Convert PDF to images
-  console.log('\nConverting PDF to images...');
-  const pageImages = await pdfToImages(PDF_PATH);
-  const convertedCount = pageImages.filter(p => p.base64).length;
-  console.log(`Converted: ${convertedCount}/${totalPages} pages`);
+  // Step 2: Convert PDF to overlapping tiles (dense sheets are split so markups
+  // stay legible under the Claude Vision 1568px long-edge cap; small sheets emit
+  // a single tile). Mirrors the production job path.
+  console.log('\nConverting PDF to tiles...');
+  const tiles = await pdfToTiledImages(PDF_PATH);
+  console.log(`Tiles: ${tiles.length} across ${new Set(tiles.map(t => t.pageNumber)).size} page(s)`);
 
-  // Step 3: Extract markups via Claude Vision
-  console.log('\nRunning extraction (this will call the Claude API)...');
+  // Step 3: Extract markups via Claude Vision (tiled path)
+  console.log('\nRunning tiled extraction (this will call the Claude API)...');
   // Rate-limit retries are handled internally by extraction-service and logged to console automatically.
-  const extractionResult = await extractAllPages(
-    pageImages,
+  const extractionResult = await extractAllPagesTiled(
+    tiles,
     { projectName: PROJECT_NAME },
     (pageNum, total, result) => {
       if (result.error) {
