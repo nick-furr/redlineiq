@@ -6,6 +6,65 @@ Each entry below is a self-contained capture: what happened, the specific number
 
 ---
 
+## 2026-05-29 (late / shipping session) — tiling shipped to production + the "wrong tool" realization + the dual-audience post arc
+
+**One-line summary:** Took the tiling fix from "validated in the eval harness" to "live in the deployed app" in one late-night session — wired it into the real upload→extract path, deployed, and swapped the public demo to the real San Marcos S201 sheet. Along the way: a stale-cache war story, and the bigger realization that for half my users I've been using the wrong tool entirely (OCR-ing data I could just parse).
+
+### This is the "I shipped it" follow-up to the confabulation post — and it's where the audience can widen to SWE
+
+The confab→tiling post (below) is the *discovery*. This session is the *shipping + a deeper engineering lesson*, which is what makes it land with software engineers, not just civil/structural folks.
+
+**The dual-audience spine (one sentence, reads two ways):**
+> An AI that can't see doesn't fail loudly. It lies politely. And you can't prompt your way out of a resolution problem.
+
+Civil hears: *trust problem, and he fixed it.* SWE hears: *a real lesson about LLM failure modes + resolution.* Same line.
+
+### Recommended arc for the next post (3 beats; beat 3 is a teaser for whatever comes after)
+
+1. **Hook (universal):** "I gave my redline AI a structural drawing I'd marked up by hand. It returned 12 confident findings. I drew zero of them."
+2. **SWE-bait second line + the meat:** "Every image you send Claude gets silently resized to 1568px on the long edge." → failed prompt guard → root cause (resolution, not knowledge) → tiling fix, recall **0 → 0.85** → **shipped it to the live app tonight.**
+3. **Teaser (don't fully explain — sets up a future post):** "Then the humbling part — for half my users the markup data was already structured data in the file. I'd been running OCR on data I could just parse. Next: I was using the wrong tool entirely."
+
+**Hook alternates:** (B, most SWE-native) lead with the 1568px gotcha itself; (C, most civil) "An AI that misses a redline is annoying. An AI that *invents* one is dangerous."
+
+### The "wrong tool" angle — the strongest SWE-native story in the deck (save for a future post)
+
+Most RedlineIQ source PDFs (Bluebeam / PDF-XChange) carry **digital annotation objects** — structured text + type + exact coordinates, sitting right in the file. I spent weeks making a vision model read rasterized pixels of that data. The right architecture is **two regimes**: vision + tiling for scanned/hand-drawn/flattened sheets; parse the annotation layer (`pdfjs-dist`) directly for digital markups → ~100%, cheap, coords included (which *also* unlocks on-drawing highlighting for free). Every engineer has a "I built the hard thing when the easy thing existed" story — this is mine, and it's honest because the parsing path isn't built yet (it's the next build, not a claim). Ilija Mirkovic flagged `pdfjs-dist` on the 5/23 launch post; credit him.
+
+### Bonus micro-story (light, optional standalone post): the stale-cache classic
+
+Swapped the demo PDF, deployed, and the live site still showed the *old* drawing — because the PDF URL was identical across the swap and the route set `Cache-Control: max-age=86400`. Browsers (mine included) served the cached old file next to the new checklist. Fix: version the URL (`?v=<filename>`) so the swap busts the cache. The two-hard-things joke writes itself. Small, relatable, human — good for a between-big-posts day.
+
+### Specific numbers (this session)
+
+| Number | What it is | Source |
+|---|---|---|
+| recall **0.846** (11/13) | case_012 caught in the *deployed app*, not just the eval | in-app job + `evals/runs/2026-05-29_current_tile_only.json` |
+| precision **0.379** (11 of 24) | the cost: tiling made it read everything incl. substrate text | same run |
+| **15 tiles** (3×5) | how the 36"×24" sheet was split | `[pdf-tiler]` log |
+| **1568 px** | Sonnet 4.6 server-side image long-edge cap | Anthropic vision docs |
+| **11 / 13** | markups now shown on the live home-page stat | `client/src/pages/HomePage.jsx` |
+
+### Specific commits (this session)
+
+- `2297f00` — feat(app): route extraction through tiling pipeline
+- `cf95a13` — feat(sample): swap hosted demo to curated case_012 (San Marcos S201)
+- `9f00fdc` — fix(sample): cache-bust sample PDF URL so swaps don't serve stale cache
+- Live: `redlineiq-app.onrender.com` (Render/Docker; `DEMO_MODE` on, public extraction gated)
+
+### Voice/tone (same as always, plus)
+
+- Engineer-to-engineer; specific numbers; own the dead ends; no AI-hype words.
+- **Dual-audience rule:** lead with the domain moment (redlines), pay off with the engineering lesson (resolution / wrong-tool). Don't pick one crowd — use lines that read both ways.
+
+### What NOT to do
+
+- **Don't commit to a fixed "post #2" topic.** Where the project is in a week decides it — the wrong-tool/parsing realization, the precision fix, or whatever actually ships. List candidates, commit to none.
+- Don't claim precision is solved (it's 0.38 — actively the next problem) or that the parsing path is built (it's a Notion task, not shipped).
+- Don't overstate the deploy as "done done" — tiling is live; conditional routing + dedup are not.
+
+---
+
 ## 2026-05-29 session — confabulation discovery + tiling confirmed on a new real case
 
 **One-line summary:** Built a real civil/structural eval case by hand, watched the model *invent* markups that weren't there when it couldn't read them, proved a prompt "don't fabricate" guard couldn't fix it — then proved tiling could, lifting that case from recall 0 → 0.85.
