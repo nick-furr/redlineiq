@@ -6,6 +6,59 @@ Each entry below is a self-contained capture: what happened, the specific number
 
 ---
 
+## 2026-05-30 — precision pass shipped: the post-processing layer that cleaned up tiling's mess
+
+**One-line summary:** The 5/29 entry ended with "precision is 0.38, that's the next problem." This session shipped the fix — a deterministic post-processing layer between tile-merge and output that lifted case_012 precision **0.379 → 0.625 with recall held**. Merged to main via PR #1, deployed. The honest catch: it fixed 2 of the 3 false-positive mechanisms; the biggest one (the model transcribing the drawing's own printed text) is still open and is a prompt problem, not a code one.
+
+### Recommended post angle: "Lever one was recall. Lever two was precision. Same fix philosophy: don't argue with the model, change what it sees."
+
+The 5/29 post (if/when it runs) sets this up perfectly: tiling let the model *read* the sheet (recall 0 → 0.85) but as a side effect it now read **everything**, including the drawing's own printed notes — so precision cratered to 0.38. This session is the cleanup, and the framing rhymes with the tiling lesson: you don't fix a vision model by scolding it in the prompt, you fix it by controlling its input/output pipeline.
+
+**Hook (SWE-native):**
+> Last week I made my redline AI read a dense drawing by slicing it into tiles. It worked — recall went 0 to 0.85. It also started "finding" the drawing's own printed legend as if it were a redline. Precision: 0.38. Here's the post-processing layer that got it to 0.63 — and the one false-positive class code can't fix.
+
+**Body (3 beats):**
+1. **The cost of the recall win.** Tiling made every tile legible, so the model dutifully extracted substrate text, redundant cross-tile copies of the same markup, and bare "red cloud around X" notes with no actual comment. 24 extracted, only 11 real → precision 0.379.
+2. **The fix is a pipeline, not a prompt.** New `markup-postprocess.js` runs three deterministic passes on the merged output: (a) **drop location-only marker markups** — a "red cloud" with no inferable comment isn't a checklist item; (b) **Jaccard cross-tile dedup** — token-overlap ≥0.6, keep the higher-confidence copy; this caught a reworded duplicate that exact-string matching missed in the tile-overlap region; (c) **unique-ID renumber** with `related_to` remapping so downstream refs survive. Locked with tests. Result: **precision 0.379 → 0.625, recall unchanged at 0.846**, clean-sheet case_001 no regression.
+3. **The honest open problem (teaser).** That only killed 5 of the 13 false positives. The other 8 are the model transcribing the *drawing's own black printed text* as redlines — and you can't dedup your way out of that. That's a prompt rule ("extract only the colored annotation layer, never the substrate") plus, for digital PDFs, the deeper move: stop OCR-ing pixels and parse the annotation objects directly. Next.
+
+### Why this one is credible (the "show the seam" move)
+
+Don't present 0.63 as a victory lap. The strongest version openly states: code fixed the mechanical FPs (dups, empty clouds); the *dominant* FP class is unsolved and is a different kind of problem. Engineers trust "here's exactly how far this got and where it stops" over "precision improved 65%."
+
+### Specific numbers (this session)
+
+| Number | What it is | Source |
+|---|---|---|
+| precision **0.379 → 0.625** | case_012, the headline | `evals/runs/2026-05-30_current_tile_only.json` |
+| recall **0.846** (held) | no recall traded for the precision gain | same run |
+| **5 of 13** FPs removed | 1 cross-tile dup + 4 location-only clouds | post-process mechanism breakdown |
+| **8 of 13** FPs remain | substrate-text transcription — the open problem | same |
+| **≥0.6** | Jaccard token-overlap dedup threshold | `markup-postprocess.js` |
+
+### Specific commits (this session)
+
+- `32e9e0d` — feat(postprocess): drop location-only marker markups (precision)
+- `5153949` — feat(postprocess): Jaccard cross-tile dedup, keep higher confidence
+- `bce0a86` — test(postprocess): lock tie-confidence dedup; note first-match scope
+- `0ed952b` — feat(postprocess): unique-ID renumber + full pipeline
+- `b872f68` — refactor(tiled): route merge through markup-postprocess pipeline
+- `e48ce35` — eval(postprocess): case_012 precision 0.379→0.625 (recall held)
+- Merged to main: PR #1 (`2e87435`), Render deploy fired.
+
+### Voice/tone
+
+- Same engineer-to-engineer, specific-numbers, own-the-gap voice as the prior entries.
+- The spine: **recall and precision were two halves of the same lesson — control the model's input (tiling) and its output (post-processing), don't try to prompt your way through either.**
+
+### What NOT to do
+
+- Don't call precision "solved." It's 0.63 with the largest FP class untouched — say so.
+- Don't imply the post-processing is clever ML. It's deterministic string/threshold logic — that's the point, and it's more honest.
+- Don't bury the teaser: the substrate-text / parse-don't-OCR follow-up is the real next post; flag it, don't resolve it here.
+
+---
+
 ## 2026-05-29 (late / shipping session) — tiling shipped to production + the "wrong tool" realization + the dual-audience post arc
 
 **One-line summary:** Took the tiling fix from "validated in the eval harness" to "live in the deployed app" in one late-night session — wired it into the real upload→extract path, deployed, and swapped the public demo to the real San Marcos S201 sheet. Along the way: a stale-cache war story, and the bigger realization that for half my users I've been using the wrong tool entirely (OCR-ing data I could just parse).
