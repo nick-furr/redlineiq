@@ -76,4 +76,12 @@ const distinct = [
 ];
 assert(dedupeMarkups(distinct, { threshold: 0.6 }).length === 2, 'distinct markups are not over-merged');
 
+// Equal confidence → the first-seen copy is kept (strict > on confidence rank)
+const tiePair = [
+  mk('access opening not shown — verify per S301', { confidence: 'high' }),
+  mk('Floor access opening not shown — verify per 1/S301', { confidence: 'high' }),
+];
+const tied = dedupeMarkups(tiePair, { threshold: 0.6 });
+assert(tied.length === 1 && tied[0] === tiePair[0], 'equal confidence → first-seen survives');
+
 console.log('\n✅ Task 1 + Task 2 tests complete\n');

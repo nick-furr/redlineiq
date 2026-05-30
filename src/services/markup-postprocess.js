@@ -63,6 +63,8 @@ export function dedupeMarkups(markups, { threshold = 0.6 } = {}) {
   for (const markup of markups) {
     const text = markup.markup_text || '';
     let dupIndex = -1;
+    // Match against the first similar kept item only. At tens of markups per
+    // sheet this is sufficient; flattening triple-rewordings would need a 2nd pass.
     for (let i = 0; i < kept.length; i++) {
       if (jaccardSimilarity(text, kept[i].markup_text || '') >= threshold) {
         dupIndex = i;
