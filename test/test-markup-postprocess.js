@@ -7,6 +7,8 @@ import {
   dropLocationOnlyMarkers,
   jaccardSimilarity,
   dedupeMarkups,
+  assignSequentialIds,
+  postprocessMergedMarkups,
 } from '../src/services/markup-postprocess.js';
 
 function assert(condition, message) {
@@ -83,5 +85,31 @@ const tiePair = [
 ];
 const tied = dedupeMarkups(tiePair, { threshold: 0.6 });
 assert(tied.length === 1 && tied[0] === tiePair[0], 'equal confidence → first-seen survives');
+
+console.log('\n🧪 markup-postprocess: assignSequentialIds + pipeline\n');
+
+// Renumber to unique sequential IDs and remap related_to
+const dupIds = [
+  mk('first', { id: 'MK-001', related_to: null }),
+  mk('second', { id: 'MK-001', related_to: 'MK-002' }), // collides + dangling-looking ref
+  mk('third', { id: 'MK-002', related_to: null }),
+];
+const renumbered = assignSequentialIds(dupIds);
+const ids = renumbered.map(m => m.id);
+assert(new Set(ids).size === 3, 'all IDs unique after renumber');
+assert(ids.join(',') === 'MK-001,MK-002,MK-003', 'IDs are sequential MK-001..MK-003');
+assert(renumbered[1].related_to === 'MK-003', 'related_to remapped to the markup formerly MK-002');
+
+// Full pipeline on a mixed batch: drop → dedupe → renumber
+const batch = [
+  mk('Red cloud markup', { id: 'MK-001' }),                                            // dropped
+  mk('Floor access opening framing not shown — verify per 1/S301', { id: 'MK-002', confidence: 'high' }),
+  mk('access opening not shown — per 1/S301', { id: 'MK-003', confidence: 'medium' }), // merged into MK-002
+  mk('Beam marks S1-S3 not defined — add member schedule', { id: 'MK-004' }),
+];
+const out = postprocessMergedMarkups(batch);
+assert(out.length === 2, 'pipeline: 4 → 2 (1 dropped, 1 merged)');
+assert(out.map(m => m.id).join(',') === 'MK-001,MK-002', 'pipeline reassigns clean sequential IDs');
+assert(out.some(m => m.markup_text.startsWith('Floor access')), 'merged survivor is the higher-confidence m5 copy');
 
 console.log('\n✅ Task 1 + Task 2 tests complete\n');

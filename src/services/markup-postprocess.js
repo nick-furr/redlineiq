@@ -79,3 +79,30 @@ export function dedupeMarkups(markups, { threshold = 0.6 } = {}) {
   }
   return kept;
 }
+
+/**
+ * Reassign sequential, unique IDs (MK-001, MK-002, …) and remap any
+ * related_to references to the new IDs. Mutates and returns the array.
+ */
+export function assignSequentialIds(markups, { prefix = 'MK', start = 1 } = {}) {
+  const idMap = new Map();
+  let counter = start;
+  for (const markup of markups) {
+    const newId = `${prefix}-${String(counter).padStart(3, '0')}`;
+    idMap.set(markup.id, newId);
+    markup.id = newId;
+    counter++;
+  }
+  for (const markup of markups) {
+    if (markup.related_to && idMap.has(markup.related_to)) {
+      markup.related_to = idMap.get(markup.related_to);
+    }
+  }
+  return markups;
+}
+
+/** drop location-only markers → fuzzy dedup → reassign unique IDs. */
+export function postprocessMergedMarkups(markups, options = {}) {
+  const deduped = dedupeMarkups(dropLocationOnlyMarkers(markups), options);
+  return assignSequentialIds(deduped, options);
+}
