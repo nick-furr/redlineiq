@@ -5,6 +5,8 @@
 import {
   isLocationOnlyMarker,
   dropLocationOnlyMarkers,
+  jaccardSimilarity,
+  dedupeMarkups,
 } from '../src/services/markup-postprocess.js';
 
 function assert(condition, message) {
@@ -52,4 +54,26 @@ const kept = dropLocationOnlyMarkers(list);
 assert(kept.length === 2, 'dropLocationOnlyMarkers keeps 2 of 4');
 assert(kept.every(m => m.markup_text.includes('not')), 'survivors are the actionable ones');
 
-console.log('\n✅ Task 1 tests complete\n');
+console.log('\n🧪 markup-postprocess: dedupeMarkups\n');
+
+// Jaccard sanity
+assert(jaccardSimilarity('access opening not shown', 'access opening not shown') === 1, 'identical text → 1.0');
+assert(jaccardSimilarity('', 'anything') === 0, 'empty text → 0');
+
+// The real m5 cross-tile dup (different wording, same markup) must merge
+const m5pair = [
+  mk('Floor access opening framing not shown — verify per 1/S301', { confidence: 'high' }),
+  mk('access opening not shown — per 1/S301', { confidence: 'medium' }),
+];
+const m5merged = dedupeMarkups(m5pair, { threshold: 0.6 });
+assert(m5merged.length === 1, 'm5 reworded dup merges to 1');
+assert(m5merged[0].confidence === 'high', 'merge keeps higher-confidence copy');
+
+// Distinct markups that share a few tokens must NOT merge
+const distinct = [
+  mk('Beam marks S1-S3 not defined — add member schedule'),
+  mk('Pier sizes not called out per location — add pier schedule'),
+];
+assert(dedupeMarkups(distinct, { threshold: 0.6 }).length === 2, 'distinct markups are not over-merged');
+
+console.log('\n✅ Task 1 + Task 2 tests complete\n');

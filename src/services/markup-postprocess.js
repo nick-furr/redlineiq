@@ -41,3 +41,39 @@ export function isLocationOnlyMarker(markup) {
 export function dropLocationOnlyMarkers(markups) {
   return markups.filter((m) => !isLocationOnlyMarker(m));
 }
+
+/** Token-overlap similarity on normalized words. Order-insensitive. */
+export function jaccardSimilarity(a, b) {
+  const ta = new Set(normalizeText(a).split(' ').filter(Boolean));
+  const tb = new Set(normalizeText(b).split(' ').filter(Boolean));
+  if (ta.size === 0 || tb.size === 0) return 0;
+  let intersection = 0;
+  for (const token of ta) if (tb.has(token)) intersection++;
+  const union = ta.size + tb.size - intersection;
+  return intersection / union;
+}
+
+/**
+ * Merge near-duplicate markups (e.g. the same real markup reworded across an
+ * overlapping tile). Keeps the higher-confidence copy. Processes in input
+ * order, so callers should pass markups in a deterministic (tile) order.
+ */
+export function dedupeMarkups(markups, { threshold = 0.6 } = {}) {
+  const kept = [];
+  for (const markup of markups) {
+    const text = markup.markup_text || '';
+    let dupIndex = -1;
+    for (let i = 0; i < kept.length; i++) {
+      if (jaccardSimilarity(text, kept[i].markup_text || '') >= threshold) {
+        dupIndex = i;
+        break;
+      }
+    }
+    if (dupIndex === -1) {
+      kept.push(markup);
+    } else if (confidenceRank(markup.confidence) > confidenceRank(kept[dupIndex].confidence)) {
+      kept[dupIndex] = markup; // replace with the higher-confidence duplicate
+    }
+  }
+  return kept;
+}
