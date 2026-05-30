@@ -112,4 +112,4 @@ assert(out.length === 2, 'pipeline: 4 → 2 (1 dropped, 1 merged)');
 assert(out.map(m => m.id).join(',') === 'MK-001,MK-002', 'pipeline reassigns clean sequential IDs');
 assert(out.some(m => m.markup_text.startsWith('Floor access')), 'merged survivor is the higher-confidence m5 copy');
 
-console.log('\n✅ Task 1 + Task 2 tests complete\n');
+console.log('\n✅ All markup-postprocess tests complete\n');

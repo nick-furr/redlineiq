@@ -101,7 +101,11 @@ export function assignSequentialIds(markups, { prefix = 'MK', start = 1 } = {}) 
   return markups;
 }
 
-/** drop location-only markers → fuzzy dedup → reassign unique IDs. */
+/**
+ * drop location-only markers → fuzzy dedup → reassign unique IDs.
+ * Note: returns the surviving input objects (not clones); their `id` and
+ * `related_to` fields are mutated in place by the renumber step.
+ */
 export function postprocessMergedMarkups(markups, options = {}) {
   const deduped = dedupeMarkups(dropLocationOnlyMarkers(markups), options);
   return assignSequentialIds(deduped, options);
