@@ -1,0 +1,362 @@
+{
+  "timestamp": "2026-05-30T05:25:47.795Z",
+  "prompt_version": "current",
+  "working_set_only": true,
+  "tile_mode": true,
+  "cases_evaluated": 1,
+  "aggregate": {
+    "recall": 0.7,
+    "precision": 0.304,
+    "specificity": 1.571
+  },
+  "results": [
+    {
+      "case_id": "case_001_c301_site_layout",
+      "discipline": "civil",
+      "sheet": "C-301",
+      "scores": {
+        "recall": 0.7,
+        "precision": 0.304,
+        "specificity": 1.571,
+        "matched": 7,
+        "total_expected": 10,
+        "total_extracted": 23
+      },
+      "match_results": [
+        {
+          "id": "m1",
+          "concept": "FFE elevation corrected from 442.0 to 142.0 — reference sheet C-401",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m2",
+          "concept": "5'-0\" access aisle must be 8' wide for van-accessible stall per ADA",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m3",
+          "concept": "36.7' building clearance dimension — verify with fire apparatus turning template",
+          "category": "verify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m4",
+          "concept": "8' compact parking stall — confirm town zoning allows and cite applicable section",
+          "category": "question",
+          "page": 1,
+          "specificity_target": 1,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m5",
+          "concept": "bare 'verify?' near side setback — no context, intent is unclear",
+          "category": "clarify",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": false
+        },
+        {
+          "id": "m6",
+          "concept": "duplicate PROP. MONOLITHIC CONC. WALK (TYP.) label near front entrance — remove one",
+          "category": "delete",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m7",
+          "concept": "add sight triangle dimensions per MA AOT standard at East Street driveway",
+          "category": "add",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m8",
+          "concept": "bare '??' near property corner dimension — no context, intent is unclear",
+          "category": "clarify",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": true
+        },
+        {
+          "id": "m9",
+          "concept": "24.0' two-way drive aisle crossed out and corrected to 26.0' minimum",
+          "category": "modify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m10",
+          "concept": "69'-11\" building height exceeds 52' max — confirm ZBA waiver granted and attach the decision document",
+          "category": "verify",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        }
+      ],
+      "extracted_count": 23,
+      "extracted_markups": [
+        {
+          "id": "MK-001",
+          "markup_text": "8' COMPACT - TOWN ALLOW? CITE S ZONING.",
+          "markup_type": "clarify",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Left side of drawing, red text annotation with cloud around 'EXPANSION AUTHORITY'",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-002",
+          "markup_text": "??",
+          "markup_type": "clarify",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Center area with red arrow pointing to question marks",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": true,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-003",
+          "markup_text": "69'-11\" WAIVE ATTACH",
+          "markup_type": "note",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Upper right area, near property line and easement markings",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-004",
+          "markup_text": "REMOVE - DUPLICATE",
+          "markup_type": "delete",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Lower right area, near proposed amenity area and circle marker 5",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-005",
+          "markup_text": "69'-11\" > 52' MAX. WAIVER GRANTED? ATTACH ZBA DECISION.",
+          "markup_type": "clarify",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Left side of drawing, overlaid on site plan with red text and arrow pointing to zoning analysis table",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-006",
+          "markup_text": "A",
+          "markup_type": "note",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Red circle with letter A in lower right area near proposed stairs",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-007",
+          "markup_text": "syb",
+          "markup_type": "note",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Red handwritten text in lower right corner below the A markup",
+          "related_to": null,
+          "confidence": "medium",
+          "ambiguous": true,
+          "raw_interpretation": "syb"
+        },
+        {
+          "id": "MK-008",
+          "markup_text": "CITE § ZONING",
+          "markup_type": "note",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Upper left corner of drawing",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-009",
+          "markup_text": "verify",
+          "markup_type": "clarify",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Red cloud around retaining wall foundation area, center-left of drawing",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-010",
+          "markup_text": "FFE = 442.0 ??",
+          "markup_type": "clarify",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Lower left area near property line, with red arrow pointing to building",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": true,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-011",
+          "markup_text": "s/b 142.0 - SEE C-401",
+          "markup_type": "modify",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Below the FFE annotation in lower left area",
+          "related_to": "MK-023",
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-012",
+          "markup_text": "VERIFY w/ FIRE",
+          "markup_type": "clarify",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Upper left area, red text annotation near proposed amenity space",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-013",
+          "markup_text": "TURNING",
+          "markup_type": "note",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Right side, below verify notation",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-014",
+          "markup_text": "26.0",
+          "markup_type": "dimension",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Lower right area, dimension notation in red",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-015",
+          "markup_text": "TURNING TEMPLATE",
+          "markup_type": "clarify",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Upper left area, red text annotation below the VERIFY w/ FIRE note",
+          "related_to": "MK-021",
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-016",
+          "markup_text": "STOP",
+          "markup_type": "note",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Center area near monolithic concrete walk, adjacent to proposed stop sign and striping notation",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false,
+          "raw_interpretation": null
+        },
+        {
+          "id": "MK-017",
+          "markup_text": "3",
+          "markup_type": "note",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Right side, red circled number near East Street",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-018",
+          "markup_text": "5'-0\" AISLE ADA VAN REQ'S 8' FIX !!",
+          "markup_type": "modify",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Left side of drawing, near proposed one-way and pedestrian crossing area",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-019",
+          "markup_text": "ADD SIGHT TRIANGLE DIM",
+          "markup_type": "add",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Right side of drawing, near proposed pedestrian crossing sign area",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-020",
+          "markup_text": "MA ACT STD.",
+          "markup_type": "note",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Far right edge of drawing, appears to be cut off",
+          "related_to": null,
+          "confidence": "medium",
+          "ambiguous": true
+        },
+        {
+          "id": "MK-021",
+          "markup_text": "26.0' MIN (2-WAY)",
+          "markup_type": "dimension",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Upper left area, red text annotation for roadway width",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-022",
+          "markup_text": "LIGHT PEDESTRIAN CROSSING SIGN & STOP SIGN AND STOP BAR",
+          "markup_type": "add",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Left side, red text annotation near pedestrian crossing area",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-023",
+          "markup_text": "CLEAR DIAGONALS AT STD.",
+          "markup_type": "note",
+          "drawing_reference": "C-301",
+          "location_on_drawing": "Left side, red text annotation below the pedestrian crossing sign note",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        }
+      ]
+    }
+  ]
+}

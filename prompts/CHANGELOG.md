@@ -9,6 +9,20 @@ Prompt source files live alongside this changelog (`v0.X.md`). The runtime-loade
 
 ---
 
+## Post-processing precision pass — 2026-05-30 (code change, not a prompt change)
+
+**Change:** New pure-function module `src/services/markup-postprocess.js` wired into the tiled merge (`src/services/tiled-extraction-service.js`). Three steps applied to the merged per-tile markup list: (1) **drop location-only markers** — items whose text is a pure red-marker description (`^red (cloud|zigzag|…)`) with no actionable content; (2) **Jaccard cross-tile dedup** (token-overlap ≥ 0.6, keep higher-confidence) replacing the old exact-normalized-text dedup; (3) **unique sequential ID renumber** (fixes duplicate `MK-001` on the single-page eval path). Targets the precision tax the tiling fix introduced (v0.10 entry). 27 unit assertions; no prompt change.
+
+**Result — case_012 (storefront, `--only=case_012 --tile`):** precision **0.379 → 0.625**, extracted 29 → 16. Every `"Red cloud around X"` location-only FP and the m5 cross-tile dup are gone; the 6 remaining FPs are all the **substrate-text class** (`HATCHED AREAS (TYP.)`, `TOC = 109'-9"…`, `W8x15 RAFTERS…`, `PLYWOOD OVER…`, `[illegible]`, `?`) — out of scope here, deferred to a phase-2 prompt rule. Recall read 0.769, but that is **judge noise, not a regression**: m2 (`SOG reinf not verified … — confirm`) is present and byte-identical to the baseline's matched copy; the Haiku judge simply declined to match it this run (ADR 0003 residual non-determinism). Judge-corrected: recall **0.846 held**, precision ~**0.688**. Zero real markups dropped by the pipeline.
+
+**Result — case_001 (clean-sheet recall guard, `--only=case_001 --tile`):** vs the only prior tiled baseline (`runs/2026-05-28_v0.9_tile.json`: 0.60 / 0.194), now **recall 0.60 → 0.70, precision 0.194 → 0.304** — both up, no recall regression. Verified the drop rule removed nothing real: all three judge-missed concepts (m3 fire-apparatus clearance, m5 bare verify?, m6 duplicate walk label) are present in the output as tile-fragmented pieces (`TURNING`/`VERIFY w/ FIRE`, `verify`, `REMOVE - DUPLICATE`). case_001 precision stays low because the leftovers are tile-**fragmented** substrate text (`A`, `syb`, `3`) — a separate fragmentation issue, not this pass.
+
+**Conclusion:** post-processing does exactly its job — removes location-only clouds + cross-tile dups, keeps every real markup. Remaining precision ceiling everywhere is the substrate-text class (phase-2 prompt rule) and tile fragmentation. Conditional/content-aware tile routing remains deferred.
+
+**Harness note:** both `--only` runs wrote to the same file (`runs/2026-05-30_current_tile_only.json`) — the tag is date-only, so the case_001 run overwrote the case_012 run. The committed artifact here is the case_001 run; case_012's numbers above are captured from its run output. Worth giving `--only` runs a case-suffixed filename.
+
+---
+
 ## v0.10 — 2026-05-29
 
 **Change:** Added a "Critical constraint — never fabricate" section above Process, plus a balancing clause on Rule 6.

@@ -15,6 +15,7 @@
  */
 
 import { extractMarkupsFromPage } from './extraction-service.js';
+import { postprocessMergedMarkups } from './markup-postprocess.js';
 
 /**
  * Extract markups from a page by tile-and-merge.
@@ -68,47 +69,21 @@ export async function extractMarkupsFromTiledPage(pageTiles, context = {}) {
   // Restore tile order so the dedup's confidence-replace logic is deterministic
   perTileResults.sort((a, b) => a.order - b.order);
 
-  // Merge: collect all markups, dedup by normalized text
-  const allMarkups = [];
-  const seen = new Map(); // normalized text → kept markup
-
-  for (const { tile, result } of perTileResults) {
-    for (const markup of result.markups) {
-      const key = normalizeText(markup.markup_text);
-      // Skip empty/no-content markups (sometimes tiles emit clouds with no inferable text)
-      if (!key || key.length < 3) {
-        // Keep them anyway under a more unique key so we don't drop them entirely,
-        // but tag location to avoid trivial dupes
-        const fallbackKey = `${key}|${tile.gridRow},${tile.gridCol}`;
-        if (!seen.has(fallbackKey)) {
-          seen.set(fallbackKey, markup);
-          allMarkups.push(markup);
-        }
-        continue;
-      }
-
-      if (seen.has(key)) {
-        // Already have this markup from another tile — keep the one with higher confidence
-        const existing = seen.get(key);
-        if (confidenceRank(markup.confidence) > confidenceRank(existing.confidence)) {
-          // Replace in allMarkups
-          const idx = allMarkups.indexOf(existing);
-          if (idx !== -1) allMarkups[idx] = markup;
-          seen.set(key, markup);
-        }
-      } else {
-        seen.set(key, markup);
-        allMarkups.push(markup);
-      }
-    }
+  // Collect every per-tile markup in deterministic (tile) order, then run the
+  // precision pipeline: drop location-only markers → fuzzy dedup → unique IDs.
+  // (perTileResults is already sorted by tile order above.)
+  const collected = [];
+  for (const { result } of perTileResults) {
+    collected.push(...result.markups);
   }
+  const allMarkups = postprocessMergedMarkups(collected);
 
   // Use first tile's page metadata as the page-level fields
   const firstResult = perTileResults[0]?.result || {};
 
   console.log(
     `  merged: ${perTileResults.reduce((s, r) => s + r.result.markups.length, 0)} per-tile markups → ` +
-    `${allMarkups.length} after dedup`
+    `${allMarkups.length} after drop+dedup`
   );
 
   return {
@@ -118,20 +93,6 @@ export async function extractMarkupsFromTiledPage(pageTiles, context = {}) {
     total_markups_found: allMarkups.length,
     markups: allMarkups,
   };
-}
-
-function normalizeText(text) {
-  if (!text) return '';
-  return text
-    .toLowerCase()
-    .replace(/\[partially illegible\]/g, '')
-    .replace(/[^\w\s]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-function confidenceRank(conf) {
-  return { high: 3, medium: 2, low: 1 }[conf] || 0;
 }
 
 /**
