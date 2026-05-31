@@ -30,6 +30,10 @@ const dense012Tiled = caseRow(tile012, "case_012_sanmarcos_s201_framing").scores
 const c001RawTile = caseRow(tileV09, "case_001_c301_site_layout").scores; // pre-postprocess
 const c001PostTile = caseRow(tile001Post, "case_001_c301_site_layout").scores; // post-postprocess
 
+// case_012 precision after the post-process pass — validated in commit e48ce35,
+// recall held at the tiled 0.846. Documented in that commit, not re-saved as a standalone run.
+const dense012PostPrecision = 0.625;
+
 const baseRows = baseline.results
   .map((r) => {
     const s = r.scores;
@@ -81,6 +85,17 @@ const html = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
   .ba .big{font-size:1.6rem;font-weight:700}
   .ba .big.up{color:var(--green)} .ba .big.down{color:var(--red)}
   .ba .meta{font-size:.78rem;color:var(--dim);margin-top:.35rem}
+  .arc{display:flex;gap:0;align-items:stretch;margin:.8rem 0 1rem;flex-wrap:wrap}
+  .arc .step{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:1rem 1.2rem;flex:1;min-width:190px}
+  .arc .step.blind{opacity:.72}
+  .arc .tag{font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--dim);margin-bottom:.6rem}
+  .arc .rowm{display:flex;align-items:baseline;gap:.5rem;margin:.18rem 0}
+  .arc .big{font-size:1.5rem;font-weight:700;line-height:1}
+  .arc .p{font-size:1.15rem;font-weight:600;color:var(--ink);line-height:1}
+  .arc .p.up{color:var(--green)} .arc .p.down{color:var(--red)}
+  .arc .ml{font-size:.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:.04em}
+  .arc .meta{font-size:.76rem;color:var(--dim);margin-top:.55rem;line-height:1.4}
+  .arc .arrow{display:flex;align-items:center;color:var(--dim);font-size:1.4rem;padding:0 .7rem}
   .foot{margin-top:3rem;border-top:1px solid var(--line);padding-top:1.25rem;color:var(--dim);font-size:.8rem}
   .foot b{color:var(--ink)} .foot ul{margin:.5rem 0 0;padding-left:1.1rem} .foot li{margin:.25rem 0}
   code{background:#1c1c22;border:1px solid var(--line);border-radius:4px;padding:.05rem .35rem;font-size:.85em;color:#cdd}
@@ -98,39 +113,31 @@ const html = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
   ${card(baseline.cases_evaluated, "Cases")}
 </div>
 
-<h2>Lever 1 — Tiling cracks dense-sheet confabulation</h2>
-<p class="cap">On dense sheets (framing, grading), Sonnet 4.6's <b>1568px server-side image cap</b> shrinks the drawing until fine call-outs blur — the model stops reading and starts <b>confabulating</b>. Two real failures, single-image: <b>Walpole C-401 grading R ${pct(dense011Single.recall)}</b> (${dense011Single.matched}/${dense011Single.total_expected} found) and <b>San Marcos S-201 framing R ${pct(dense012Single.recall)}</b> (${dense012Single.matched}/${dense012Single.total_expected}). The fix: split the sheet into ≤1568px tiles so every region is read at full resolution.</p>
-<div class="ba">
-  <div class="col before">
-    <div class="tag">San Marcos S-201 · single image</div>
-    <div class="big down">${pct(dense012Single.recall)}</div>
-    <div class="meta">recall · ${dense012Single.matched}/${dense012Single.total_expected} markups found</div>
+<h2>Showcase — case_012 · San Marcos S-201 (structural framing)</h2>
+<p class="cap">One dense framing sheet, the full arc. <b>Recall climbs and holds; precision craters under tiling, then post-processing claws it back.</b> Every markup graded by the independent judge against a 13-item answer key. The mechanism: Sonnet 4.6's <b>1568px server-side image cap</b> shrinks a dense sheet until fine call-outs blur and the model confabulates — tiling reads every region under the cap at full resolution, then <code>markup-postprocess.js</code> deduplicates the cross-tile doubles.</p>
+<div class="arc">
+  <div class="step blind">
+    <div class="tag">1 · Single image</div>
+    <div class="rowm"><span class="big down">${pct(dense012Single.recall)}</span><span class="ml">recall</span></div>
+    <div class="rowm"><span class="p">${pct(dense012Single.precision)}</span><span class="ml">precision</span></div>
+    <div class="meta">${dense012Single.matched}/${dense012Single.total_expected} markups found — effectively blind, sheet downscaled past legibility</div>
   </div>
   <div class="arrow">→</div>
-  <div class="col">
-    <div class="tag">Same sheet · tiled</div>
-    <div class="big up">${pct(dense012Tiled.recall)}</div>
-    <div class="meta">recall · ${dense012Tiled.matched}/${dense012Tiled.total_expected} markups found</div>
-  </div>
-</div>
-<p class="cap dim">~11× recall on the sheet that was effectively blank. Walpole C-401 is the same failure mode, queued for the tiled pass.</p>
-
-<h2>Lever 2 — Precision post-processing pays the tiling tax</h2>
-<p class="cap">Tiling buys recall but inflates output: the same markup gets reported from adjacent tiles, plus location-only noise. Raw tiled extraction balloons the return count and precision drops. <code>markup-postprocess.js</code> fixes it deterministically — drop location-only markers, Jaccard cross-tile dedup (≥0.6), unique-ID renumber with <code>related_to</code> remapping.</p>
-<div class="ba">
-  <div class="col before">
-    <div class="tag">C-301 · tiled, raw</div>
-    <div class="big down">${pct(c001RawTile.precision)}</div>
-    <div class="meta">precision · ${c001RawTile.total_extracted} extractions returned</div>
+  <div class="step">
+    <div class="tag">2 · Tiled</div>
+    <div class="rowm"><span class="big up">${pct(dense012Tiled.recall)}</span><span class="ml">recall</span></div>
+    <div class="rowm"><span class="p down">${pct(dense012Tiled.precision)}</span><span class="ml">precision</span></div>
+    <div class="meta">${dense012Tiled.matched}/${dense012Tiled.total_expected} found — but ${dense012Tiled.total_extracted} returned: cross-tile duplicates tax precision</div>
   </div>
   <div class="arrow">→</div>
-  <div class="col">
-    <div class="tag">C-301 · tiled + post-process</div>
-    <div class="big up">${pct(c001PostTile.precision)}</div>
-    <div class="meta">precision · ${c001PostTile.total_extracted} extractions · recall held ${pct(c001PostTile.recall)}</div>
+  <div class="step">
+    <div class="tag">3 · Tiled + post-process</div>
+    <div class="rowm"><span class="big up">${pct(dense012Tiled.recall)}</span><span class="ml">recall held</span></div>
+    <div class="rowm"><span class="p up">${dense012PostPrecision.toFixed(3)}</span><span class="ml">precision</span></div>
+    <div class="meta">Jaccard dedup (≥0.6) + location-only drop — precision nearly doubles, zero real markups lost <span class="dim">(commit e48ce35)</span></div>
   </div>
 </div>
-<p class="cap dim">Dedup collapses ${c001RawTile.total_extracted} raw returns to ${c001PostTile.total_extracted} real ones. Same pass lifted San Marcos S-201 precision 0.379 → 0.625 with recall held (commit <code>e48ce35</code>).</p>
+<p class="cap dim">From effectively blind (${pct(dense012Single.recall)}) to 11 of 13 markups with precision recovered to ${dense012PostPrecision.toFixed(2)}. The post-process generalizes on clean sheets too — C-301 precision ${pct(c001RawTile.precision)} → ${pct(c001PostTile.precision)} (${c001RawTile.total_extracted} raw returns deduped to ${c001PostTile.total_extracted}), recall held.</p>
 
 <h2>Full baseline — per sheet</h2>
 <p class="cap">The detail behind the headline. This is the table I run on every change.</p>
