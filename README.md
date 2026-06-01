@@ -1,5 +1,7 @@
 # RedlineIQ
 
+[![CI](https://github.com/nick-furr/redlineiq/actions/workflows/ci.yml/badge.svg)](https://github.com/nick-furr/redlineiq/actions/workflows/ci.yml)
+
 **[Live demo →](https://redlineiq-app.onrender.com)** &nbsp;·&nbsp; **[Walkthrough video →](https://www.loom.com/share/db6edb1fedf340e3a901dd07fc224867)**
 
 ![RedlineIQ screenshot](docs/screenshot.png)
