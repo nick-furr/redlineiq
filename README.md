@@ -1,6 +1,7 @@
 # RedlineIQ
 
 [![CI](https://github.com/nick-furr/redlineiq/actions/workflows/ci.yml/badge.svg)](https://github.com/nick-furr/redlineiq/actions/workflows/ci.yml)
+[![evals](https://img.shields.io/badge/evals%20v0.9-recall%200.665%20%C2%B7%20precision%200.687%20%C2%B7%20spec%201.51-blue)](#eval-harness)
 
 **[Live demo →](https://redlineiq-app.onrender.com)** &nbsp;·&nbsp; **[Walkthrough video →](https://www.loom.com/share/db6edb1fedf340e3a901dd07fc224867)**
 
