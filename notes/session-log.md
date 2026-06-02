@@ -8,26 +8,27 @@ This file is **facts only** — no post framing, hooks, or voice notes. Build-in
 
 ## 2026-06-02 — parse/vision hybrid Phase 1 shipped (annotation-layer parse path)
 
-**Summary:** Built the parse path the 5/29 "wrong-tool" realization pointed to: digital, un-flattened PDFs now route through a lossless `pdfjs-dist` annotation-layer parser instead of vision. Markup text + exact coordinates are read straight from the PDF; one cheap **text-only** Claude call assigns the semantic labels (type / related_to / confidence / ambiguous) that aren't stored in the file. The tiled-vision path is untouched — PDFs with no annotation layer route to vision exactly as before. Opened as PR #2 (not yet merged). TDD throughout; 39 offline assertions across 5 suites.
+**Summary:** Built the parse path the 5/29 "wrong-tool" realization pointed to: digital, un-flattened PDFs now route through a lossless `pdfjs-dist` annotation-layer parser instead of vision. Markup text + exact coordinates are read straight from the PDF; one cheap **text-only** Claude call assigns the semantic labels (type / related_to / confidence / ambiguous) that aren't stored in the file. The tiled-vision path is untouched — PDFs with no annotation layer route to vision exactly as before. **Scored end-to-end in the eval harness, the parse path holds recall and lifts precision sharply on the same sheet: case_012 recall 0.846 / precision 0.917 vs the vision path's 0.846 / 0.625 — equal recall, +0.292 precision.** Opened as PR #2 (not yet merged). TDD throughout; 39 offline assertions across 5 suites.
 
 **What happened:**
-1. **Router-first architecture:** a probe (`pdf-annotation-probe.js`) counts markup-subtype annotations *before any rasterization* and classifies the source as `digital_annotation` vs `raster`. `chooseExtractionPath()` in `job-service.js` routes: annotations → parse, else → vision. Digital files skip image conversion entirely.
+1. **Router-first architecture:** a probe (`pdf-annotation-probe.js`) counts markup-subtype annotations *before any rasterization* and classifies the source as `digital_annotation` vs `raster`. The pure router `chooseExtractionPath()` lives in that same probe module — so lightweight callers (CLI, eval harness) route without importing the job service's DB/persistence graph; `job-service.js`, `extract-cli.js`, and `run-eval.js` all consume it. Routes: annotations → parse, else → vision. Digital files skip image conversion entirely.
 2. **Same output contract:** `parse-extraction-service.js` (parse → text-only label → assemble) returns the identical `ExtractionResult` shape as `extractAllPagesTiled`, so the job runner, persistence, SSE events, and UI needed no other changes.
 3. **Dead end / field gotcha (the one real bug):** the implementation plan read annotation text from `a.contents` — which is `undefined` in pdfjs 5.x. Parsing returned **0 markups**. The note text actually lives in `a.contentsObj.str`. The committed diagnostic (`inspect-pdf.js`) had only counted annotations by *subtype*, never verified the text field, so the "12 FreeText w/ text" claim was inferred, not checked. Fixed by reading `a.contentsObj?.str` with a fallback to the flat `contents` string for older builds. (Confirms the project rule: verify against evidence, don't trust the inferred assumption.)
 4. **Lossless result:** live smoke test on the un-flattened San Marcos S201 (case_012) extracted **12/12 text annotations, 0 malformed**, each with a valid `markup_type` and a 4-tuple coordinate rect; the genuinely ambiguous note ("?") was flagged correctly. The 12 Polygon clouds carry no text and were skipped (location indicators — their paired note carries the content), mirroring the existing `dropLocationOnlyMarkers` philosophy.
 5. **Coordinates captured, highlighting deferred:** each parsed markup carries `{ page, rect, subtype }` (PDF points, bottom-left origin). Documented as a parse-only optional field on `ExtractedMarkup`; on-drawing highlighting will consume it later.
-6. **Eval segmentation:** the harness now records the routed regime per case and reports recall/precision **broken down by source type** + router accuracy, so parse numbers don't blend into the vision average. Tagged case_011/case_012 labels with `source_type: digital_annotation`.
+6. **Eval scores the parse path:** the harness dispatches each case through its routed regime and **scores it**, reporting recall/precision broken down by source type + router accuracy so parse and vision numbers don't blend. case_012 (parse) scored **recall 0.846, precision 0.917** — same recall as the vision path, precision up from 0.625 because reading only the annotation layer drops the substrate-text false positives vision couldn't dedup away. The two misses are expected, not regressions: one textless cloud (no note to extract — correctly skipped) and one annotation-vs-concept content mismatch. A `--force-vision` flag overrides the router so the parse-vs-vision delta stays measurable; `--tile` stays a vision-only knob. Tagged case_011/case_012 labels with `source_type: digital_annotation`.
+7. **CLI + lightweight callers routed:** `extract-cli.js` now runs the same probe + router — digital PDFs parse (skipping rasterization) instead of always going through vision; vision branch unchanged.
 
 **Known limitations (follow-ups, not blockers):**
-- The eval harness records `routed` and segments by regime but still **scores** every case via the vision path — `digital_annotation` recall is currently vision's number, not parse's. Router accuracy is real; in-harness parse-path scoring is the follow-up.
-- `extract-cli.js` bypasses the router (calls `extractAllPages` directly); the new path was verified via a direct driver script. Wiring the CLI through the router is a small follow-up.
 - Phase 2 (flattened color-filtered parse) deferred — `_flattened` fixtures are in the tree but unused here.
+- On-drawing highlight UI that consumes the captured `coordinates` is deferred.
 
 | Number | What it is | Source |
 |---|---|---|
+| **0.846 / 0.917** | case_012 parse-path **recall / precision**, scored in-harness (vs vision 0.846 / 0.625 — equal recall, **+0.292 precision**) | `evals/runs/2026-06-02_current_only.json`, `75d8380` |
 | **12 / 12** | text annotations extracted losslessly, 0 malformed | live smoke on case_012 (un-flattened) |
 | **24 → 12** | probe counts 24 markup annotations (12 FreeText + 12 Polygon); 12 text markups emitted (textless clouds skipped) | `pdf-annotation-probe.js` / `parse-extraction-service.js` |
-| **100%** | router accuracy on tagged cases (case_012→parse, case_001→vision) | `summarizeByRegime` standalone check |
+| **100%** | router accuracy on tagged cases (case_012→parse, case_001→vision) | eval per-regime block, `run-eval.js` |
 | **`contentsObj.str`** | the pdfjs 5.x field carrying annotation text (`a.contents` is `undefined`) | `9dd23c0` |
 | **39 / 5** | offline test assertions / suites passing (`npm test`) | probe, parse-extraction, eval-routing + existing extraction, postprocess |
 
@@ -40,6 +41,9 @@ This file is **facts only** — no post framing, hooks, or voice notes. Build-in
 - `4e5cd56` — docs(model): document parse-only coordinates field
 - `9489077` — eval: segment recall/precision by source regime + router accuracy
 - `3d68c87` — chore: register parse tests, revert stray client backend dep
+- `8db36c8` — feat(cli): route extract-cli through the source-type router
+- `9103f76` — refactor: move chooseExtractionPath to pdf-annotation-probe (decouple CLI/eval from the DB graph)
+- `75d8380` — eval: score the parse path for digital cases (case_012 0.846 / 0.917)
 - PR #2: https://github.com/nick-furr/redlineiq/pull/2 (open)
 
 **Related docs:** spec `docs/superpowers/specs/2026-06-02-parse-vision-hybrid-extraction-design.md`, plan `docs/superpowers/plans/2026-06-02-parse-vision-hybrid-phase1.md`.
