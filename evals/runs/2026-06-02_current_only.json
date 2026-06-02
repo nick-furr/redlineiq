@@ -1,0 +1,393 @@
+{
+  "timestamp": "2026-06-02T16:30:09.017Z",
+  "prompt_version": "current",
+  "working_set_only": false,
+  "tile_mode": false,
+  "force_vision": false,
+  "cases_evaluated": 1,
+  "aggregate": {
+    "recall": 0.846,
+    "precision": 0.917,
+    "specificity": 1.818
+  },
+  "results": [
+    {
+      "case_id": "case_012_sanmarcos_s201_framing",
+      "discipline": "structural",
+      "sheet": "S201",
+      "expected_source": "digital_annotation",
+      "routed": "parse",
+      "extractor_used": "parse",
+      "scores": {
+        "recall": 0.846,
+        "precision": 0.917,
+        "specificity": 1.818,
+        "matched": 11,
+        "total_expected": 13,
+        "total_extracted": 12
+      },
+      "match_results": [
+        {
+          "id": "m1",
+          "concept": "Individual pier sizes not called out at each location — only Pier Legend shown; add pier marks/schedule",
+          "category": "missing_information",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m2",
+          "concept": "6-inch slab-on-grade reinforcing not verified for fire-apparatus floor loading — confirm design load",
+          "category": "design_issue",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m3",
+          "concept": "Fire-brick slab recess extents not dimensioned — add limits",
+          "category": "missing_information",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m4",
+          "concept": "Beam marks S1-S3 referenced on plan but not defined — add member schedule or sizes",
+          "category": "missing_information",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m5",
+          "concept": "Floor access opening header/trimmer framing not shown — verify per detail 1/S301",
+          "category": "missing_information",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m6",
+          "concept": "Post detail 4/S201 referenced but detail not located on this set — verify reference",
+          "category": "design_issue",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m7",
+          "concept": "10x16 beam bearing at CMU not detailed — provide bearing and anchorage detail",
+          "category": "code_violation",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m8",
+          "concept": "S1 beam span at re-entrant corner not verified for attic loading — check deflection",
+          "category": "design_issue",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m9",
+          "concept": "C8x11.5 purlins at 24 inch o.c. span full bay with no intermediate support — verify span",
+          "category": "design_issue",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m10",
+          "concept": "Rafter-to-support connection at HSS6x6 post not detailed — add connection detail",
+          "category": "missing_information",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": true
+        },
+        {
+          "id": "m11",
+          "concept": "Roof diaphragm plywood fastening schedule not referenced — add per general notes",
+          "category": "code_violation",
+          "page": 1,
+          "specificity_target": 2,
+          "is_ambiguous": false,
+          "matched": false
+        },
+        {
+          "id": "m12",
+          "concept": "Ambiguous cloud with no comment — unclear intent",
+          "category": "ambiguous",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": false
+        },
+        {
+          "id": "m13",
+          "concept": "Bare question mark near detail bubble — verify",
+          "category": "ambiguous",
+          "page": 1,
+          "specificity_target": 0,
+          "is_ambiguous": true,
+          "matched": true
+        }
+      ],
+      "extracted_count": 12,
+      "extracted_markups": [
+        {
+          "id": "MK-001",
+          "markup_text": "Pier sizes not called out per location — add pier schedule",
+          "drawing_reference": "Unknown",
+          "location_on_drawing": "",
+          "coordinates": {
+            "page": 1,
+            "rect": [
+              1194.27771,
+              1312.5,
+              1352.25,
+              1384.5
+            ],
+            "subtype": "FreeText"
+          },
+          "markup_type": "add",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-002",
+          "markup_text": "SOG reinf not verified for fire-apparatus floor loading — confirm",
+          "drawing_reference": "Unknown",
+          "location_on_drawing": "",
+          "coordinates": {
+            "page": 1,
+            "rect": [
+              1048,
+              1589,
+              1257,
+              1690
+            ],
+            "subtype": "FreeText"
+          },
+          "markup_type": "note",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-003",
+          "markup_text": "Fire-brick recess extents not dimensioned — add limits",
+          "drawing_reference": "Unknown",
+          "location_on_drawing": "",
+          "coordinates": {
+            "page": 1,
+            "rect": [
+              186.629105,
+              1013.580627,
+              384.310394,
+              1140.024902
+            ],
+            "subtype": "FreeText"
+          },
+          "markup_type": "dimension",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-004",
+          "markup_text": "Beam marks S1–S3 not defined — add member schedule",
+          "drawing_reference": "Unknown",
+          "location_on_drawing": "",
+          "coordinates": {
+            "page": 1,
+            "rect": [
+              1235.533813,
+              1390.019287,
+              1645.971191,
+              1466.070923
+            ],
+            "subtype": "FreeText"
+          },
+          "markup_type": "add",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-005",
+          "markup_text": "Floor access opening framing not shown — verify per 1/S301",
+          "drawing_reference": "Unknown",
+          "location_on_drawing": "",
+          "coordinates": {
+            "page": 1,
+            "rect": [
+              1841.400024,
+              1051.195923,
+              2112,
+              1143.025391
+            ],
+            "subtype": "FreeText"
+          },
+          "markup_type": "clarify",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-006",
+          "markup_text": "Detail 4/S201 referenced but not on set — verify",
+          "drawing_reference": "Unknown",
+          "location_on_drawing": "",
+          "coordinates": {
+            "page": 1,
+            "rect": [
+              65.67691,
+              407.468964,
+              297.499969,
+              452.472961
+            ],
+            "subtype": "FreeText"
+          },
+          "markup_type": "clarify",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-007",
+          "markup_text": "10x16 beam bearing at CMU not detailed — add detail",
+          "drawing_reference": "Unknown",
+          "location_on_drawing": "",
+          "coordinates": {
+            "page": 1,
+            "rect": [
+              567.600037,
+              258.596008,
+              774.599976,
+              342
+            ],
+            "subtype": "FreeText"
+          },
+          "markup_type": "detail",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-008",
+          "markup_text": "S1 span at re-entrant corner — check deflection",
+          "drawing_reference": "Unknown",
+          "location_on_drawing": "",
+          "coordinates": {
+            "page": 1,
+            "rect": [
+              756.600037,
+              162.596024,
+              1097.400024,
+              332.999969
+            ],
+            "subtype": "FreeText"
+          },
+          "markup_type": "note",
+          "related_to": "MK-004",
+          "confidence": "medium",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-009",
+          "markup_text": "8x11.5 @ 24\" o.c. full-bay span — verify, no intermediate support",
+          "drawing_reference": "Unknown",
+          "location_on_drawing": "",
+          "coordinates": {
+            "page": 1,
+            "rect": [
+              1382.400024,
+              603.599976,
+              1671.599976,
+              754.199951
+            ],
+            "subtype": "FreeText"
+          },
+          "markup_type": "note",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-010",
+          "markup_text": "Rafter-to-HSS post connection not detailed — add",
+          "drawing_reference": "Unknown",
+          "location_on_drawing": "",
+          "coordinates": {
+            "page": 1,
+            "rect": [
+              1185.75,
+              353.246002,
+              1413.75,
+              411.319885
+            ],
+            "subtype": "FreeText"
+          },
+          "markup_type": "detail",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-011",
+          "markup_text": "\"PLYWOOD OVER 1 1/2\" METAL ROOF DECK\" note",
+          "drawing_reference": "Unknown",
+          "location_on_drawing": "",
+          "coordinates": {
+            "page": 1,
+            "rect": [
+              1261.5,
+              68.996002,
+              1436.25,
+              150.749985
+            ],
+            "subtype": "FreeText"
+          },
+          "markup_type": "note",
+          "related_to": null,
+          "confidence": "high",
+          "ambiguous": false
+        },
+        {
+          "id": "MK-012",
+          "markup_text": "?",
+          "drawing_reference": "Unknown",
+          "location_on_drawing": "",
+          "coordinates": {
+            "page": 1,
+            "rect": [
+              1419,
+              316.75,
+              1435.25,
+              341
+            ],
+            "subtype": "FreeText"
+          },
+          "markup_type": "note",
+          "related_to": null,
+          "confidence": "low",
+          "ambiguous": true
+        }
+      ]
+    }
+  ]
+}
