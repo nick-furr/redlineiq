@@ -48,4 +48,9 @@ assert(result.allMarkups[0].id === 'MK-001' && result.allMarkups[1].id === 'MK-0
 assert(result.stats.byType.delete === 1 && result.stats.byType.clarify === 1, 'assembleResult stats.byType counts');
 assert(result.stats.ambiguousCount === 1, 'assembleResult ambiguousCount === 1');
 
+console.log('\n🧪 parse-extraction: extractAllPagesParsed contract\n');
+
+const { extractAllPagesParsed } = await import('../src/services/parse-extraction-service.js');
+assert(typeof extractAllPagesParsed === 'function', 'extractAllPagesParsed is exported');
+
 if (!failed) console.log('\n✅ all parse-extraction tests passed\n');

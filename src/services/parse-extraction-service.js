@@ -148,3 +148,33 @@ export function assembleResult(labeledPages) {
 
   return { pages, allMarkups, totalMarkups: allMarkups.length, stats };
 }
+
+/**
+ * Parse + label every page of a digital PDF. Same contract as
+ * extractAllPagesTiled: returns { pages, allMarkups, totalMarkups, stats } and
+ * calls onProgress(pageNum, totalPages, pageResult) after each page.
+ *
+ * @param {string} pdfPath
+ * @param {Object} [context] - reserved for parity with the vision path
+ * @param {Function} [onProgress] - (pageNum, totalPages, result)
+ */
+export async function extractAllPagesParsed(pdfPath, context = {}, onProgress = null) {
+  const rawPages = await parseAnnotationLayer(pdfPath);
+  const labeledPages = [];
+
+  for (let i = 0; i < rawPages.length; i++) {
+    const page = rawPages[i];
+    try {
+      const labeled = await labelMarkups(page.markups);
+      const labeledPage = { ...page, markups: labeled };
+      labeledPages.push(labeledPage);
+      if (onProgress) onProgress(page.page_number, rawPages.length, { markups: labeled });
+    } catch (err) {
+      console.error(`Error labeling page ${page.page_number} (parse):`, err.message);
+      labeledPages.push({ ...page, markups: [], error: err.message });
+      if (onProgress) onProgress(page.page_number, rawPages.length, { error: err.message });
+    }
+  }
+
+  return assembleResult(labeledPages);
+}
