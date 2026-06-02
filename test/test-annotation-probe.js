@@ -28,4 +28,9 @@ assert(raster.markupCount === 0, 'case_001 markupCount is 0');
 
 assert(MARKUP_SUBTYPES.has('FreeText') && !MARKUP_SUBTYPES.has('Link'), 'subtype set includes FreeText, excludes Link');
 
+console.log('\n🧪 job-service: chooseExtractionPath\n');
+const { chooseExtractionPath } = await import('../src/services/job-service.js');
+assert(chooseExtractionPath({ sourceType: 'digital_annotation' }) === 'parse', 'digital_annotation → parse');
+assert(chooseExtractionPath({ sourceType: 'raster' }) === 'vision', 'raster → vision');
+
 if (!failed) console.log('\n✅ all probe tests passed\n');
