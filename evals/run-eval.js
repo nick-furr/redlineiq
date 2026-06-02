@@ -2,9 +2,15 @@
 /**
  * RedlineIQ eval harness.
  *
+ * Each case runs through its routed regime by default: digital annotation
+ * layers are parsed losslessly, everything else goes through vision. The
+ * per-regime breakdown then reflects each path's real numbers.
+ *
  * Usage:
  *   node evals/run-eval.js                         # all PDFs in pdfs/, uses prompts/active.md
  *   node evals/run-eval.js --working-set           # exclude holdout/
+ *   node evals/run-eval.js --force-vision          # ignore the router, run vision on every case
+ *                                                  # (keeps the parse-vs-vision delta measurable)
  *   node evals/run-eval.js --prompt v0.7           # loads prompts/v0.7.md if exists, else uses
  *                                                  # active.md and the tag is label-only
  *
@@ -19,6 +25,8 @@ import { pdfToImages } from '../src/utils/pdf-converter.js';
 import { pdfToTiledImages } from '../src/utils/pdf-tiler.js';
 import { judgeMarkup } from './lib/llm-judge.js';
 import { scoreCase } from './lib/score.js';
+import { probeAnnotations, chooseExtractionPath } from '../src/utils/pdf-annotation-probe.js';
+import { summarizeByRegime } from './lib/regime-summary.js';
 
 const HERE = fileURLToPath(new URL('.', import.meta.url));
 const PDFS_DIR    = join(HERE, 'pdfs');
@@ -30,6 +38,11 @@ const REPO_ROOT   = resolve(HERE, '..');
 const args = process.argv.slice(2);
 const workingSetOnly = args.includes('--working-set');
 const tileMode = args.includes('--tile');
+// By default each case runs through its routed regime (parse for digital
+// annotation layers, vision otherwise) — i.e. the harness measures the real
+// production system. --force-vision ignores the router and runs vision on every
+// case, so the parse-vs-vision delta on a digital sheet stays measurable.
+const forceVision = args.includes('--force-vision');
 const promptIdx = args.indexOf('--prompt');
 const promptVersion = promptIdx !== -1 ? args[promptIdx + 1] : 'current';
 
@@ -52,6 +65,7 @@ if (existsSync(resolve(REPO_ROOT, candidatePromptFile))) {
 
 const { extractMarkupsFromPage } = await import('../src/services/extraction-service.js');
 const { extractMarkupsFromTiledPage } = await import('../src/services/tiled-extraction-service.js');
+const { extractAllPagesParsed } = await import('../src/services/parse-extraction-service.js');
 
 async function run() {
   await mkdir(RUNS_DIR, { recursive: true });
@@ -70,7 +84,7 @@ async function run() {
     process.exit(0);
   }
 
-  console.log(`\nRedlineIQ eval — prompt: ${promptVersion} — ${pdfs.length} PDF(s)${workingSetOnly ? ' (working set)' : ''}${tileMode ? ' [TILED]' : ''}\n`);
+  console.log(`\nRedlineIQ eval — prompt: ${promptVersion} — ${pdfs.length} PDF(s)${workingSetOnly ? ' (working set)' : ''}${tileMode ? ' [TILED]' : ''}${forceVision ? ' [FORCE-VISION]' : ''}\n`);
 
   const results = [];
 
@@ -88,9 +102,21 @@ async function run() {
     const label = JSON.parse(await readFile(labelPath, 'utf-8'));
     console.log(`${caseId}  [${label.discipline}]  ${label.expected_markups.length} expected`);
 
+    const probe = await probeAnnotations(join(PDFS_DIR, pdfFile));
+    const routed = chooseExtractionPath(probe);
+    // Dispatch by the router's verdict so the harness scores what production
+    // runs. --force-vision overrides it; --tile is a vision-only knob (the parse
+    // path doesn't rasterize, so it ignores --tile).
+    const useParser = routed === 'parse' && !forceVision;
+    const extractorUsed = useParser ? 'parse' : tileMode ? 'tiled_vision' : 'vision';
+
     const allExtracted = [];
 
-    if (tileMode) {
+    if (useParser) {
+      // Parse path: read the annotation layer directly, label text-only — no rasterization
+      const parsed = await extractAllPagesParsed(join(PDFS_DIR, pdfFile), { projectName: label.sheet });
+      allExtracted.push(...parsed.allMarkups);
+    } else if (tileMode) {
       // Tiled path: render N tiles per page, run per-tile extraction + merge
       const tiles = await pdfToTiledImages(join(PDFS_DIR, pdfFile));
       const tilesByPage = new Map();
@@ -110,7 +136,7 @@ async function run() {
         allExtracted.push(...result.markups);
       }
     }
-    console.log(`  extracted: ${allExtracted.length}`);
+    console.log(`  extracted: ${allExtracted.length} (${extractorUsed})`);
 
     const matchResults = [];
     for (const expected of label.expected_markups) {
@@ -122,7 +148,12 @@ async function run() {
     const scores = scoreCase(matchResults, allExtracted.length);
     console.log(`  → recall=${scores.recall}  precision=${scores.precision}  specificity=${scores.specificity}\n`);
 
-    results.push({ case_id: caseId, discipline: label.discipline, sheet: label.sheet, scores, match_results: matchResults, extracted_count: allExtracted.length, extracted_markups: allExtracted });
+    results.push({
+      case_id: caseId, discipline: label.discipline, sheet: label.sheet,
+      expected_source: label.source_type || 'raster', routed, extractor_used: extractorUsed,
+      scores, match_results: matchResults,
+      extracted_count: allExtracted.length, extracted_markups: allExtracted,
+    });
   }
 
   const aggregate = {
@@ -131,12 +162,19 @@ async function run() {
     specificity: avg(results.map(r => r.scores.specificity)),
   };
 
+  const regime = summarizeByRegime(results);
+  console.log('\nBy regime:');
+  for (const [k, v] of Object.entries(regime.byRegime)) {
+    console.log(`  ${k.padEnd(20)} n=${v.count}  recall=${v.recall.toFixed(3)}  precision=${v.precision.toFixed(3)}`);
+  }
+  console.log(`  router accuracy: ${(regime.routerAccuracy * 100).toFixed(0)}%`);
+
   const timestamp = new Date().toISOString().slice(0, 10);
   const tagSuffix = `${tileMode ? '_tile' : ''}${onlyFilters ? '_only' : ''}`;
   const runPath = join(RUNS_DIR, `${timestamp}_${promptVersion}${tagSuffix}.json`);
   const htmlPath = runPath.replace('.json', '.html');
 
-  const output = { timestamp: new Date().toISOString(), prompt_version: promptVersion, working_set_only: workingSetOnly, tile_mode: tileMode, cases_evaluated: results.length, aggregate, results };
+  const output = { timestamp: new Date().toISOString(), prompt_version: promptVersion, working_set_only: workingSetOnly, tile_mode: tileMode, force_vision: forceVision, cases_evaluated: results.length, aggregate, results };
 
   await writeFile(runPath, JSON.stringify(output, null, 2));
   await writeFile(htmlPath, buildHtml(output));

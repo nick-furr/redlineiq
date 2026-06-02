@@ -13,6 +13,8 @@ import { EventEmitter } from 'events';
 import { pdfToTiledImages } from '../utils/pdf-tiler.js';
 import { extractAllPagesTiled } from './tiled-extraction-service.js';
 import { addExtractionResults, getProject } from './project-service.js';
+import { probeAnnotations, chooseExtractionPath } from '../utils/pdf-annotation-probe.js';
+import { extractAllPagesParsed } from './parse-extraction-service.js';
 
 // ─── Job Store ─────────────────────────────────────────────────
 
@@ -88,7 +90,7 @@ async function runJob(job) {
     throw new Error(`Project ${projectId} not found`);
   }
 
-  // Step 1: Convert PDF to images
+  // Step 1: Probe source type BEFORE any rasterization — digital files skip it.
   job.status = JOB_STATUS.CONVERTING;
   emitter.emit('job_started', {
     jobId: job.id,
@@ -96,48 +98,41 @@ async function runJob(job) {
     totalPages: project.total_pages,
   });
 
-  console.log(`[Job ${job.id}] Converting PDF to tiles...`);
-  const tiles = await pdfToTiledImages(project.pdf_path);
-  // tiles is a flat array across all pages; conditional tiling is internal
-  // (small sheets emit one tile, dense sheets emit a grid). Progress is per-page.
-  const totalPages = new Set(tiles.map(t => t.pageNumber)).size;
+  const probe = await probeAnnotations(project.pdf_path);
+  const path = chooseExtractionPath(probe);
+  console.log(`[Job ${job.id}] Source: ${probe.sourceType} (${probe.markupCount} annotations) → ${path}`);
 
-  job.progress.totalPages = totalPages;
+  const onPage = (pageNum, total, result) => {
+    const success = !result.error;
+    const count = result.markups ? result.markups.length : 0;
+    if (success) job.progress.pagesComplete++; else job.progress.pagesFailed++;
+    job.progress.currentPage = pageNum;
+    job.progress.totalPages = total;
+    console.log(`[Job ${job.id}] Page ${pageNum}/${total}: ${success ? count + ' markups' : 'FAILED'}`);
+    emitter.emit('page_complete', {
+      jobId: job.id, pageNumber: pageNum, totalPages: total,
+      success, markupsFound: count, error: result.error || null,
+    });
+  };
 
-  emitter.emit('conversion_complete', {
-    jobId: job.id,
-    totalPages,
-  });
-
-  // Step 2: Extract markups page by page
+  // Step 2: Extract — parse the annotation layer for digital files, else tiled vision.
   job.status = JOB_STATUS.EXTRACTING;
+  let extractionResult;
 
-  const extractionResult = await extractAllPagesTiled(
-    tiles,
-    { projectName: project.name },
-    (pageNum, total, result) => {
-      const success = !result.error;
-      const count = result.markups ? result.markups.length : 0;
-
-      if (success) {
-        job.progress.pagesComplete++;
-      } else {
-        job.progress.pagesFailed++;
-      }
-      job.progress.currentPage = pageNum;
-
-      console.log(`[Job ${job.id}] Page ${pageNum}/${total}: ${success ? count + ' markups' : 'FAILED'}`);
-
-      emitter.emit('page_complete', {
-        jobId: job.id,
-        pageNumber: pageNum,
-        totalPages: total,
-        success,
-        markupsFound: count,
-        error: result.error || null,
-      });
-    }
-  );
+  if (path === 'parse') {
+    extractionResult = await extractAllPagesParsed(
+      project.pdf_path, { projectName: project.name }, onPage
+    );
+    job.progress.totalPages = extractionResult.stats.totalPages;
+    emitter.emit('conversion_complete', { jobId: job.id, totalPages: extractionResult.stats.totalPages });
+  } else {
+    console.log(`[Job ${job.id}] Converting PDF to tiles...`);
+    const tiles = await pdfToTiledImages(project.pdf_path);
+    const totalPages = new Set(tiles.map(t => t.pageNumber)).size;
+    job.progress.totalPages = totalPages;
+    emitter.emit('conversion_complete', { jobId: job.id, totalPages });
+    extractionResult = await extractAllPagesTiled(tiles, { projectName: project.name }, onPage);
+  }
 
   // Step 3: Save results to project
   job.status = JOB_STATUS.SAVING;

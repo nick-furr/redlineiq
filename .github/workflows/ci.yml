@@ -24,3 +24,9 @@ jobs:
 
       - name: Run test suite
         run: npm test
+        # The suite is fully offline (fixture PDFs + pure helpers, no real API
+        # calls), but some modules import src/config/index.js, which fail-fasts
+        # if ANTHROPIC_API_KEY is unset. A dummy value satisfies that import
+        # without enabling any network calls — keeps CI free and deterministic.
+        env:
+          ANTHROPIC_API_KEY: dummy-key-offline-tests

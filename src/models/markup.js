@@ -56,8 +56,12 @@ export const STATUS = {
  * @property {string} confidence - One of CONFIDENCE values
  * @property {boolean} ambiguous - Whether the markup intent is unclear,
  *   even if the text is legible. E.g., "verify" with no context.
- * @property {string} [raw_interpretation] - For low-confidence items, 
+ * @property {string} [raw_interpretation] - For low-confidence items,
  *   the literal characters/marks as seen, before interpretation.
+ * @property {Object} [coordinates] - Parse-path only. Exact annotation geometry
+ *   from the PDF. { page:number, rect:[x1,y1,x2,y2] (PDF points, bottom-left
+ *   origin), subtype:string }. Absent on vision-extracted markups. Captured now;
+ *   on-drawing highlighting (deferred) will consume it.
  */
 
 /**

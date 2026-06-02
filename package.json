@@ -9,7 +9,7 @@
     "dev": "node --watch --watch-path=src src/index.js",
     "build": "cd client && npm install && npm run build",
     "extract": "node src/scripts/extract-cli.js",
-    "test": "node test/test-extraction.js && node test/test-markup-postprocess.js",
+    "test": "node test/test-extraction.js && node test/test-markup-postprocess.js && node test/test-annotation-probe.js && node test/test-parse-extraction.js && node test/test-eval-routing.js",
     "test:root": "node test-extraction.js",
     "eval": "node evals/run-eval.js --working-set",
     "eval:all": "node evals/run-eval.js"
@@ -26,6 +26,7 @@
     "multer": "^2.1.1",
     "pdf-lib": "^1.17.1",
     "pdf2pic": "^3.1.1",
+    "pdfjs-dist": "^5.7.284",
     "sharp": "^0.33.2",
     "uuid": "^14.0.0"
   }
