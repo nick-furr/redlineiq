@@ -19,6 +19,9 @@ import { pdfToImages } from '../src/utils/pdf-converter.js';
 import { pdfToTiledImages } from '../src/utils/pdf-tiler.js';
 import { judgeMarkup } from './lib/llm-judge.js';
 import { scoreCase } from './lib/score.js';
+import { probeAnnotations } from '../src/utils/pdf-annotation-probe.js';
+import { chooseExtractionPath } from '../src/services/job-service.js';
+import { summarizeByRegime } from './lib/regime-summary.js';
 
 const HERE = fileURLToPath(new URL('.', import.meta.url));
 const PDFS_DIR    = join(HERE, 'pdfs');
@@ -88,6 +91,9 @@ async function run() {
     const label = JSON.parse(await readFile(labelPath, 'utf-8'));
     console.log(`${caseId}  [${label.discipline}]  ${label.expected_markups.length} expected`);
 
+    const probe = await probeAnnotations(join(PDFS_DIR, pdfFile));
+    const routed = chooseExtractionPath(probe);
+
     const allExtracted = [];
 
     if (tileMode) {
@@ -122,7 +128,12 @@ async function run() {
     const scores = scoreCase(matchResults, allExtracted.length);
     console.log(`  → recall=${scores.recall}  precision=${scores.precision}  specificity=${scores.specificity}\n`);
 
-    results.push({ case_id: caseId, discipline: label.discipline, sheet: label.sheet, scores, match_results: matchResults, extracted_count: allExtracted.length, extracted_markups: allExtracted });
+    results.push({
+      case_id: caseId, discipline: label.discipline, sheet: label.sheet,
+      expected_source: label.source_type || 'raster', routed,
+      scores, match_results: matchResults,
+      extracted_count: allExtracted.length, extracted_markups: allExtracted,
+    });
   }
 
   const aggregate = {
@@ -130,6 +141,13 @@ async function run() {
     precision: avg(results.map(r => r.scores.precision)),
     specificity: avg(results.map(r => r.scores.specificity)),
   };
+
+  const regime = summarizeByRegime(results);
+  console.log('\nBy regime:');
+  for (const [k, v] of Object.entries(regime.byRegime)) {
+    console.log(`  ${k.padEnd(20)} n=${v.count}  recall=${v.recall.toFixed(3)}  precision=${v.precision.toFixed(3)}`);
+  }
+  console.log(`  router accuracy: ${(regime.routerAccuracy * 100).toFixed(0)}%`);
 
   const timestamp = new Date().toISOString().slice(0, 10);
   const tagSuffix = `${tileMode ? '_tile' : ''}${onlyFilters ? '_only' : ''}`;
