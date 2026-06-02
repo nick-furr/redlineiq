@@ -30,5 +30,6 @@ Flat layout — no subdirectories. If the directory grows past ~15 files, prune 
 | `dogfood/YYYY-MM-DD.md` | Raw friction journals from using the product end-to-end | "10:16 - I see a red cloud around Office 01W but no actual bubble" |
 | `prompts/CHANGELOG.md` | Scored prompt iterations with deltas | "v0.9 +0.204 bare-mark recall" |
 | `docs/decisions/NNNN-*.md` | Architectural decisions (ADRs) with consequences | "SQLite via better-sqlite3" |
+| `notes/session-log.md` | Factual per-session build record — what shipped, numbers, dead ends, commits | "precision 0.379 → 0.625, recall held" |
 | `notes/*.md` | Everything else worth keeping | Investigation findings, strategy thoughts, design sketches |
 | `~/.claude/.../memory/*.md` | Personal-context for Claude across sessions | "User prefers terse responses" |
