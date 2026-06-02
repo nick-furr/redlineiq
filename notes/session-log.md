@@ -6,6 +6,46 @@ This file is **facts only** — no post framing, hooks, or voice notes. Build-in
 
 ---
 
+## 2026-06-02 — parse/vision hybrid Phase 1 shipped (annotation-layer parse path)
+
+**Summary:** Built the parse path the 5/29 "wrong-tool" realization pointed to: digital, un-flattened PDFs now route through a lossless `pdfjs-dist` annotation-layer parser instead of vision. Markup text + exact coordinates are read straight from the PDF; one cheap **text-only** Claude call assigns the semantic labels (type / related_to / confidence / ambiguous) that aren't stored in the file. The tiled-vision path is untouched — PDFs with no annotation layer route to vision exactly as before. Opened as PR #2 (not yet merged). TDD throughout; 39 offline assertions across 5 suites.
+
+**What happened:**
+1. **Router-first architecture:** a probe (`pdf-annotation-probe.js`) counts markup-subtype annotations *before any rasterization* and classifies the source as `digital_annotation` vs `raster`. `chooseExtractionPath()` in `job-service.js` routes: annotations → parse, else → vision. Digital files skip image conversion entirely.
+2. **Same output contract:** `parse-extraction-service.js` (parse → text-only label → assemble) returns the identical `ExtractionResult` shape as `extractAllPagesTiled`, so the job runner, persistence, SSE events, and UI needed no other changes.
+3. **Dead end / field gotcha (the one real bug):** the implementation plan read annotation text from `a.contents` — which is `undefined` in pdfjs 5.x. Parsing returned **0 markups**. The note text actually lives in `a.contentsObj.str`. The committed diagnostic (`inspect-pdf.js`) had only counted annotations by *subtype*, never verified the text field, so the "12 FreeText w/ text" claim was inferred, not checked. Fixed by reading `a.contentsObj?.str` with a fallback to the flat `contents` string for older builds. (Confirms the project rule: verify against evidence, don't trust the inferred assumption.)
+4. **Lossless result:** live smoke test on the un-flattened San Marcos S201 (case_012) extracted **12/12 text annotations, 0 malformed**, each with a valid `markup_type` and a 4-tuple coordinate rect; the genuinely ambiguous note ("?") was flagged correctly. The 12 Polygon clouds carry no text and were skipped (location indicators — their paired note carries the content), mirroring the existing `dropLocationOnlyMarkers` philosophy.
+5. **Coordinates captured, highlighting deferred:** each parsed markup carries `{ page, rect, subtype }` (PDF points, bottom-left origin). Documented as a parse-only optional field on `ExtractedMarkup`; on-drawing highlighting will consume it later.
+6. **Eval segmentation:** the harness now records the routed regime per case and reports recall/precision **broken down by source type** + router accuracy, so parse numbers don't blend into the vision average. Tagged case_011/case_012 labels with `source_type: digital_annotation`.
+
+**Known limitations (follow-ups, not blockers):**
+- The eval harness records `routed` and segments by regime but still **scores** every case via the vision path — `digital_annotation` recall is currently vision's number, not parse's. Router accuracy is real; in-harness parse-path scoring is the follow-up.
+- `extract-cli.js` bypasses the router (calls `extractAllPages` directly); the new path was verified via a direct driver script. Wiring the CLI through the router is a small follow-up.
+- Phase 2 (flattened color-filtered parse) deferred — `_flattened` fixtures are in the tree but unused here.
+
+| Number | What it is | Source |
+|---|---|---|
+| **12 / 12** | text annotations extracted losslessly, 0 malformed | live smoke on case_012 (un-flattened) |
+| **24 → 12** | probe counts 24 markup annotations (12 FreeText + 12 Polygon); 12 text markups emitted (textless clouds skipped) | `pdf-annotation-probe.js` / `parse-extraction-service.js` |
+| **100%** | router accuracy on tagged cases (case_012→parse, case_001→vision) | `summarizeByRegime` standalone check |
+| **`contentsObj.str`** | the pdfjs 5.x field carrying annotation text (`a.contents` is `undefined`) | `9dd23c0` |
+| **39 / 5** | offline test assertions / suites passing (`npm test`) | probe, parse-extraction, eval-routing + existing extraction, postprocess |
+
+**Commits (PR #2, branch `feat/parse-vision-hybrid`):**
+- `a329633` — build: add pdfjs-dist for backend annotation parsing
+- `44525f7` — feat(probe): annotation-count source-type router
+- `9dd23c0` — feat(parse): annotation-layer extraction + text-only labeling helpers (incl. the `contentsObj.str` fix)
+- `ddf6f7b` — feat(parse): extractAllPagesParsed entrypoint matching vision contract
+- `0c51ee4` — feat(jobs): route digital PDFs to parse, raster to vision
+- `4e5cd56` — docs(model): document parse-only coordinates field
+- `9489077` — eval: segment recall/precision by source regime + router accuracy
+- `3d68c87` — chore: register parse tests, revert stray client backend dep
+- PR #2: https://github.com/nick-furr/redlineiq/pull/2 (open)
+
+**Related docs:** spec `docs/superpowers/specs/2026-06-02-parse-vision-hybrid-extraction-design.md`, plan `docs/superpowers/plans/2026-06-02-parse-vision-hybrid-phase1.md`.
+
+---
+
 ## 2026-05-30 — precision post-processing layer shipped
 
 **Summary:** Shipped a deterministic post-processing layer between tile-merge and output that lifted case_012 precision **0.379 → 0.625 with recall held at 0.846**. Merged to main via PR #1, deployed. Fixed 2 of the 3 false-positive mechanisms; the largest (the model transcribing the drawing's own printed text as redlines) remains open — it's a prompt/parsing problem, not a code one.
