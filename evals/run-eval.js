@@ -19,8 +19,7 @@ import { pdfToImages } from '../src/utils/pdf-converter.js';
 import { pdfToTiledImages } from '../src/utils/pdf-tiler.js';
 import { judgeMarkup } from './lib/llm-judge.js';
 import { scoreCase } from './lib/score.js';
-import { probeAnnotations } from '../src/utils/pdf-annotation-probe.js';
-import { chooseExtractionPath } from '../src/services/job-service.js';
+import { probeAnnotations, chooseExtractionPath } from '../src/utils/pdf-annotation-probe.js';
 import { summarizeByRegime } from './lib/regime-summary.js';
 
 const HERE = fileURLToPath(new URL('.', import.meta.url));

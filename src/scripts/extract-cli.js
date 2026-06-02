@@ -23,8 +23,7 @@ dotenv.config();
 
 import { pdfToImages, getPdfPageCount } from '../utils/pdf-converter.js';
 import { extractAllPages } from '../services/extraction-service.js';
-import { probeAnnotations } from '../utils/pdf-annotation-probe.js';
-import { chooseExtractionPath } from '../services/job-service.js';
+import { probeAnnotations, chooseExtractionPath } from '../utils/pdf-annotation-probe.js';
 import { extractAllPagesParsed } from '../services/parse-extraction-service.js';
 
 async function main() {

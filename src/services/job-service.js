@@ -13,7 +13,7 @@ import { EventEmitter } from 'events';
 import { pdfToTiledImages } from '../utils/pdf-tiler.js';
 import { extractAllPagesTiled } from './tiled-extraction-service.js';
 import { addExtractionResults, getProject } from './project-service.js';
-import { probeAnnotations } from '../utils/pdf-annotation-probe.js';
+import { probeAnnotations, chooseExtractionPath } from '../utils/pdf-annotation-probe.js';
 import { extractAllPagesParsed } from './parse-extraction-service.js';
 
 // ─── Job Store ─────────────────────────────────────────────────
@@ -78,14 +78,6 @@ export function createJob(projectId) {
  */
 export function getJob(jobId) {
   return jobs.get(jobId) || null;
-}
-
-/**
- * Decide which extraction regime to use from a probe result.
- * Phase 1: annotations present → parse; otherwise → vision.
- */
-export function chooseExtractionPath(probeResult) {
-  return probeResult.sourceType === 'digital_annotation' ? 'parse' : 'vision';
 }
 
 // ─── Job Runner ────────────────────────────────────────────────

@@ -47,3 +47,15 @@ export async function probeAnnotations(pdfPath) {
     perPageCounts,
   };
 }
+
+/**
+ * Decide which extraction regime to use from a probe result.
+ * Phase 1: annotations present → parse; otherwise → vision.
+ *
+ * Pure routing logic over a probe verdict — lives here, next to the probe, so
+ * lightweight callers (CLI, eval harness) can route without importing the job
+ * service and its DB/persistence graph.
+ */
+export function chooseExtractionPath(probeResult) {
+  return probeResult.sourceType === 'digital_annotation' ? 'parse' : 'vision';
+}

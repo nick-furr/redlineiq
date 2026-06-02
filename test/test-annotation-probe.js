@@ -4,7 +4,7 @@
  */
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
-import { probeAnnotations, MARKUP_SUBTYPES } from '../src/utils/pdf-annotation-probe.js';
+import { probeAnnotations, MARKUP_SUBTYPES, chooseExtractionPath } from '../src/utils/pdf-annotation-probe.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const pdf = (name) => resolve(HERE, '../evals/pdfs', name);
@@ -28,8 +28,7 @@ assert(raster.markupCount === 0, 'case_001 markupCount is 0');
 
 assert(MARKUP_SUBTYPES.has('FreeText') && !MARKUP_SUBTYPES.has('Link'), 'subtype set includes FreeText, excludes Link');
 
-console.log('\n🧪 job-service: chooseExtractionPath\n');
-const { chooseExtractionPath } = await import('../src/services/job-service.js');
+console.log('\n🧪 pdf-annotation-probe: chooseExtractionPath\n');
 assert(chooseExtractionPath({ sourceType: 'digital_annotation' }) === 'parse', 'digital_annotation → parse');
 assert(chooseExtractionPath({ sourceType: 'raster' }) === 'vision', 'raster → vision');
 
