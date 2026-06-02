@@ -23,6 +23,9 @@ dotenv.config();
 
 import { pdfToImages, getPdfPageCount } from '../utils/pdf-converter.js';
 import { extractAllPages } from '../services/extraction-service.js';
+import { probeAnnotations } from '../utils/pdf-annotation-probe.js';
+import { chooseExtractionPath } from '../services/job-service.js';
+import { extractAllPagesParsed } from '../services/parse-extraction-service.js';
 
 async function main() {
   const args = process.argv.slice(2);
@@ -77,45 +80,55 @@ Examples:
   console.log(`\n📄 RedlineIQ Extraction`);
   console.log(`   File: ${path.basename(pdfPath)}`);
 
-  // Get page count
-  const totalPages = await getPdfPageCount(pdfPath);
-  console.log(`   Pages: ${totalPages}`);
-
-  if (pages) {
-    console.log(`   Processing pages: ${pages.join(', ')}`);
-  } else {
-    console.log(`   Processing: all pages`);
-  }
-
-  console.log(`\n🔄 Converting PDF to images...`);
   const startTime = Date.now();
+  const projectName = path.basename(pdfPath, '.pdf');
 
-  const pageImages = await pdfToImages(pdfPath, { pages });
-  const validImages = pageImages.filter(p => p.base64);
-  console.log(`   ✓ ${validImages.length} pages converted (${((Date.now() - startTime) / 1000).toFixed(1)}s)`);
+  // Per-page progress reporter, shared by both extraction paths.
+  const onProgress = (pageNum, total, pageResult) => {
+    if (pageResult.error) {
+      console.log(`   ✗ Page ${pageNum}/${total}: ERROR - ${pageResult.error}`);
+    } else {
+      const count = pageResult.markups ? pageResult.markups.length : 0;
+      console.log(`   ✓ Page ${pageNum}/${total}: ${count} markups found`);
 
-  console.log(`\n🤖 Running extraction with Claude...\n`);
-
-  const result = await extractAllPages(
-    validImages,
-    { projectName: path.basename(pdfPath, '.pdf') },
-    (pageNum, total, pageResult) => {
-      if (pageResult.error) {
-        console.log(`   ✗ Page ${pageNum}/${total}: ERROR - ${pageResult.error}`);
-      } else {
-        const count = pageResult.markups ? pageResult.markups.length : 0;
-        console.log(`   ✓ Page ${pageNum}/${total}: ${count} markups found`);
-        
-        if (verbose && pageResult.markups) {
-          for (const m of pageResult.markups) {
-            const flag = m.ambiguous ? ' ⚠️' : '';
-            const conf = m.confidence === 'low' ? ' [low conf]' : '';
-            console.log(`      ${m.id}: [${m.markup_type}] "${m.markup_text}"${conf}${flag}`);
-          }
+      if (verbose && pageResult.markups) {
+        for (const m of pageResult.markups) {
+          const flag = m.ambiguous ? ' ⚠️' : '';
+          const conf = m.confidence === 'low' ? ' [low conf]' : '';
+          console.log(`      ${m.id}: [${m.markup_type}] "${m.markup_text}"${conf}${flag}`);
         }
       }
     }
-  );
+  };
+
+  // Route by source type — same decision the job runner makes. Digital annotation
+  // layers parse losslessly and skip rasterization entirely; everything else goes
+  // through vision.
+  const probe = await probeAnnotations(pdfPath);
+  const route = chooseExtractionPath(probe);
+  console.log(`   Source: ${probe.sourceType} (${probe.markupCount} annotations) → ${route}`);
+
+  let result;
+
+  if (route === 'parse') {
+    if (pages) {
+      console.log(`   Note: --pages is ignored on the parse path; processing all pages`);
+    }
+    console.log(`\n🤖 Parsing annotation layer + labeling with Claude...\n`);
+    result = await extractAllPagesParsed(pdfPath, { projectName }, onProgress);
+  } else {
+    const totalPages = await getPdfPageCount(pdfPath);
+    console.log(`   Pages: ${totalPages}`);
+    console.log(pages ? `   Processing pages: ${pages.join(', ')}` : `   Processing: all pages`);
+
+    console.log(`\n🔄 Converting PDF to images...`);
+    const pageImages = await pdfToImages(pdfPath, { pages });
+    const validImages = pageImages.filter(p => p.base64);
+    console.log(`   ✓ ${validImages.length} pages converted (${((Date.now() - startTime) / 1000).toFixed(1)}s)`);
+
+    console.log(`\n🤖 Running extraction with Claude...\n`);
+    result = await extractAllPages(validImages, { projectName }, onProgress);
+  }
 
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
 
