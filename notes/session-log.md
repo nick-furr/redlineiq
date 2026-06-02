@@ -8,7 +8,7 @@ This file is **facts only** — no post framing, hooks, or voice notes. Build-in
 
 ## 2026-06-02 — parse/vision hybrid Phase 1 shipped (annotation-layer parse path)
 
-**Summary:** Built the parse path the 5/29 "wrong-tool" realization pointed to: digital, un-flattened PDFs now route through a lossless `pdfjs-dist` annotation-layer parser instead of vision. Markup text + exact coordinates are read straight from the PDF; one cheap **text-only** Claude call assigns the semantic labels (type / related_to / confidence / ambiguous) that aren't stored in the file. The tiled-vision path is untouched — PDFs with no annotation layer route to vision exactly as before. **Scored end-to-end in the eval harness, the parse path holds recall and lifts precision sharply on the same sheet: case_012 recall 0.846 / precision 0.917 vs the vision path's 0.846 / 0.625 — equal recall, +0.292 precision.** Opened as PR #2 (not yet merged). TDD throughout; 39 offline assertions across 5 suites.
+**Summary:** Built the parse path the 5/29 "wrong-tool" realization pointed to: digital, un-flattened PDFs now route through a lossless `pdfjs-dist` annotation-layer parser instead of vision. Markup text + exact coordinates are read straight from the PDF; one cheap **text-only** Claude call assigns the semantic labels (type / related_to / confidence / ambiguous) that aren't stored in the file. The tiled-vision path is untouched — PDFs with no annotation layer route to vision exactly as before. **Scored end-to-end in the eval harness, the parse path holds recall and lifts precision sharply on the same sheet: case_012 recall 0.846 / precision 0.917 vs the vision path's 0.846 / 0.625 — equal recall, +0.292 precision.** Merged to main via PR #2 (merge commit `854fdbb`). TDD throughout; 39 offline assertions across 5 suites.
 
 **What happened:**
 1. **Router-first architecture:** a probe (`pdf-annotation-probe.js`) counts markup-subtype annotations *before any rasterization* and classifies the source as `digital_annotation` vs `raster`. The pure router `chooseExtractionPath()` lives in that same probe module — so lightweight callers (CLI, eval harness) route without importing the job service's DB/persistence graph; `job-service.js`, `extract-cli.js`, and `run-eval.js` all consume it. Routes: annotations → parse, else → vision. Digital files skip image conversion entirely.
@@ -44,7 +44,8 @@ This file is **facts only** — no post framing, hooks, or voice notes. Build-in
 - `8db36c8` — feat(cli): route extract-cli through the source-type router
 - `9103f76` — refactor: move chooseExtractionPath to pdf-annotation-probe (decouple CLI/eval from the DB graph)
 - `75d8380` — eval: score the parse path for digital cases (case_012 0.846 / 0.917)
-- PR #2: https://github.com/nick-furr/redlineiq/pull/2 (open)
+- `5cc7122` — ci: dummy ANTHROPIC_API_KEY so offline tests can import config (CI was red — `config/index.js` fail-fasts without a key, even for offline tests that import a service transitively)
+- Merged to main via PR #2 (merge commit `854fdbb`): https://github.com/nick-furr/redlineiq/pull/2
 
 **Related docs:** spec `docs/superpowers/specs/2026-06-02-parse-vision-hybrid-extraction-design.md`, plan `docs/superpowers/plans/2026-06-02-parse-vision-hybrid-phase1.md`.
 
