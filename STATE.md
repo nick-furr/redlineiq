@@ -35,6 +35,12 @@ matches on conceptual equivalence. Prompt versions are tracked in
   Indiscriminate tiling triples extracted count and hurts precision on clean sheets;
   `markup-postprocess.js` filters the worst of it. The open work is gating tiling on actual
   sheet resolution rather than tiling all raster.
+- **Substrate-text false positives are the open precision class.** On the tiled vision
+  path, the model transcribes the drawing's own printed black text as if it were redlines.
+  Post-processing removed the location-only-cloud and cross-tile-dup FPs, but ~8/13 of
+  case_012's FPs are this substrate-text class — can't be deduped away. The fix is a prompt
+  rule ("extract only the colored annotation layer, never the substrate") and, for digital
+  PDFs, the parse path (which sidesteps it entirely by reading the annotation objects).
 - **Real hand-drawn / photographed sheets are the hard ceiling.** Clean digital markups
   score well; photographed reviewer markup is where recall falls off.
 - **Clarification loop is one-directional** — ambiguous items auto-flag, but there's no
@@ -55,8 +61,11 @@ matches on conceptual equivalence. Prompt versions are tracked in
    `src/utils/pdf-annotation-probe.js`, `src/services/parse-extraction-service.js`).
    Phase 2 is the `digital_flattened` regime — digital PDFs whose markups were flattened
    into the page and so carry no annotation layer to parse.
-4. **Clarification reply workflow** — close the loop on auto-flagged ambiguous markups.
-5. **Formatted PDF report export** — for clean drafter handoff.
+4. **On-drawing highlighting** — the parse path already captures `{ page, rect, subtype }`
+   coordinates per markup (PDF points, bottom-left origin); the UI to overlay them on the
+   rendered drawing is not built. Lowest-risk visual win, data is already there.
+5. **Clarification reply workflow** — close the loop on auto-flagged ambiguous markups.
+6. **Formatted PDF report export** — for clean drafter handoff.
 
 ## Pointers
 

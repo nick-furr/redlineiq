@@ -6,6 +6,26 @@ This file is **facts only** — no post framing, hooks, or voice notes. Build-in
 
 ---
 
+## 2026-06-05 — froze to maintenance mode + doc-accuracy pass
+
+**Summary:** Parked RedlineIQ as a public portfolio piece. No feature work — got the repo to a clean, presentable, resumable snapshot: maintenance-mode README banner, a `STATE.md` resume map, dead-code removal, a security patch, and a documentation-accuracy pass that brought the README/STATE in line with the shipped hybrid pipeline. Tagged `v0.9-portfolio`.
+
+**What happened:**
+1. **Freeze + resume map:** added a "portfolio / maintenance mode" banner to the README and wrote `STATE.md` (current standing, known limitations, top follow-ups to resume on). Annotated tag `v0.9-portfolio` marks the snapshot.
+2. **Dead-code cleanup:** removed 7 orphaned root-level `.js` files (`api.js`, `extraction-service.js`, `markup.js`, `project-service.js`, `pdf-converter.js`, `index.js`, `extract-cli.js`) — pre-`src/`-reorg duplicates that imported `../config`-style paths and were broken where they sat. Live app is entirely `src/`; nothing imported them. No behavior change.
+3. **Confidentiality:** gitignored the two real third-party plan PDFs (case_011 Bohler grading, case_012 San Marcos framing) — publicly downloadable drawings with my own markups, not redistributed via the repo. Consistent with the existing `case_C*` / `dogfood/sources/` convention.
+4. **Security:** `npm audit` flagged react-router (2 high + 1 moderate, all the same GHSA cluster) in `client/`. `npm audit fix` bumped it past the advisories; lockfile-only, client build verified, audit clean.
+5. **Doc-accuracy pass (the substantive one):** the README still documented the original single-pass Claude Vision flow and predated PR #2. Brought README + STATE in line with what `job-service.js` actually runs — source-type probe (`pdfjs-dist`) → parse path for digital PDFs, tiled vision for raster; documented the previously-missing LangFuse + Sentry observability; added the new modules to the key-files map and the new env vars to the config table; corrected the eval/Next-steps sections that still called tiling "eval-only" (it ships as the production raster path). Also linked the design specs/plans from the ADR index and noted that `active.md` is v0.10 (defense-in-depth) while v0.9 stays the pinned aggregate baseline.
+
+**Commits:**
+- `9cb4ef2` — chore: remove dead pre-`src/` root duplicate modules
+- `b7d1450` — docs: freeze RedlineIQ as a portfolio snapshot (README banner, STATE.md, ignore real plans)
+- `32a7dce` — chore(deps): patch react-router to clear 2 high-severity advisories
+- `3a2745b` — docs: update README + STATE to match the shipped hybrid pipeline
+- tag `v0.9-portfolio` — portfolio / maintenance-mode snapshot marker
+
+---
+
 ## 2026-06-02 — parse/vision hybrid Phase 1 shipped (annotation-layer parse path)
 
 **Summary:** Built the parse path the 5/29 "wrong-tool" realization pointed to: digital, un-flattened PDFs now route through a lossless `pdfjs-dist` annotation-layer parser instead of vision. Markup text + exact coordinates are read straight from the PDF; one cheap **text-only** Claude call assigns the semantic labels (type / related_to / confidence / ambiguous) that aren't stored in the file. The tiled-vision path is untouched — PDFs with no annotation layer route to vision exactly as before. **Scored end-to-end in the eval harness, the parse path holds recall and lifts precision sharply on the same sheet: case_012 recall 0.846 / precision 0.917 vs the vision path's 0.846 / 0.625 — equal recall, +0.292 precision.** Merged to main via PR #2 (merge commit `854fdbb`). TDD throughout; 39 offline assertions across 5 suites.
