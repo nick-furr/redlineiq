@@ -67,9 +67,22 @@ matches on conceptual equivalence. Prompt versions are tracked in
 5. **Clarification reply workflow** — close the loop on auto-flagged ambiguous markups.
 6. **Formatted PDF report export** — for clean drafter handoff.
 
-## Pointers
+## Where everything lives (project map)
 
-- Architecture rationale: `docs/decisions/` (ADRs, Nygard format).
-- Prompt iteration history: `prompts/CHANGELOG.md`; active prompt: `prompts/active.md`.
-- Eval conventions + case taxonomy: `evals/CONVENTIONS.md`.
-- Local setup: `DEV_SETUP.md`.
+One place to orient from — whether resuming the build or describing it for an opportunity.
+
+| Looking for… | Go to |
+|---|---|
+| What it is, how to run it, the architecture | [`README.md`](README.md) |
+| Live demo + walkthrough video | links at the top of the README |
+| Current state, limitations, what's next (this file) | [`STATE.md`](STATE.md) |
+| *Why* decisions were made (ADRs + the two big design specs/plans) | [`docs/decisions/`](docs/decisions/) → its index links the hybrid + tiling specs |
+| Prompt iteration history, eval numbers, failed experiments | [`prompts/CHANGELOG.md`](prompts/CHANGELOG.md); active prompt: [`prompts/active.md`](prompts/active.md) |
+| Full build narrative — every session, dead end, commit, metric | [`notes/session-log.md`](notes/session-log.md) |
+| Eval case taxonomy + authoring conventions | [`evals/CONVENTIONS.md`](evals/CONVENTIONS.md) |
+| Real-world friction / dogfooding notes | [`dogfood/`](dogfood/) |
+| Local setup (Node pin, GraphicsMagick/Ghostscript, troubleshooting) | [`DEV_SETUP.md`](DEV_SETUP.md) |
+
+## In one paragraph (for applications / interviews)
+
+RedlineIQ is a deployed, end-to-end AI pipeline that turns marked-up construction plan PDFs into structured, actionable checklists — extracting every redline annotation with type, location, and confidence, and auto-flagging ambiguous ones. The engineering depth is in the extraction architecture and the measurement discipline: a source-type probe routes digital PDFs through a **lossless annotation-layer parse** (no Vision call) and everything else through **tiled Claude Vision** that splits sheets into ≤1568px tiles to beat the model's server-side resize ceiling, with a deterministic post-processing pass for precision. Quality is tracked by a **reproducible eval harness** (pinned `temperature: 0`, conceptual-equivalence LLM judge, σ ≈ 0.003 aggregate) over a versioned case set — with honest, defensible metrics rather than cherry-picked ones. Built solo, shipped on Docker/Render, documented with ADRs, design specs, and a full build log.
