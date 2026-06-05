@@ -7,6 +7,8 @@
 
 ![RedlineIQ screenshot](docs/screenshot.png)
 
+> **Project status — portfolio / maintenance mode.** Active feature work is paused as of June 2026. This is a working, deployed snapshot built to demonstrate an end-to-end AI extraction pipeline; it is not under active development. See [`STATE.md`](STATE.md) for where things stand and what I'd pick up next if I resumed.
+
 ## What it does
 
 Redlined plan sets are how engineers mark up drawings for drafters to revise — handwritten annotations scattered across pages, no standard format, no built-in organization. Before any actual drafting can begin, a drafter has to manually read, interpret, and organize every annotation. RedlineIQ eliminates that step. Upload a marked-up PDF and the app uses Claude Vision to extract every annotation into a structured, actionable checklist — categorized by type, location, and confidence, with ambiguous items auto-flagged for clarification.

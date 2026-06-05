@@ -25,6 +25,12 @@ evals/labels/case_C*.json
 evals/holdout/case_hC*.pdf
 evals/labels/case_hC*.json
 
+# Real third-party plans downloaded online (Bohler grading, San Marcos framing) with
+# my own markups added. Publicly downloadable but still someone else's drawings — not
+# redistributed via this repo. Local-only.
+evals/pdfs/case_011_*.pdf
+evals/pdfs/case_012_*.pdf
+
 # Tooling caches and local-only scratch
 .playwright-mcp/
 .tmp.driveupload/
