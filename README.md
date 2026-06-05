@@ -11,38 +11,60 @@
 
 ## What it does
 
-Redlined plan sets are how engineers mark up drawings for drafters to revise — handwritten annotations scattered across pages, no standard format, no built-in organization. Before any actual drafting can begin, a drafter has to manually read, interpret, and organize every annotation. RedlineIQ eliminates that step. Upload a marked-up PDF and the app uses Claude Vision to extract every annotation into a structured, actionable checklist — categorized by type, location, and confidence, with ambiguous items auto-flagged for clarification.
+Redlined plan sets are how engineers mark up drawings for drafters to revise — handwritten annotations scattered across pages, no standard format, no built-in organization. Before any actual drafting can begin, a drafter has to manually read, interpret, and organize every annotation. RedlineIQ eliminates that step. Upload a marked-up PDF and the app uses Claude to extract every annotation into a structured, actionable checklist — categorized by type, location, and confidence, with ambiguous items auto-flagged for clarification.
 
 ## Tech stack
 
 - **Frontend:** React + Vite, Tailwind CSS
 - **Backend:** Node.js + Express
-- **AI:** Claude Sonnet 4.6 (Vision API)
+- **AI:** Claude Sonnet 4.6 — Vision API (tiled raster path) + text-only calls (digital parse path)
 - **Persistence:** SQLite via better-sqlite3
-- **PDF processing:** pdf2pic + GraphicsMagick + Ghostscript
+- **PDF processing:** pdfjs-dist (annotation parsing + source-type probe); pdf2pic + GraphicsMagick + Ghostscript (rasterization & tiling)
+- **Observability:** LangFuse (LLM tracing) + Sentry (error tracking) — both optional, enabled via env
 - **Deployment:** Docker on Render
 
 ## Architecture
 
+Every upload is classified by source type *before* any work, then routed down the cheapest path that fits — digital PDFs are parsed losslessly with no Vision call at all; everything else falls through to tiled Claude Vision.
+
 ```
-PDF Upload → pdf2pic (pages → images) → Claude Vision API → Structured JSON → Checklist
+PDF upload
+  └─ probe annotation layer (pdfjs-dist)
+       ├─ digital w/ live annotations → PARSE path: read markup text + exact
+       │     coordinates straight from the PDF, then one cheap text-only Claude
+       │     call for semantic labels. No rasterization, no Vision.
+       └─ scanned / flattened / raster → TILED VISION path: split each page into
+             ≤1568px tiles (Sonnet's resize ceiling), run Claude Vision per tile,
+             merge + dedup, then precision post-process.
+                                  ↓
+              Structured JSON → SQLite → categorized, confidence-scored checklist
 ```
+
+Both paths return the same result shape, so persistence, the job runner, and the UI are path-agnostic. The async job runner (`job-service.js`) streams per-page progress to the client over SSE. The CLI applies the same source-type routing.
 
 ### Key files
 
 ```
 src/
-├── index.js                    # Express server entry point
-├── config/index.js             # Environment configuration
-├── models/markup.js            # Data model, types, helpers
+├── index.js                         # Express server entry point (loads Sentry first)
+├── instrument.js                    # Sentry initialization
+├── config/index.js                  # Environment configuration
+├── models/markup.js                 # Data model, types, helpers
 ├── services/
-│   ├── db.js                   # SQLite connection and schema setup
-│   ├── extraction-service.js   # Core AI extraction (Claude Vision)
-│   ├── job-service.js          # Async extraction job runner + SSE events
-│   └── project-service.js      # Project & checklist state management
-├── routes/api.js               # REST API endpoints
-├── utils/pdf-converter.js      # PDF → image conversion
-└── scripts/extract-cli.js      # CLI tool for standalone extraction
+│   ├── db.js                        # SQLite connection and schema setup
+│   ├── job-service.js               # Async job runner: probes source, routes path, streams SSE
+│   ├── parse-extraction-service.js  # Digital path — lossless annotation parse + text-only label call
+│   ├── tiled-extraction-service.js  # Raster path — per-tile Vision extraction, merge/dedup, postprocess
+│   ├── extraction-service.js        # Single-page Claude Vision (used by CLI + eval baseline)
+│   ├── markup-postprocess.js        # Precision filters applied to merged tiled output
+│   ├── project-service.js           # Project & checklist state management
+│   └── langfuse.js                  # LangFuse LLM-tracing client
+├── routes/api.js                    # REST API endpoints
+├── utils/
+│   ├── pdf-annotation-probe.js      # Source-type probe + extraction-path router
+│   ├── pdf-tiler.js                 # PDF page → overlapping ≤1568px tiles
+│   └── pdf-converter.js             # PDF → image conversion
+└── scripts/extract-cli.js           # CLI tool (same source-type routing as the app)
 
 prompts/
 ├── active.md                   # Runtime prompt (loaded by extraction-service.js)
@@ -142,6 +164,12 @@ curl http://localhost:3001/api/projects/{id}/summary
 | `MAX_FILE_SIZE_MB` | No | `20` | Max PDF upload size in MB. |
 | `MAX_PAGES` | No | `10` | Max pages per PDF. Checked at upload and again before extraction. |
 | `PORT` | No | `3001` | HTTP port. |
+| `OUTPUT_DIR` | No | `./output` | Directory for processed extraction output files. |
+| `LANGFUSE_PUBLIC_KEY` | No | — | LangFuse public key. LLM tracing is disabled unless both LangFuse keys are set. |
+| `LANGFUSE_SECRET_KEY` | No | — | LangFuse secret key. |
+| `LANGFUSE_BASE_URL` | No | `https://cloud.langfuse.com` | Override only when self-hosting LangFuse. |
+| `SENTRY_DSN` | No | — | Sentry DSN for error tracking. Disabled if unset. |
+| `SENTRY_TRACES_SAMPLE_RATE` | No | — | Sentry performance-trace sample rate (e.g. `0.1`). |
 
 ### Render notes
 
@@ -183,7 +211,7 @@ Outputs a JSON run file and an HTML report to `evals/runs/`. Each run scores thr
 
 The earlier 5/24 figure of 0.811 was measured against a non-deterministic stack (both extraction and judge defaulted to API `temperature: 1.0`). After pinning `temperature: 0` on both calls per ADR 0003, the eval is stable across runs (aggregate σ ≈ 0.003). The lower number is honest signal, not a regression. v0.9's two-pass `## Process` prompt change still earns its keep — bare-mark recall, the sub-metric it was designed to move, holds at the pinned config.
 
-**Experimental: v0.9 + tiling.** For sheets where source resolution exceeds Anthropic's ~1568 px server-side resize cap for Sonnet 4.6, splitting the PDF into ≤1568 px-long-edge tiles and merging per-tile extractions cracks the model-resolution ceiling. **case_006** (real hand-drawn bathroom elevation, stuck at recall ≤0.538 for two weeks across every prompt iteration) lifted to recall=0.538 + precision=0.636 (vs pinned baseline 0.231 / 0.273) — biggest single-case recall gain in the project to date. Precision regression on clean synthetic sheets is real (indiscriminate tiling triples extracted count), so this isn't shipped to production yet — iteration to conditional/source-aware tiling is the next ship target.
+**Tiling (now the production raster path).** For sheets where source resolution exceeds Anthropic's ~1568 px server-side resize cap for Sonnet 4.6, splitting the PDF into ≤1568 px-long-edge tiles and merging per-tile extractions cracks the model-resolution ceiling. **case_006** (real hand-drawn bathroom elevation, stuck at recall ≤0.538 for two weeks across every prompt iteration) lifted to recall=0.538 + precision=0.636 (vs the pre-tiling baseline 0.231 / 0.273) — biggest single-case recall gain in the project to date. Tiling now ships as the production Vision path for raster/scanned sources, with `markup-postprocess.js` filtering the worst false positives the merge introduces. The remaining refinement is **conditional tiling** — tile only when a sheet's resolution actually demands it, rather than every raster page, since indiscriminate tiling still inflates extracted count on clean sheets.
 
 Prompt versions are tracked in [`prompts/CHANGELOG.md`](prompts/CHANGELOG.md). The active prompt is [`prompts/active.md`](prompts/active.md), loaded by `extraction-service.js` at startup. Judgment uses Claude Haiku at `temperature: 0` (single deterministic call per pair; the prior 3x majority-vote pattern was a band-aid for the temperature default and is now removed), matching by conceptual equivalence rather than literal text. Case naming and the substrate × markup realism taxonomy are documented in [`evals/CONVENTIONS.md`](evals/CONVENTIONS.md).
 
@@ -192,8 +220,8 @@ Determinism characterization: aggregate σ ≈ 0.003 across runs. Per-case has s
 ## Next steps
 
 - [ ] Bare-mark recall — 57.9% aggregate on v0.9 (11 of 19 bare `verify?` / `??` markers caught, up from 37.5% on v0.8). Two-pass extraction lifted +0.204 on civil/arch cases but does not yet generalize: cases 003 (utility), 008 (electrical), and 010 (structural) each caught 0/2 because the Pass 2 checklist examples are civil/arch-flavored. Next lever: extend Pass 2 examples to MEP/structural language, or move to per-discipline few-shot
-- [ ] More real-world cases — case_011 (real Bohler grading plan, was case_R001) scored well on digital self-authored markups. case_006 (real public plan + real reviewer markup, photographed) had been the ceiling case — recall 0.231 at the pinned baseline — until the 5/28 tiling experiment lifted it to 0.538. Conditional tiling (only tile detected hand-drawn/scanned sources) is the next ship target for that gain to land in production. See [`evals/CONVENTIONS.md`](evals/CONVENTIONS.md) for the substrate × markup taxonomy used to slice these
-- [ ] Tile-large-sheets productionization — current tiling prototype is eval-only; needs source detection (vector vs raster) + tighter dedup before becoming the default extraction path for big sheets
+- [ ] More real-world cases — case_011 (real Bohler grading plan, was case_R001) scored well on digital self-authored markups. case_006 (real public plan + real reviewer markup, photographed) had been the ceiling case — recall 0.231 at the pinned baseline — until the 5/28 tiling experiment lifted it to 0.538 — and tiling has since shipped as the production raster path, so that gain is live. See [`evals/CONVENTIONS.md`](evals/CONVENTIONS.md) for the substrate × markup taxonomy used to slice these
+- [ ] Conditional tiling — production currently tiles *every* raster page; gate it on actual sheet resolution (and tighten merge dedup) so clean low-res scans skip the precision hit that indiscriminate tiling causes. Source-type detection itself already ships (`pdf-annotation-probe.js`)
 - [ ] Clarification workflow — engineer response loop for ambiguous markups (currently auto-flagged but no reply path)
 - [ ] PDF export — checklist is exportable as CSV today; a formatted PDF report for handoff is not yet implemented
 - [ ] Architecture decisions — 3 ADRs written ([`docs/decisions/`](docs/decisions/)), 3 more queued (max_tokens, sample isolation, Docker-on-Render)

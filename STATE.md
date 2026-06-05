@@ -29,10 +29,12 @@ matches on conceptual equivalence. Prompt versions are tracked in
 - **Two-pass extraction doesn't generalize across disciplines.** It lifted civil/arch
   bare-mark recall +0.204 but cases 003 (utility), 008 (electrical), and 010 (structural)
   each caught 0/2 — the Pass 2 checklist examples are civil/arch-flavored.
-- **Tiling is eval-only, not productionized.** Splitting high-res sheets into ≤1568px
-  tiles cracked the model-resolution ceiling (case_006: 0.231 → 0.538 recall) but
-  indiscriminate tiling triples extracted count and tanks precision on clean synthetic
-  sheets. Needs source-aware (vector vs raster) conditional tiling before shipping.
+- **Tiling is unconditional on the raster path.** Tiling ships in production (it cracked
+  the model-resolution ceiling — case_006: 0.231 → 0.538 recall) and source-type routing
+  is live (`pdf-annotation-probe.js`), but every raster page is tiled regardless of need.
+  Indiscriminate tiling triples extracted count and hurts precision on clean sheets;
+  `markup-postprocess.js` filters the worst of it. The open work is gating tiling on actual
+  sheet resolution rather than tiling all raster.
 - **Real hand-drawn / photographed sheets are the hard ceiling.** Clean digital markups
   score well; photographed reviewer markup is where recall falls off.
 - **Clarification loop is one-directional** — ambiguous items auto-flag, but there's no
@@ -44,12 +46,15 @@ matches on conceptual equivalence. Prompt versions are tracked in
 1. **Per-discipline Pass 2 few-shot** — extend Pass 2 examples to MEP/structural language
    (or go per-discipline) so bare-mark recall generalizes past civil/arch. Highest-signal
    lever; cases 003/008/010 are the proof set.
-2. **Conditional/source-aware tiling** — detect raster vs vector source, tile only
-   hand-drawn/scanned sheets, tighten dedup. Lands the case_006 gain in production without
-   the precision regression on clean sheets.
-3. **Parse/vision hybrid path** — route digital PDFs through annotation parsing and
-   reserve tiled vision for scanned/hand-drawn. (Phase 1 merged; the source-type router
-   exists — see `src/utils/pdf-annotation-probe.js`.)
+2. **Conditional tiling** — production tiles every raster page; gate it on actual sheet
+   resolution (and tighten merge dedup) so clean low-res scans skip the precision hit.
+   Source-type routing and the parse/vision split already ship — this is the remaining
+   refinement on the raster path.
+3. **Parse/vision hybrid — Phase 2.** Phase 1 ships: digital PDFs with a live annotation
+   layer are parsed losslessly, everything else routes to tiled vision (see
+   `src/utils/pdf-annotation-probe.js`, `src/services/parse-extraction-service.js`).
+   Phase 2 is the `digital_flattened` regime — digital PDFs whose markups were flattened
+   into the page and so carry no annotation layer to parse.
 4. **Clarification reply workflow** — close the loop on auto-flagged ambiguous markups.
 5. **Formatted PDF report export** — for clean drafter handoff.
 
