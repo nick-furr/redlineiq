@@ -11,7 +11,7 @@
 
 ## What it does
 
-Redlined plan sets are how engineers mark up drawings for drafters to revise — handwritten annotations scattered across pages, no standard format, no built-in organization. Before any actual drafting can begin, a drafter has to manually read, interpret, and organize every annotation. RedlineIQ eliminates that step. Upload a marked-up PDF and the app uses Claude to extract every annotation into a structured, actionable checklist — categorized by type, location, and confidence, with ambiguous items auto-flagged for clarification.
+Redlined plan sets are how engineers mark up drawings for drafters to revise — handwritten annotations scattered across pages, no standard format, no built-in organization. Before any actual drafting can begin, a drafter has to manually read, interpret, and organize every annotation. RedlineIQ eliminates that step. Upload a marked-up PDF and the app uses Claude to extract every annotation into a structured, actionable checklist — categorized by type, location, and confidence, with ambiguous items auto-flagged for clarification. Under the hood it's a **hybrid pipeline**: digital PDFs are parsed losslessly straight from the file, while scanned or flattened sheets fall through to tiled Claude Vision — see [Architecture](#architecture--hybrid-parsevision-pipeline) below.
 
 ## Tech stack
 
@@ -23,9 +23,9 @@ Redlined plan sets are how engineers mark up drawings for drafters to revise —
 - **Observability:** LangFuse (LLM tracing) + Sentry (error tracking) — both optional, enabled via env
 - **Deployment:** Docker on Render
 
-## Architecture
+## Architecture — hybrid parse/vision pipeline
 
-Every upload is classified by source type *before* any work, then routed down the cheapest path that fits — digital PDFs are parsed losslessly with no Vision call at all; everything else falls through to tiled Claude Vision.
+RedlineIQ runs a **hybrid extraction pipeline**: every upload is classified by source type *before* any work, then routed down the cheapest path that fits — digital PDFs are parsed losslessly with no Vision call at all; everything else falls through to tiled Claude Vision.
 
 ```
 PDF upload
