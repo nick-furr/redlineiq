@@ -1,0 +1,50 @@
+# AI code review on every non-draft PR, run by Claude Code in CI.
+# Reviews the diff against the project conventions in CLAUDE.md — the same
+# rules the local .claude/agents/code-reviewer agent enforces.
+#
+# Requires the ANTHROPIC_API_KEY repo secret (Settings → Secrets → Actions).
+name: Claude Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  claude-review:
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: read
+      id-token: write
+      actions: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Claude code review
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            Review this pull request against the conventions in CLAUDE.md. Focus on:
+            - Correctness bugs in the changed code
+            - Architecture invariants: both extraction paths must return the same
+              result shape (downstream stays path-agnostic); routes stay thin with
+              business logic in src/services/
+            - Every Claude API call sets temperature explicitly (ADR 0003)
+            - Prompt discipline: versioned snapshots under prompts/ are immutable;
+              a prompt change needs a new vN.md + active.md + CHANGELOG entry
+            - npm test must stay offline and deterministic (CI runs with a dummy key)
+
+            Post your review as a PR comment using `gh pr comment`. Use inline
+            comments for line-specific findings. Order findings by severity and
+            end with a one-line merge verdict. Skip praise and diff restatement.
+          claude_args: |
+            --allowed-tools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
