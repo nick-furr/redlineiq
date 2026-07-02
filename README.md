@@ -138,6 +138,12 @@ curl -X POST http://localhost:3001/api/projects/{id}/items/MK-002/flag \
 
 # Get project summary
 curl http://localhost:3001/api/projects/{id}/summary
+
+# Ask a question about the project's markups (RAG — FTS5 retrieval + grounded
+# Claude answer citing markup IDs, see ADR 0004)
+curl -X POST http://localhost:3001/api/projects/{id}/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question": "Which sheets have dimension changes?"}'
 ```
 
 ## System requirements
@@ -216,6 +222,15 @@ The earlier 5/24 figure of 0.811 was measured against a non-deterministic stack 
 Prompt versions are tracked in [`prompts/CHANGELOG.md`](prompts/CHANGELOG.md). The active prompt is [`prompts/active.md`](prompts/active.md), loaded by `extraction-service.js` at startup. (`active.md` is **v0.10** — a defense-in-depth "never fabricate" clause layered on v0.9. It is *not* the confabulation fix: tiling addressed the root cause, illegibility; the prose guard alone failed its objective, see the CHANGELOG v0.10 entry. **v0.9 remains the pinned aggregate baseline** because v0.10's prompt-only delta is unattributable at the aggregate.) Judgment uses Claude Haiku at `temperature: 0` (single deterministic call per pair; the prior 3x majority-vote pattern was a band-aid for the temperature default and is now removed), matching by conceptual equivalence rather than literal text. Case naming and the substrate × markup realism taxonomy are documented in [`evals/CONVENTIONS.md`](evals/CONVENTIONS.md).
 
 Determinism characterization: aggregate σ ≈ 0.003 across runs. Per-case has soft variance (σ ≈ 0.05) on borderline judgments due to Anthropic-side residual non-determinism at temp=0. Rule of thumb: aggregate moves >0.02 are signal; per-case moves >0.1 on borderline cases are signal. See `prompts/CHANGELOG.md` "v0.9 (rebaselined)" entry for full numbers and ADR 0003 for the architectural decision.
+
+## AI-assisted engineering
+
+The repo doesn't just *use* Claude in the product — the engineering workflow itself is agentic, and the tooling is checked in:
+
+- **A Claude Code agent team** ([`.claude/agents/`](.claude/agents/)) encodes this project's real constraints as reviewable subagents: [`eval-analyst`](.claude/agents/eval-analyst.md) (interprets eval runs against the pinned baseline with the project's actual signal/noise thresholds), [`prompt-reviewer`](.claude/agents/prompt-reviewer.md) (gates prompt changes on versioning + determinism discipline), [`code-reviewer`](.claude/agents/code-reviewer.md) (holds diffs to the architecture invariants), and [`pipeline-debugger`](.claude/agents/pipeline-debugger.md) (systematic triage against the known failure taxonomy in `STATE.md`).
+- **A project skill** ([`.claude/skills/prompt-iteration/`](.claude/skills/prompt-iteration/SKILL.md)) makes the prompt-versioning workflow executable: hypothesis → immutable snapshot → changelog → working-set eval → threshold comparison. Failed experiments get recorded, not deleted.
+- **CI-integrated AI review** ([`.github/workflows/claude-review.yml`](.github/workflows/claude-review.yml)) — every non-draft PR gets a Claude Code review against the same conventions the local agents enforce.
+- **RAG over extraction output** — `POST /api/projects/{id}/ask` answers questions about a project's markups, grounded in retrieved items and citing markup IDs. Retrieval is SQLite FTS5 (BM25, trigger-synced, zero new dependencies) rather than embeddings — a deliberate, documented trade-off for this corpus shape ([ADR 0004](docs/decisions/0004-fts5-retrieval-for-ask.md)). The retrieval layer is fully covered by offline tests; CI never makes an API call.
 
 ## Next steps
 
