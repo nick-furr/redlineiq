@@ -9,6 +9,7 @@
  * GET  /api/jobs/:jobId            — Poll job status (non-SSE fallback)
  * PATCH /api/projects/:id/items/:itemId — Update checklist item status
  * POST /api/projects/:id/items/:itemId/flag — Flag item for clarification
+ * POST /api/projects/:id/ask       — RAG Q&A over the project's markups
  * GET  /api/projects/:id/summary   — Get progress summary
  * DELETE /api/projects/:id         — Delete project
  */
@@ -31,6 +32,7 @@ import {
   deleteProject,
 } from '../services/project-service.js';
 import { createJob, getJob } from '../services/job-service.js';
+import { retrieveMarkups, rankItemsByOverlap, answerFromMarkups } from '../services/ask-service.js';
 import { SAMPLE_ID, isSampleProject, rejectSampleWrite } from '../constants/sample.js';
 
 // ─── Sample Project ────────────────────────────────────────────
@@ -60,6 +62,20 @@ const extractionLimiter = rateLimit({
   handler: (req, res) => {
     res.status(429).json({
       error: 'Extraction limit reached (3 per hour). Please try again later.',
+    });
+  },
+});
+
+// Q&A is one text-only Claude call per question — far cheaper than extraction,
+// so it gets a looser cap than the 3/hour extraction limit.
+const askLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) => {
+    res.status(429).json({
+      error: 'Question limit reached (10 per hour). Please try again later.',
     });
   },
 });
@@ -318,6 +334,46 @@ router.post('/projects/:id/items/:itemId/flag', rejectSampleWrite, async (req, r
     res.json({ item });
   } catch (err) {
     res.status(err.message.includes('not found') ? 404 : 500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/projects/:id/ask
+ * Ask a natural-language question about the project's extracted markups.
+ * FTS5 retrieval (in-memory ranking for the JSON-backed sample project),
+ * then one grounded Claude call citing markup IDs — see ADR 0004.
+ *
+ * Body: { question: "Which sheets have electrical changes?" }
+ * Returns: { answer, sources } — sources are the retrieved markups the
+ * answer is grounded in. No retrieval hits → honest empty answer, no API call.
+ */
+router.post('/projects/:id/ask', requireDemoKey, askLimiter, async (req, res) => {
+  const question = req.body?.question?.trim();
+  if (!question) return res.status(400).json({ error: 'Question is required' });
+
+  let sources;
+  if (isSampleProject(req.params.id)) {
+    if (!sampleProject) return res.status(404).json({ error: 'Sample not available' });
+    sources = rankItemsByOverlap(sampleProject.checklist, question);
+  } else {
+    const project = getProject(req.params.id);
+    if (!project) return res.status(404).json({ error: 'Project not found' });
+    sources = retrieveMarkups(project.id, question);
+  }
+
+  if (sources.length === 0) {
+    return res.json({
+      answer: 'No markups in this project match that question. Try terms from the markup text, a sheet reference, or a markup type (add, delete, move, dimension…).',
+      sources: [],
+    });
+  }
+
+  try {
+    const answer = await answerFromMarkups(question, sources);
+    res.json({ answer, sources });
+  } catch (err) {
+    console.error('Ask error:', err);
+    res.status(500).json({ error: err.message });
   }
 });
 

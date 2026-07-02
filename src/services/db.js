@@ -47,6 +47,59 @@ db.exec(`
     updated_at             TEXT NOT NULL,
     PRIMARY KEY (id, project_id)
   );
+
+  -- Full-text index over extracted markups, powering POST /projects/:id/ask
+  -- (ADR 0004). Fed by triggers rather than application code so the index can
+  -- never drift from checklist_items regardless of which service writes items.
+  -- No update trigger: the markup JSON is immutable after insert — status
+  -- updates touch other columns.
+  CREATE VIRTUAL TABLE IF NOT EXISTS markup_fts USING fts5(
+    markup_text,
+    location,
+    markup_type,
+    drawing_reference,
+    item_id UNINDEXED,
+    project_id UNINDEXED,
+    page_number UNINDEXED
+  );
+
+  CREATE TRIGGER IF NOT EXISTS checklist_items_fts_insert
+  AFTER INSERT ON checklist_items BEGIN
+    INSERT INTO markup_fts (markup_text, location, markup_type, drawing_reference, item_id, project_id, page_number)
+    VALUES (
+      json_extract(new.markup, '$.markup_text'),
+      json_extract(new.markup, '$.location_on_drawing'),
+      json_extract(new.markup, '$.markup_type'),
+      json_extract(new.markup, '$.drawing_reference'),
+      new.id,
+      new.project_id,
+      json_extract(new.markup, '$.page_number')
+    );
+  END;
+
+  CREATE TRIGGER IF NOT EXISTS checklist_items_fts_delete
+  AFTER DELETE ON checklist_items BEGIN
+    DELETE FROM markup_fts WHERE item_id = old.id AND project_id = old.project_id;
+  END;
 `);
+
+// Backfill the FTS index for databases created before it existed (the triggers
+// only cover writes made after this schema shipped). Runs once: a non-empty
+// index means the backfill or the triggers already populated it.
+const ftsRowCount = db.prepare('SELECT COUNT(*) AS c FROM markup_fts').get().c;
+if (ftsRowCount === 0) {
+  db.exec(`
+    INSERT INTO markup_fts (markup_text, location, markup_type, drawing_reference, item_id, project_id, page_number)
+    SELECT
+      json_extract(markup, '$.markup_text'),
+      json_extract(markup, '$.location_on_drawing'),
+      json_extract(markup, '$.markup_type'),
+      json_extract(markup, '$.drawing_reference'),
+      id,
+      project_id,
+      json_extract(markup, '$.page_number')
+    FROM checklist_items;
+  `);
+}
 
 export default db;
