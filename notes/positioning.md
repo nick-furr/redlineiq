@@ -37,7 +37,7 @@ This framing is sharper than "handwriting OCR for redlines" because:
 - Solo practitioners who don't have enough volume to justify the workflow change
 - Firms not on Bluebeam (Adobe-only shops — different integration story)
 
-**(needs user input)** — Sharpen "personally feels the pain" into a profile: hours per week spent on markup cleanup, project type, seniority. Use post-Karanveer / post-Sandis-coffee-chat learnings to populate.
+**(needs user input)** — Sharpen "personally feels the pain" into a profile: hours per week spent on markup cleanup, project type, seniority. Populate from the first JTBD interviews and AEC coffee-chat learnings.
 
 ## Anchor metrics
 
@@ -73,7 +73,7 @@ For each, capture: what they do, where they overlap with RedlineIQ, where Redlin
 
 ## JTBD discovery questions (use in customer interviews)
 
-These are the questions that should be asked when talking to prospective customers. The answers shape positioning sharpness over time. Use during Week 6 interview pipeline (Karanveer call etc.) and any cold customer chat.
+These are the questions that should be asked when talking to prospective customers. The answers shape positioning sharpness over time. Use during the Week 6 interview pipeline and any cold customer chat.
 
 **1. Liability (validates the "audit trail matters" hypothesis):**
 > "If you missed a markup this tool didn't catch, who's on the hook?"
@@ -143,6 +143,6 @@ These are the things this doc doesn't have answers for yet:
 
 - Engineering Practice Plan (Notion): the Task Board "Brain Dump" + Ongoing items that seeded this doc
 - Perplexity research (TODO: link or excerpt)
-- Outreach log: `outreach_log_karanveer_firm.md` (in repo) for context on the first JTBD interview pipeline
+- Outreach log: kept local-only (contains contact names/details, not committed) — context for the first JTBD interview pipeline
 - README.md — keep aligned with whatever positioning lands here
 - Memory: any future `user`-type entries about product strategy preferences should cross-reference this doc
