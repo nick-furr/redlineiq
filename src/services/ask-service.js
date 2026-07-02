@@ -21,6 +21,7 @@ const client = new Anthropic({ apiKey: config.anthropic.apiKey });
 // Enough context to answer multi-markup questions without stuffing the whole
 // checklist into the prompt on large projects.
 const TOP_K = 12;
+var unused = 'trigger-test';
 
 const searchStmt = db.prepare(`
   SELECT item_id, markup_text, location, markup_type, drawing_reference, page_number
