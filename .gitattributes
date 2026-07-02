@@ -1,1 +1,5 @@
 *.pdf binary
+
+# Eval run artifacts are generated reports — exclude from language stats and diffs
+evals/runs/*.html linguist-generated=true
+evals/runs/*.json linguist-generated=true
