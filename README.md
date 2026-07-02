@@ -7,7 +7,7 @@
 
 ![RedlineIQ screenshot](docs/screenshot.png)
 
-> **Project status — portfolio / maintenance mode.** Active feature work is paused as of June 2026. This is a working, deployed snapshot built to demonstrate an end-to-end AI extraction pipeline; it is not under active development. See [`STATE.md`](STATE.md) for where things stand and what I'd pick up next if I resumed.
+> **Project status — portfolio / maintenance mode.** Active work on the extraction pipeline is paused as of June 2026 — this is a working, deployed snapshot demonstrating an end-to-end AI extraction pipeline, not under active feature development. The [AI-assisted engineering layer](#ai-assisted-engineering) (agent team, CI review, and the `/ask` RAG endpoint) was added July 2026 as a focused portfolio addition that leaves the pipeline and its eval baseline untouched. See [`STATE.md`](STATE.md) for where things stand and what I'd pick up next if I resumed.
 
 ## What it does
 
