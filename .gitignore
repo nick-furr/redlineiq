@@ -51,3 +51,9 @@ scripts/blank-plans/
 
 # Personal BD/networking notes — local-only
 research/
+
+# Quarantine for real firm files (design partners, pilots) — only the README is tracked.
+# Nothing leaves this directory for git, the demo server, or a public post without
+# written permission. See intake/README.md and CLAUDE.md.
+intake/*
+!intake/README.md
