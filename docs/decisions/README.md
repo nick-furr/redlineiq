@@ -2,6 +2,16 @@
 
 Decisions are recorded chronologically. Each entry follows [Michael Nygard's ADR template](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions): Context, Decision, Consequences, Alternatives.
 
+## Where a decision goes
+
+Four mechanisms, one rule each. [`log.md`](log.md) stages everything: every non-trivial
+decision gets a dated entry there the moment it happens, with reasoning and a status.
+Decisions that turn out architectural are promoted from the log to a numbered ADR here.
+Prompt-level deltas go to [`prompts/CHANGELOG.md`](../../prompts/CHANGELOG.md). The build
+narrative (what happened, in order, with dead ends) stays in
+[`notes/session-log.md`](../../notes/session-log.md). If a choice is being made and none of
+these files is being written to, it is not decided yet.
+
 | # | Title | Status | Summary |
 |---|---|---|---|
 | [0001](0001-async-sse-extraction.md) | Async SSE for extraction | Accepted | Background job + SSE progress stream so multi-page extractions survive load-balancer timeouts. |
