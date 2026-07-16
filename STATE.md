@@ -1,88 +1,98 @@
-# Project State — RedlineIQ
+# Project State: RedlineIQ
 
-A map for future-me. Last updated June 2026, at the point active work was paused.
+The living source of truth for where the project stands. Any ship or decision that changes
+what this file claims updates it in the same commit (rule in `CLAUDE.md`). Last updated
+2026-07-16, at the start of the post-audit push.
 
 ## Where it stands
 
-RedlineIQ is a working, deployed end-to-end pipeline: upload a marked-up plan PDF →
-pages rendered to images → Claude Vision extracts annotations → structured, categorized
-checklist with confidence and auto-flagged ambiguity. Live at
-[redlineiq-app.onrender.com](https://redlineiq-app.onrender.com). The codebase lives
-entirely under `src/`; persistence is SQLite; deploy is Docker-on-Render.
+Active development as of July 2026. RedlineIQ is a working, deployed end-to-end pipeline:
+upload a marked-up plan PDF, get a structured, categorized checklist with confidence and
+auto-flagged ambiguity. Live at [redlineiq-app.onrender.com](https://redlineiq-app.onrender.com);
+SQLite persistence, Docker-on-Render deploy.
 
-The eval harness is the real spine of the project — a deterministic (temperature 0,
-per ADR 0003) scoring loop over a versioned working set of cases, with an LLM judge that
-matches on conceptual equivalence. Prompt versions are tracked in
-`prompts/CHANGELOG.md` with hypothesis/delta/rationale per iteration.
+Extraction is a hybrid: an annotation-layer probe routes each upload. Digital PDFs with live
+annotations are parsed losslessly (pdfjs, exact coordinates, one cheap text-only label call);
+scanned and flattened sheets go through tiled Claude Vision with deterministic precision
+post-processing. Both lanes converge on one result shape. A RAG Q&A endpoint (`/ask`,
+FTS5 retrieval per ADR 0004) answers questions over a project's extracted markups.
+
+A full read-only codebase audit landed 2026-07-16: `docs/audit-2026-07.md`. The current
+roadmap derives from it.
 
 ## Current numbers (pinned v0.9 baseline, 9 working-set cases)
 
-- **Recall 0.665 · Precision 0.687 · Specificity 1.509** — fully deterministic config.
-- Bare-mark recall (the sub-metric v0.9's two-pass prompt targeted): **57.9%** (11/19),
-  up from 37.5% on v0.8.
-- These are honest, post-rebaseline numbers. The earlier 0.811 figure was measured
-  against a non-deterministic stack (temp 1.0) and is not comparable — see the
-  "v0.9 (rebaselined)" entry in `prompts/CHANGELOG.md` and ADR 0003.
+- **Recall 0.665 · Precision 0.687 · Specificity 1.509**, deterministic config per ADR 0003.
+- Two integrity caveats from the audit, both Week 1 work: the parse lane's label call is the
+  one unpinned-temperature call site in the repo, so parse-lane numbers are noise until the
+  pin lands; and the harness's default vision path is untiled while production tiles, so the
+  trustworthy baseline is a fresh run with `--tile` after the pin.
 
 ## Known limitations
 
-- **Two-pass extraction doesn't generalize across disciplines.** It lifted civil/arch
-  bare-mark recall +0.204 but cases 003 (utility), 008 (electrical), and 010 (structural)
-  each caught 0/2 — the Pass 2 checklist examples are civil/arch-flavored.
-- **Tiling is unconditional on the raster path.** Tiling ships in production (it cracked
-  the model-resolution ceiling — case_006: 0.231 → 0.538 recall) and source-type routing
-  is live (`pdf-annotation-probe.js`), but every raster page is tiled regardless of need.
-  Indiscriminate tiling triples extracted count and hurts precision on clean sheets;
-  `markup-postprocess.js` filters the worst of it. The open work is gating tiling on actual
-  sheet resolution rather than tiling all raster.
-- **Substrate-text false positives are the open precision class.** On the tiled vision
-  path, the model transcribes the drawing's own printed black text as if it were redlines.
-  Post-processing removed the location-only-cloud and cross-tile-dup FPs, but ~8/13 of
-  case_012's FPs are this substrate-text class — can't be deduped away. The fix is a prompt
-  rule ("extract only the colored annotation layer, never the substrate") and, for digital
-  PDFs, the parse path (which sidesteps it entirely by reading the annotation objects).
+- **Mixed PDFs lose their raster pages silently.** Routing is document-level: one live
+  annotation anywhere sends the whole file down the parse lane, where scanned pages yield
+  empty results with no warning. The per-page counts needed to fix it are already computed
+  and consumed by nothing. This is the Week 3 ship, gated before any design partner sends
+  a real file.
+- **Text-less annotations are dropped on the parse lane.** A cloud with no `/Contents` never
+  reaches output: a built-in recall ceiling, not a model failure.
+- **Substrate-text false positives** remain the open precision class on the vision path (the
+  model transcribes the drawing's own printed text as redlines).
+- **`drawing_reference` is hardcoded `'Unknown'` on parse output**, degrading `/ask`
+  retrieval and blocking per-sheet grouping. Week 2 work, and the upstream fix coordinate
+  linking needs.
 - **Real hand-drawn / photographed sheets are the hard ceiling.** Clean digital markups
   score well; photographed reviewer markup is where recall falls off.
-- **Clarification loop is one-directional** — ambiguous items auto-flag, but there's no
-  engineer reply path.
-- **No formatted PDF export** — checklist exports as CSV only.
+- **Clarification loop is one-directional**; no engineer reply path.
+- **No formatted PDF export**; checklist exports as CSV only.
 
-## Top things I'd do next if I picked it back up
+## The plan (from the post-audit Notion task, one meaningful ship per week)
 
-1. **Per-discipline Pass 2 few-shot** — extend Pass 2 examples to MEP/structural language
-   (or go per-discipline) so bare-mark recall generalizes past civil/arch. Highest-signal
-   lever; cases 003/008/010 are the proof set.
-2. **Conditional tiling** — production tiles every raster page; gate it on actual sheet
-   resolution (and tighten merge dedup) so clean low-res scans skip the precision hit.
-   Source-type routing and the parse/vision split already ship — this is the remaining
-   refinement on the raster path.
-3. **Parse/vision hybrid — Phase 2.** Phase 1 ships: digital PDFs with a live annotation
-   layer are parsed losslessly, everything else routes to tiled vision (see
-   `src/utils/pdf-annotation-probe.js`, `src/services/parse-extraction-service.js`).
-   Phase 2 is the `digital_flattened` regime — digital PDFs whose markups were flattened
-   into the page and so carry no annotation layer to parse.
-4. **On-drawing highlighting** — the parse path already captures `{ page, rect, subtype }`
-   coordinates per markup (PDF points, bottom-left origin); the UI to overlay them on the
-   rendered drawing is not built. Lowest-risk visual win, data is already there.
-5. **Clarification reply workflow** — close the loop on auto-flagged ambiguous markups.
-6. **Formatted PDF report export** — for clean drafter handoff.
+1. **Week 1, make the numbers real:** pin `temperature: 0` in `labelMarkups`, capture the
+   pdfjs annotation id, fix the stale-truth headers and CLI routing claims, delete dead
+   weight, bound the 429 retry, run the `--tile` baseline. Plus this workflow migration.
+2. **Week 2, parse-lane eval depth:** more `digital_annotation` cases, populate
+   `drawing_reference`, re-flatten and label the two watermarked fixtures, re-run against
+   the Week 1 baseline.
+3. **Week 3, per-page routing:** wire up `perPageCounts`, add a mixed digital+raster
+   fixture. Lands before any pilot file arrives.
+4. **Week 4, coordinate linking ships:** the `.lsp` generator (per-sheet AutoLISP zoom to
+   `/Rect`), verify the plot-scale assumption with a human, record the demo.
+
+**Deferred until the named evidence arrives** (do not build ahead): status write-back
+(needs durable object storage first; belongs in the v2 one-pager), vision tuning (re-assess
+after Week 2 numbers), the shared `assembleExtractionResult` refactor (opportunistic only,
+when touching those files), stack rewrite (decided against 2026-07-16, see
+`docs/decisions/log.md`).
 
 ## Where everything lives (project map)
-
-One place to orient from — whether resuming the build or describing it for an opportunity.
 
 | Looking for… | Go to |
 |---|---|
 | What it is, how to run it, the architecture | [`README.md`](README.md) |
 | Live demo + walkthrough video | links at the top of the README |
-| Current state, limitations, what's next (this file) | [`STATE.md`](STATE.md) |
+| Current state, limitations, the plan (this file) | [`STATE.md`](STATE.md) |
+| The July 2026 audit every plan item cites | [`docs/audit-2026-07.md`](docs/audit-2026-07.md) |
+| Running decisions log (staged, promoted to ADRs) | [`docs/decisions/log.md`](docs/decisions/log.md) |
 | *Why* decisions were made (ADRs + the two big design specs/plans) | [`docs/decisions/`](docs/decisions/) → its index links the hybrid + tiling specs |
 | Prompt iteration history, eval numbers, failed experiments | [`prompts/CHANGELOG.md`](prompts/CHANGELOG.md); active prompt: [`prompts/active.md`](prompts/active.md) |
-| Full build narrative — every session, dead end, commit, metric | [`notes/session-log.md`](notes/session-log.md) |
+| Full build narrative (every session, dead end, commit, metric) | [`notes/session-log.md`](notes/session-log.md) |
 | Eval case taxonomy + authoring conventions | [`evals/CONVENTIONS.md`](evals/CONVENTIONS.md) |
 | Real-world friction / dogfooding notes | [`dogfood/`](dogfood/) |
+| Incoming design-partner files (gitignored, quarantine) | `intake/` |
 | Local setup (Node pin, GraphicsMagick/Ghostscript, troubleshooting) | [`DEV_SETUP.md`](DEV_SETUP.md) |
 
 ## In one paragraph (for applications / interviews)
 
-RedlineIQ is a deployed, end-to-end AI pipeline that turns marked-up construction plan PDFs into structured, actionable checklists — extracting every redline annotation with type, location, and confidence, and auto-flagging ambiguous ones. The engineering depth is in the extraction architecture and the measurement discipline: a source-type probe routes digital PDFs through a **lossless annotation-layer parse** (no Vision call) and everything else through **tiled Claude Vision** that splits sheets into ≤1568px tiles to beat the model's server-side resize ceiling, with a deterministic post-processing pass for precision. Quality is tracked by a **reproducible eval harness** (pinned `temperature: 0`, conceptual-equivalence LLM judge, σ ≈ 0.003 aggregate) over a versioned case set — with honest, defensible metrics rather than cherry-picked ones. Built solo, shipped on Docker/Render, documented with ADRs, design specs, and a full build log.
+RedlineIQ is a deployed, end-to-end AI pipeline that turns marked-up construction plan PDFs
+into structured, actionable checklists: every redline annotation extracted with type,
+location, and confidence, ambiguous ones auto-flagged. The engineering depth is in the
+extraction architecture and the measurement discipline. A source-type probe routes digital
+PDFs through a lossless annotation-layer parse (no Vision call) and everything else through
+tiled Claude Vision that splits sheets into ≤1568px tiles to beat the model's server-side
+resize ceiling, with a deterministic post-processing pass for precision. Quality is tracked
+by a reproducible eval harness (pinned `temperature: 0`, conceptual-equivalence LLM judge,
+σ ≈ 0.003 aggregate) over a versioned case set, with honest, defensible metrics rather than
+cherry-picked ones. Built solo, shipped on Docker/Render, documented with ADRs, design
+specs, a decisions log, and a full build log.
