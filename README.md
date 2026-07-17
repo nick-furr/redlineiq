@@ -1,13 +1,13 @@
 # RedlineIQ
 
 [![CI](https://github.com/nick-furr/redlineiq/actions/workflows/ci.yml/badge.svg)](https://github.com/nick-furr/redlineiq/actions/workflows/ci.yml)
-[![evals](https://img.shields.io/badge/evals%20v0.9-recall%200.665%20%C2%B7%20precision%200.687%20%C2%B7%20spec%201.51-blue)](#eval-harness)
+[![evals](https://img.shields.io/badge/evals%207%2F17%20tiled-recall%200.835%20%C2%B7%20precision%200.593%20%C2%B7%20spec%201.59-blue)](#eval-harness)
 
 **[Live demo →](https://redlineiq-app.onrender.com)** &nbsp;·&nbsp; **[Walkthrough video →](https://www.loom.com/share/db6edb1fedf340e3a901dd07fc224867)**
 
 ![RedlineIQ screenshot](docs/screenshot.png)
 
-> **Project status — portfolio / maintenance mode.** Active work on the extraction pipeline is paused as of June 2026 — this is a working, deployed snapshot demonstrating an end-to-end AI extraction pipeline, not under active feature development. The [AI-assisted engineering layer](#ai-assisted-engineering) (agent team, CI review, and the `/ask` RAG endpoint) was added July 2026 as a focused portfolio addition that leaves the pipeline and its eval baseline untouched. See [`STATE.md`](STATE.md) for where things stand and what I'd pick up next if I resumed.
+> **Project status: active development** (resumed July 2026 after a June pause). A full codebase audit ([`docs/audit-2026-07.md`](docs/audit-2026-07.md)) kicked off a weekly shipping cadence: eval trust, then parse-lane coverage, then per-page routing, then coordinate linking into AutoCAD. [`STATE.md`](STATE.md) is the living map of where things stand. The [AI-assisted engineering layer](#ai-assisted-engineering) (agent team, CI review, the `/ask` RAG endpoint) landed earlier in July.
 
 ## What it does
 
@@ -213,7 +213,9 @@ Outputs a JSON run file and an HTML report to `evals/runs/`. Each run scores thr
 | **Precision** | Fraction of extracted markups that matched something expected | ≥ 0.70 |
 | **Specificity** | Avg specificity weight of matched items (rewards detail) | ≥ 1.50 |
 
-**Current pinned baseline (v0.9, 9 working-set cases, fully deterministic config):** recall=0.665 · precision=0.687 · specificity=1.509
+**Current production-equivalent baseline (2026-07-17: tiled raster path, full 12-case working set, every call site temperature-pinned):** recall=0.835 · precision=0.593 · specificity=1.593, router accuracy 100%. By regime: raster n=10 at recall 0.818 / precision 0.520; digital_annotation n=2 at recall 0.923 / precision 0.959. The raster precision cost is the documented tiling tradeoff — earlier baselines ran the harness's untiled default, which masked it.
+
+**Prompt-comparison baseline (v0.9, 9 working-set cases, untiled config):** recall=0.665 · precision=0.687 · specificity=1.509. Still the reference for attributing prompt-only deltas across versioned snapshots.
 
 The earlier 5/24 figure of 0.811 was measured against a non-deterministic stack (both extraction and judge defaulted to API `temperature: 1.0`). After pinning `temperature: 0` on both calls per ADR 0003, the eval is stable across runs (aggregate σ ≈ 0.003). The lower number is honest signal, not a regression. v0.9's two-pass `## Process` prompt change still earns its keep — bare-mark recall, the sub-metric it was designed to move, holds at the pinned config.
 

@@ -44,6 +44,8 @@ function loadPrompt() {
 
 const SYSTEM_PROMPT = loadPrompt();
 
+const MAX_RATE_LIMIT_RETRIES = 3;
+
 /**
  * Extract markups from a single page image.
  * 
@@ -56,8 +58,6 @@ const SYSTEM_PROMPT = loadPrompt();
  * @param {string} [context.expectedSheets] - Known sheet numbers
  * @returns {Promise<Object>} Parsed extraction result
  */
-const MAX_RATE_LIMIT_RETRIES = 3;
-
 export async function extractMarkupsFromPage(pageImage, context = {}, attempt = 0) {
   const { base64, mediaType, pageNumber } = pageImage;
 

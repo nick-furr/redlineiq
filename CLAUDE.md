@@ -70,9 +70,11 @@ The eval harness is the spine of the project. Non-obvious constraints:
 - **The harness's default vision path is not production's**: production tiles every raster
   page; the harness only tiles with `--tile`. Baselines that claim to represent production
   must run with `--tile`.
-- **v0.9 is the pinned baseline** (recall 0.665 · precision 0.687 · specificity 1.509) even
-  though `active.md` is v0.10; v0.10's prompt-only delta was unattributable at the
-  aggregate.
+- **Two baselines, different jobs.** The production-equivalent reference is the 2026-07-17
+  tiled run (recall 0.835 · precision 0.593 · specificity 1.593, 12 cases; see STATE.md) —
+  compare production-facing changes against it. v0.9 (recall 0.665 · precision 0.687 ·
+  specificity 1.509, untiled, 9 cases) stays the prompt-comparison baseline even though
+  `active.md` is v0.10; v0.10's prompt-only delta was unattributable at the aggregate.
 - **Signal thresholds:** aggregate metric moves >0.02 are signal; per-case moves >0.1 on
   borderline cases are signal. Anything smaller is run-to-run noise (aggregate σ ≈ 0.003).
 - **`evals/holdout/` is a holdout set**; never iterate prompts against it. Tune on the
