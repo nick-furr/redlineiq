@@ -29,6 +29,7 @@ assert(all.length === 12, `case_012 → 12 text markups (got ${all.length})`);
 assert(all.every(m => typeof m.markup_text === 'string' && m.markup_text.length > 0), 'every markup has non-empty text');
 assert(all.every(m => Array.isArray(m.coordinates.rect) && m.coordinates.rect.length === 4), 'every markup has a 4-tuple rect');
 assert(all.every(m => m.coordinates.page === 1), 'coordinates.page is set');
+assert(all.every(m => typeof m.coordinates.annotationId === 'string' && m.coordinates.annotationId.length > 0), 'every markup has an annotationId');
 
 console.log('\n🧪 parse-extraction: pure label helpers\n');
 

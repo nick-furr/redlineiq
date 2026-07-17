@@ -60,8 +60,10 @@ export const STATUS = {
  *   the literal characters/marks as seen, before interpretation.
  * @property {Object} [coordinates] - Parse-path only. Exact annotation geometry
  *   from the PDF. { page:number, rect:[x1,y1,x2,y2] (PDF points, bottom-left
- *   origin), subtype:string }. Absent on vision-extracted markups. Captured now;
- *   on-drawing highlighting (deferred) will consume it.
+ *   origin), subtype:string, annotationId:string }. Absent on vision-extracted
+ *   markups. annotationId is the pdfjs object ref, the handle status write-back
+ *   needs to target the original annotation; rect/page/subtype feed on-drawing
+ *   highlighting (both deferred).
  */
 
 /**

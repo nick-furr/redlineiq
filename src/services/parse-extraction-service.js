@@ -46,7 +46,7 @@ export async function parseAnnotationLayer(pdfPath) {
         markup_text: text,
         drawing_reference: 'Unknown',
         location_on_drawing: '',
-        coordinates: { page: p, rect: Array.from(a.rect || []), subtype: a.subtype },
+        coordinates: { page: p, rect: Array.from(a.rect || []), subtype: a.subtype, annotationId: a.id },
       });
     }
 
