@@ -39,9 +39,12 @@ const args = process.argv.slice(2);
 const workingSetOnly = args.includes('--working-set');
 const tileMode = args.includes('--tile');
 // By default each case runs through its routed regime (parse for digital
-// annotation layers, vision otherwise) — i.e. the harness measures the real
-// production system. --force-vision ignores the router and runs vision on every
-// case, so the parse-vs-vision delta on a digital sheet stays measurable.
+// annotation layers, vision otherwise) — this matches production for ROUTING.
+// It does NOT match production for raster extraction: production always tiles
+// (job-service.js), this harness only tiles with --tile. A baseline claiming to
+// represent production must be run with --tile. --force-vision ignores the
+// router and runs vision on every case, so the parse-vs-vision delta on a
+// digital sheet stays measurable.
 const forceVision = args.includes('--force-vision');
 const promptIdx = args.indexOf('--prompt');
 const promptVersion = promptIdx !== -1 ? args[promptIdx + 1] : 'current';

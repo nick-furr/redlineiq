@@ -40,7 +40,7 @@ PDF upload
               Structured JSON → SQLite → categorized, confidence-scored checklist
 ```
 
-Both paths return the same result shape, so persistence, the job runner, and the UI are path-agnostic. The async job runner (`job-service.js`) streams per-page progress to the client over SSE. The CLI applies the same source-type routing.
+Both paths return the same result shape, so persistence, the job runner, and the UI are path-agnostic. The async job runner (`job-service.js`) streams per-page progress to the client over SSE. The CLI applies the same source-type *routing*, but its raster branch runs single-image extraction rather than production's tiled path — treat CLI vision output as routing verification, not a production run.
 
 ### Key files
 
@@ -64,7 +64,7 @@ src/
 │   ├── pdf-annotation-probe.js      # Source-type probe + extraction-path router
 │   ├── pdf-tiler.js                 # PDF page → overlapping ≤1568px tiles
 │   └── pdf-converter.js             # PDF → image conversion
-└── scripts/extract-cli.js           # CLI tool (same source-type routing as the app)
+└── scripts/extract-cli.js           # CLI tool (same routing as the app; raster branch is untiled, not production-equivalent)
 
 prompts/
 ├── active.md                   # Runtime prompt (loaded by extraction-service.js)

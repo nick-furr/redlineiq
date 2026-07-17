@@ -1,5 +1,5 @@
 /**
- * PDF → Tile Images (eval prototype)
+ * PDF → Tile Images
  *
  * Splits each PDF page into an N×M grid of overlapping tiles, each sized
  * so that its long edge ≈ 1568 px (Sonnet 4.6's server-side image resize
@@ -7,11 +7,10 @@
  * sheet by chopping it into smaller pieces that each fit within Anthropic's
  * input cap, rather than downsampling the whole sheet to fit.
  *
- * This is a parallel pipeline to src/utils/pdf-converter.js, NOT a
- * replacement. Production extraction still uses pdf-converter. Tiling is
- * eval-only until the hypothesis is validated.
- *
- * See ADR 0003 + notes/extraction-quality-levers.md for the why.
+ * This is the production raster pipeline (job-service.js), separate from
+ * pdf-converter.js, which the CLI's raster branch and the eval harness's
+ * default (non --tile) runs use instead. See ADR 0003 for the validating
+ * measurements and notes/extraction-quality-levers.md for the why.
  */
 
 import { fromPath } from 'pdf2pic';

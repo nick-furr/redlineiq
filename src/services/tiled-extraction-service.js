@@ -1,5 +1,5 @@
 /**
- * Tiled Extraction Service (eval prototype)
+ * Tiled Extraction Service
  *
  * Wraps the standard extractMarkupsFromPage to support tiled inputs:
  *   1. Each page is split into N tile images by pdf-tiler.js
@@ -10,8 +10,9 @@
  * large sheets where the whole-sheet image otherwise gets server-side
  * downsampled below the resolution needed to read handwriting.
  *
- * This is an eval-only parallel path to extraction-service.js. Production
- * extraction is unchanged. See ADR 0003 + notes/extraction-quality-levers.md.
+ * This IS the production raster path (job-service.js routes every raster
+ * upload through here; see ADR 0003 for the validating measurements). The
+ * CLI's raster branch (extract-cli.js) does not tile — see its header.
  */
 
 import { extractMarkupsFromPage } from './extraction-service.js';
