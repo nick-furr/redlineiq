@@ -135,48 +135,6 @@ export const STATUS = {
  */
 
 /**
- * The JSON schema sent to Claude in the extraction prompt
- * to enforce structured output.
- */
-export const EXTRACTION_RESPONSE_SCHEMA = {
-  type: 'object',
-  properties: {
-    page_number: { type: 'integer' },
-    drawing_reference: { type: 'string' },
-    drawing_title: { type: 'string' },
-    total_markups_found: { type: 'integer' },
-    markups: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: { type: 'string' },
-          markup_text: { type: 'string' },
-          markup_type: {
-            type: 'string',
-            enum: Object.values(MARKUP_TYPES),
-          },
-          drawing_reference: { type: 'string' },
-          location_on_drawing: { type: 'string' },
-          related_to: { type: ['string', 'null'] },
-          confidence: {
-            type: 'string',
-            enum: Object.values(CONFIDENCE),
-          },
-          ambiguous: { type: 'boolean' },
-          raw_interpretation: { type: 'string' },
-        },
-        required: [
-          'id', 'markup_text', 'markup_type', 'drawing_reference',
-          'location_on_drawing', 'related_to', 'confidence', 'ambiguous',
-        ],
-      },
-    },
-  },
-  required: ['page_number', 'drawing_reference', 'drawing_title', 'total_markups_found', 'markups'],
-};
-
-/**
  * Helper: Create a new ChecklistItem from an extracted markup
  */
 export function createChecklistItem(extractedMarkup) {

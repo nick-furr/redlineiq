@@ -11,7 +11,6 @@ import {
   STATUS,
   createChecklistItem,
   computeSummary,
-  EXTRACTION_RESPONSE_SCHEMA,
 } from '../src/models/markup.js';
 
 function assert(condition, message) {
@@ -94,14 +93,5 @@ console.log('\nEdge Cases:');
 const emptySummary = computeSummary([]);
 assert(emptySummary.total === 0, 'Empty checklist total is 0');
 assert(emptySummary.percent_complete === 0, 'Empty checklist percent is 0');
-
-// ─── Test: Extraction response schema ──────────────────────────
-console.log('\nExtraction Schema:');
-assert(EXTRACTION_RESPONSE_SCHEMA.type === 'object', 'Schema is an object');
-assert(EXTRACTION_RESPONSE_SCHEMA.properties.markups.type === 'array', 'Markups field is array');
-assert(
-  EXTRACTION_RESPONSE_SCHEMA.properties.markups.items.properties.markup_type.enum.length === 8,
-  'Schema has all 8 markup type enums'
-);
 
 console.log('\n✅ All tests complete\n');

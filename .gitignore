@@ -9,6 +9,8 @@ output/
 data/
 *.db
 *.sqlite
+__pycache__/
+*.pyc
 # Claude Code — the agent team (.claude/agents/) and skills (.claude/skills/)
 # are checked in; only machine-local settings stay out
 .claude/settings.local.json
