@@ -10,6 +10,18 @@ be decided; the data source is named), **candidate** (worth doing, not scheduled
 
 ---
 
+## 2026-07-17 — Week 1 production-equivalent eval baseline recorded
+
+**COMMITTED.** Ran `node evals/run-eval.js --working-set --tile` after the temperature pin
+and the stale-truth fixes landed. Aggregate recall 0.835 · precision 0.593 · specificity
+1.593 across the full 12-case working set (raster n=10, digital_annotation n=2, router
+accuracy 100%). Full numbers in STATE.md; run artifact
+`evals/runs/2026-07-17_current_tile.json`. This supersedes the pinned v0.9 baseline as the
+reference for Week 2's re-run comparison — v0.9 stays on record as historical context
+(different case count, untiled) but is not the number to beat going forward. The raster
+precision drop versus v0.9 is not a regression: it is the tiling precision tradeoff that
+was always in production, previously invisible because the harness defaulted to untiled.
+
 ## 2026-07-16 — No stack rewrite / Next.js migration
 
 **COMMITTED.** Considered during post-audit planning and rejected. The AI-efficiency

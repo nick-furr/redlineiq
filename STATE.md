@@ -20,11 +20,23 @@ FTS5 retrieval per ADR 0004) answers questions over a project's extracted markup
 A full read-only codebase audit landed 2026-07-16: `docs/audit-2026-07.md`. The current
 roadmap derives from it.
 
-## Current numbers (pinned v0.9 baseline, 9 working-set cases)
+## Current numbers
 
-- **Recall 0.665 · Precision 0.687 · Specificity 1.509**, deterministic config per ADR 0003.
-- One integrity caveat remains from the audit: the harness's default vision path is untiled
-  while production tiles, so the trustworthy baseline is a fresh run with `--tile` (Week 1).
+- **Pinned v0.9 baseline** (9-case working set as of that pin, untiled default harness
+  config): recall 0.665 · precision 0.687 · specificity 1.509. Historical reference for
+  prompt-only deltas; not directly comparable to the line below (different case count,
+  untiled).
+- **Week 1 production-equivalent baseline** (2026-07-17, `evals/runs/2026-07-17_current_tile.json`):
+  active prompt (v0.10), `--tile` (matches production's raster path), full 12-case working
+  set, temperature pin landed. Aggregate: **recall 0.835 · precision 0.593 · specificity
+  1.593**. By regime: raster n=10 recall 0.818 / precision 0.520; digital_annotation n=2
+  recall 0.923 / precision 0.959; router accuracy 100%. This is the reference for Week 2's
+  "re-run eval, compare against Week 1 baseline."
+- The raster precision hit (0.520) is the known tiling tradeoff already logged under Known
+  limitations below — indiscriminate tiling triples extracted count and catches more
+  substrate-text false positives on clean sheets. Not a regression; it is what production
+  has actually been doing since Phase 1, now measured honestly instead of masked by an
+  untiled harness default.
   The parse lane's temperature pin landed 2026-07-16; parse-lane numbers from before it are
   not comparable.
 
