@@ -56,7 +56,9 @@ const SYSTEM_PROMPT = loadPrompt();
  * @param {string} [context.expectedSheets] - Known sheet numbers
  * @returns {Promise<Object>} Parsed extraction result
  */
-export async function extractMarkupsFromPage(pageImage, context = {}) {
+const MAX_RATE_LIMIT_RETRIES = 3;
+
+export async function extractMarkupsFromPage(pageImage, context = {}, attempt = 0) {
   const { base64, mediaType, pageNumber } = pageImage;
 
   if (!base64) {
@@ -148,10 +150,12 @@ export async function extractMarkupsFromPage(pageImage, context = {}) {
       throw new Error(`Failed to parse extraction result for page ${pageNumber}. The API response was not valid JSON.`);
     }
     if (err.status === 429) {
-      // Rate limited — wait and retry once
-      console.warn('Rate limited, waiting 10s...');
+      if (attempt >= MAX_RATE_LIMIT_RETRIES) {
+        throw new Error(`Rate limited on page ${pageNumber} after ${MAX_RATE_LIMIT_RETRIES} retries`);
+      }
+      console.warn(`Rate limited, waiting 10s... (attempt ${attempt + 1}/${MAX_RATE_LIMIT_RETRIES})`);
       await sleep(10000);
-      return extractMarkupsFromPage(pageImage, context);
+      return extractMarkupsFromPage(pageImage, context, attempt + 1);
     }
     throw err;
   }
