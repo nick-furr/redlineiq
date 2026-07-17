@@ -6,6 +6,10 @@ what this file claims updates it in the same commit (rule in `CLAUDE.md`). Last 
 
 ## Where it stands
 
+**Public v1 note (2026-07-17):** the public `redlineiq` repo is archived at this commit as
+the v1 portfolio artifact. Active development, including this file's future updates,
+continues in a private repository (see `docs/decisions/log.md`, "v1 public repo archived").
+
 Active development as of July 2026. RedlineIQ is a working, deployed end-to-end pipeline:
 upload a marked-up plan PDF, get a structured, categorized checklist with confidence and
 auto-flagged ambiguity. Live at [redlineiq-app.onrender.com](https://redlineiq-app.onrender.com);

@@ -10,6 +10,20 @@ be decided; the data source is named), **candidate** (worth doing, not scheduled
 
 ---
 
+## 2026-07-17 — v1 public repo archived; development moves to a private repo
+
+**COMMITTED.** Posting demos is distribution and continues; the public repo is a portfolio
+artifact and freezes at the Week 1 state (honest baseline, clean audit trail, full
+history). The reasons to go private are the subtle ones, not clone-fear: prompt
+engineering and eval ground truth are earned IP that grows from Week 2 onward, and once
+paying pilots enter the picture a public repo invites self-hosting questions from exactly
+the technically literate buyers being sold to. The moat (AEC network, domain read,
+distribution head start) is not the code, so this is cheap insurance taken at the right
+moment, not a retreat. Mechanics: full history mirrored to the private repo, Render
+repointed at it before the public repo is archived read-only. The public v1 keeps the
+live-demo link and the build story for the hire pipeline; "I took it private because it
+is becoming a product" is itself the signal in that conversation.
+
 ## 2026-07-17 — Week 1 production-equivalent eval baseline recorded
 
 **COMMITTED.** Ran `node evals/run-eval.js --working-set --tile` after the temperature pin

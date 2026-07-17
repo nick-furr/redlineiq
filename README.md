@@ -7,7 +7,7 @@
 
 ![RedlineIQ screenshot](docs/screenshot.png)
 
-> **Project status: active development** (resumed July 2026 after a June pause). A full codebase audit ([`docs/audit-2026-07.md`](docs/audit-2026-07.md)) kicked off a weekly shipping cadence: eval trust, then parse-lane coverage, then per-page routing, then coordinate linking into AutoCAD. [`STATE.md`](STATE.md) is the living map of where things stand. The [AI-assisted engineering layer](#ai-assisted-engineering) (agent team, CI review, the `/ask` RAG endpoint) landed earlier in July.
+> **Project status: v1, frozen July 2026.** This repo is the complete, working v1 of RedlineIQ (a deployed hybrid parse/vision extraction pipeline with a reproducible eval harness), preserved as a portfolio artifact with its full unsquashed history. The [live demo](https://redlineiq-app.onrender.com) stays up. Development continues in a private repository as RedlineIQ heads toward design-partner pilots. [`STATE.md`](STATE.md) records where things stood at the freeze; [`docs/audit-2026-07.md`](docs/audit-2026-07.md) is the audit that set the roadmap the private work follows.
 
 ## What it does
 
