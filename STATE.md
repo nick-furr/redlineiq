@@ -23,10 +23,10 @@ roadmap derives from it.
 ## Current numbers (pinned v0.9 baseline, 9 working-set cases)
 
 - **Recall 0.665 · Precision 0.687 · Specificity 1.509**, deterministic config per ADR 0003.
-- Two integrity caveats from the audit, both Week 1 work: the parse lane's label call is the
-  one unpinned-temperature call site in the repo, so parse-lane numbers are noise until the
-  pin lands; and the harness's default vision path is untiled while production tiles, so the
-  trustworthy baseline is a fresh run with `--tile` after the pin.
+- One integrity caveat remains from the audit: the harness's default vision path is untiled
+  while production tiles, so the trustworthy baseline is a fresh run with `--tile` (Week 1).
+  The parse lane's temperature pin landed 2026-07-16; parse-lane numbers from before it are
+  not comparable.
 
 ## Known limitations
 

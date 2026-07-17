@@ -63,12 +63,10 @@ The eval harness is the spine of the project. Non-obvious constraints:
   `extraction-service.js`. Versioned snapshots (`prompts/v0.6.md` … `v0.10.md`) are
   immutable history; never edit them. A prompt change means: new version file + update
   `active.md` + an entry in `prompts/CHANGELOG.md` with hypothesis/delta/rationale.
-- **Temperature is pinned to 0 per ADR 0003, with one known violation:** the vision path
-  and the Haiku judge are pinned; the parse lane's `labelMarkups` call
-  (`parse-extraction-service.js:99`) is unpinned until the Week 1 fix lands. Until then,
-  parse-lane eval numbers are not trustworthy. Never add a new API call site without an
-  explicit `temperature`. Pre-pin numbers (e.g. the old 0.811 recall) are not comparable to
-  anything current.
+- **Every Claude call site pins `temperature: 0` per ADR 0003** (vision extraction,
+  parse-lane labeling, the Haiku judge). Never add a new API call site without an explicit
+  `temperature`. Pre-pin numbers (e.g. the old 0.811 recall) are not comparable to anything
+  current.
 - **The harness's default vision path is not production's**: production tiles every raster
   page; the harness only tiles with `--tile`. Baselines that claim to represent production
   must run with `--tile`.

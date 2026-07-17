@@ -99,6 +99,7 @@ export async function labelMarkups(markups) {
   const response = await client.messages.create({
     model: config.anthropic.model,
     max_tokens: 4096,
+    temperature: 0, // ADR 0003: every call site pins temperature explicitly
     system: LABEL_SYSTEM,
     messages: [{ role: 'user', content: buildLabelUserMessage(markups) }],
   });
